@@ -1,0 +1,13 @@
+# Bun configuration
+[install]
+# Cache directory
+cache = ".bun/install/cache"
+
+# Peer dependencies
+peer = true
+
+# Auto-install dependencies
+auto = true
+
+[install.scopes]
+# Add private registry scopes here if needed

@@ -1,0 +1,2 @@
+# Keep this directory in git
+# The actual .mmdb files are gitignored (large binary files)
