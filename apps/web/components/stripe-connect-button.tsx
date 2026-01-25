@@ -21,7 +21,7 @@ export function StripeConnectButton() {
     try {
       // Redirect to OAuth initiation endpoint
       window.location.href = "/api/stripe/connect";
-    } catch (error) {
+    } catch {
       setIsLoading(false);
       // AC5: User-friendly error message
       toast.error("Connection Failed", {

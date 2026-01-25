@@ -10,7 +10,7 @@ import { headers } from "next/headers";
  * - Generates Stripe OAuth URL with CSRF protection
  * - Redirects to Stripe consent screen (AC2)
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // AC7: Validate Better Auth session before OAuth redirect
     const session = await auth.api.getSession({

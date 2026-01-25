@@ -102,7 +102,9 @@ export async function GET(request: NextRequest) {
     
     // For now, we'll get the user's primary organization
     // This is a simplified approach for MVP - production should have explicit org selection
-    const organizationId = (session as any).activeOrganization?.id;
+    // Better Auth organization plugin stores org in session.user.organizationId
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const organizationId = (session.user as any).organizationId as string | undefined;
     
     if (!organizationId) {
       return NextResponse.redirect(
@@ -130,7 +132,9 @@ export async function GET(request: NextRequest) {
     console.error("Stripe OAuth callback error:", error);
     
     // AC5: Network error handling
-    let errorMessage = "Network error. Check your internet connection.";
+    const errorMessage = error instanceof Error 
+      ? `Network error: ${error.message}`
+      : "Network error. Check your internet connection.";
     if (error instanceof Error) {
       console.error("Error details:", error.message);
     }

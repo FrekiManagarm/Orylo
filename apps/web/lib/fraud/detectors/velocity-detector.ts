@@ -1,9 +1,8 @@
 import {
   IDetector,
-  FraudDetectionContext,
-  FraudDetectionResult,
-  FraudScoreSeverity,
-  DetectorIdSchema,
+  DetectionContext,
+  DetectorResult,
+  createDetectorId,
 } from "@orylo/fraud-engine";
 import { redis } from "@/lib/redis";
 
@@ -20,11 +19,11 @@ import { redis } from "@/lib/redis";
  * AC6: Performance <10ms (Redis in-memory)
  */
 export class VelocityDetector implements IDetector {
-  readonly id = DetectorIdSchema.parse("velocity-detector");
+  readonly id = createDetectorId("velocity-detector");
   readonly name = "Velocity Detector";
   readonly description =
     "Flags customers with unusually high transaction counts per hour";
-  readonly severity = 40; // Base score for HIGH risk
+  readonly priority = 1; // High priority - fast detector
 
   /**
    * Execute velocity detection
@@ -32,27 +31,24 @@ export class VelocityDetector implements IDetector {
    * @param context - Fraud detection context with customer data
    * @returns Detection result or null if error
    */
-  async execute(
-    context: FraudDetectionContext
-  ): Promise<FraudDetectionResult | null> {
+  async detect(
+    context: DetectionContext
+  ): Promise<DetectorResult> {
     const startTime = Date.now();
 
     try {
       // AC5: Handle missing customerId (first-time customer or anonymous)
-      if (!context.metadata?.customerId) {
+      if (!context.customerId) {
         console.warn("[velocity_detector_no_customer_id]", {
           paymentIntentId: context.paymentIntentId,
         });
         // Return LOW risk for anonymous transactions
         return {
           detectorId: this.id,
-          score: {
-            value: 0,
-            severity: FraudScoreSeverity.LOW,
-            reason: "No customer ID - cannot track velocity",
-            detectorId: this.id,
-          },
-          details: {
+          score: 0,
+          confidence: 50,
+          reason: "No customer ID - cannot track velocity",
+          metadata: {
             txCount: 0,
             timeframe: "1h",
             threshold: 10,
@@ -61,7 +57,7 @@ export class VelocityDetector implements IDetector {
         };
       }
 
-      const customerId = context.metadata.customerId as string;
+      const customerId = context.customerId;
 
       // AC3: Build Redis key with hour granularity
       const hour = this.getCurrentHour();
@@ -76,7 +72,7 @@ export class VelocityDetector implements IDetector {
       }
 
       // AC2: Apply thresholds
-      const { score, severity, reason } = this.calculateRisk(txCount);
+      const { score, reason, confidence } = this.calculateRisk(txCount);
 
       // AC6: Log if slow (>10ms)
       const latency = Date.now() - startTime;
@@ -99,13 +95,10 @@ export class VelocityDetector implements IDetector {
       // AC4: Return result with metadata
       return {
         detectorId: this.id,
-        score: {
-          value: score,
-          severity,
-          reason,
-          detectorId: this.id,
-        },
-        details: {
+        score,
+        confidence,
+        reason,
+        metadata: {
           txCount,
           timeframe: "1h",
           threshold: 10,
@@ -120,8 +113,16 @@ export class VelocityDetector implements IDetector {
         error: error instanceof Error ? error.message : "Unknown error",
       });
 
-      // Return null to skip detector (don't block detection)
-      return null;
+      // Return neutral result instead of null (don't block detection)
+      return {
+        detectorId: this.id,
+        score: 0,
+        confidence: 0,
+        reason: "Velocity detector error - skipped",
+        metadata: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      };
     }
   }
 
@@ -135,28 +136,28 @@ export class VelocityDetector implements IDetector {
    */
   private calculateRisk(txCount: number): {
     score: number;
-    severity: FraudScoreSeverity;
     reason: string;
+    confidence: number;
   } {
     if (txCount > 10) {
       // AC2: HIGH risk - likely card testing attack
       return {
         score: 40,
-        severity: FraudScoreSeverity.HIGH,
+        confidence: 90,
         reason: `High velocity: ${txCount} transactions in 1 hour (threshold: >10)`,
       };
     } else if (txCount >= 5) {
       // AC2: MEDIUM risk - elevated activity
       return {
         score: 20,
-        severity: FraudScoreSeverity.MEDIUM,
+        confidence: 70,
         reason: `Medium velocity: ${txCount} transactions in 1 hour (threshold: 5-10)`,
       };
     } else {
       // AC2, AC5: LOW risk - normal activity or first transaction
       return {
         score: 0,
-        severity: FraudScoreSeverity.LOW,
+        confidence: 80,
         reason: `Low velocity: ${txCount} transactions in 1 hour (threshold: <5)`,
       };
     }

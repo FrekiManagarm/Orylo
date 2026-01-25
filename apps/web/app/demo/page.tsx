@@ -7,6 +7,7 @@ import {
   type DetectionContext,
   type IDetector,
   type DetectorResult,
+  type FraudDetectionResult,
   FraudDecision,
   createOrganizationId,
   createPaymentIntentId,
@@ -39,7 +40,7 @@ class DemoDetector implements IDetector {
 }
 
 export default function DemoPage() {
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<FraudDetectionResult | null>(null);
   const [amount, setAmount] = useState(5000); // 50€ en centimes
 
   const runDetection = async () => {
@@ -127,7 +128,7 @@ export default function DemoPage() {
             </div>
 
             <div>
-              <span className="font-medium">Temps d'exécution:</span>{" "}
+              <span className="font-medium">Temps d&apos;exécution:</span>{" "}
               {result.executionTimeMs.toFixed(2)}ms
             </div>
 
@@ -136,7 +137,7 @@ export default function DemoPage() {
               {result.detectorResults.length}
             </div>
 
-            {result.detectorResults.map((dr: any, idx: number) => (
+            {result.detectorResults.map((dr: DetectorResult, idx: number) => (
               <div key={idx} className="border-l-4 border-blue-500 pl-4">
                 <div className="font-medium">{dr.detectorId}</div>
                 <div className="text-sm text-gray-600">{dr.reason}</div>

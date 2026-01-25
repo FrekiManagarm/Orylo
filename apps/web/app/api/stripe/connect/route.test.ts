@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET } from "./route";
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import type { Session } from "@/lib/auth";
 
 // Mock auth module
 vi.mock("@/lib/auth", () => ({
@@ -29,7 +30,7 @@ describe("GET /api/stripe/connect", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", organizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     const request = new NextRequest("http://localhost:3000/api/stripe/connect");
     const response = await GET(request);
@@ -59,7 +60,7 @@ describe("GET /api/stripe/connect", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", organizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     const request = new NextRequest("http://localhost:3000/api/stripe/connect");
     const response = await GET(request);
@@ -75,7 +76,7 @@ describe("GET /api/stripe/connect", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", organizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     const request = new NextRequest("http://localhost:3000/api/stripe/connect");
     const response = await GET(request);

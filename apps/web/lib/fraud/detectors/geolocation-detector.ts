@@ -1,11 +1,11 @@
 import {
   IDetector,
-  FraudDetectionContext,
-  FraudDetectionResult,
-  FraudScoreSeverity,
-  DetectorIdSchema,
+  DetectionContext,
+  DetectorResult,
+  createDetectorId,
 } from "@orylo/fraud-engine";
 import { Reader } from "@maxmind/geoip2-node";
+import type { ReaderModel } from "@maxmind/geoip2-node";
 import path from "path";
 
 /**
@@ -21,13 +21,13 @@ import path from "path";
  * AC6: Performance <5ms (local DB lookup)
  */
 export class GeolocationDetector implements IDetector {
-  readonly id = DetectorIdSchema.parse("geolocation-detector");
+  readonly id = createDetectorId("geolocation-detector");
   readonly name = "Geolocation Detector";
   readonly description =
     "Flags mismatches between customer IP country and card billing country";
-  readonly severity = 30; // Base score for HIGH risk
+  readonly priority = 2; // Medium priority
 
-  private reader: Reader | null = null;
+  private reader: ReaderModel | null = null;
   private initError: Error | null = null;
 
   /**
@@ -67,11 +67,11 @@ export class GeolocationDetector implements IDetector {
    * Execute geolocation detection
    * 
    * @param context - Fraud detection context with IP and card data
-   * @returns Detection result or null if error/missing data
+   * @returns Detection result
    */
-  async execute(
-    context: FraudDetectionContext
-  ): Promise<FraudDetectionResult | null> {
+  async detect(
+    context: DetectionContext
+  ): Promise<DetectorResult> {
     const startTime = Date.now();
 
     // AC2: Check if database loaded
@@ -80,7 +80,15 @@ export class GeolocationDetector implements IDetector {
         paymentIntentId: context.paymentIntentId,
         reason: "MaxMind database not loaded",
       });
-      return null;
+      return {
+        detectorId: this.id,
+        score: 0,
+        confidence: 0,
+        reason: "Geolocation detector disabled - MaxMind database not loaded",
+        metadata: {
+          disabled: true,
+        },
+      };
     }
 
     // AC1: Extract card country and customer IP
@@ -94,7 +102,16 @@ export class GeolocationDetector implements IDetector {
         hasCardCountry: !!cardCountry,
         hasCustomerIp: !!customerIp,
       });
-      return null;
+      return {
+        detectorId: this.id,
+        score: 0,
+        confidence: 0,
+        reason: "Missing card country or customer IP",
+        metadata: {
+          hasCardCountry: !!cardCountry,
+          hasCustomerIp: !!customerIp,
+        },
+      };
     }
 
     try {
@@ -107,7 +124,15 @@ export class GeolocationDetector implements IDetector {
           paymentIntentId: context.paymentIntentId,
           customerIp,
         });
-        return null;
+        return {
+          detectorId: this.id,
+          score: 0,
+          confidence: 0,
+          reason: "IP country not found in MaxMind database",
+          metadata: {
+            customerIp,
+          },
+        };
       }
 
       // AC4: Detect VPN/Proxy
@@ -121,25 +146,25 @@ export class GeolocationDetector implements IDetector {
 
       // Calculate risk score
       let score = 0;
-      let severity = FraudScoreSeverity.LOW;
+      let confidence = 80;
       let reason = "";
 
       if (mismatch) {
         if (isVpn) {
           // AC4: VPN exception - lower score to avoid false positives
           score = 15;
-          severity = FraudScoreSeverity.MEDIUM;
+          confidence = 60;
           reason = `IP country (${ipCountry}) ≠ card country (${cardCountry}), VPN detected`;
         } else {
           // AC3: High risk - country mismatch
           score = 30;
-          severity = FraudScoreSeverity.HIGH;
+          confidence = 85;
           reason = `IP country (${ipCountry}) ≠ card country (${cardCountry})`;
         }
       } else {
         // AC3: Low risk - countries match
         score = 0;
-        severity = FraudScoreSeverity.LOW;
+        confidence = 90;
         reason = `IP and card countries match (${ipCountry})`;
       }
 
@@ -166,13 +191,10 @@ export class GeolocationDetector implements IDetector {
       // AC5: Return result with metadata
       return {
         detectorId: this.id,
-        score: {
-          value: score,
-          severity,
-          reason,
-          detectorId: this.id,
-        },
-        details: {
+        score,
+        confidence,
+        reason,
+        metadata: {
           ipCountry,
           cardCountry,
           mismatch,
@@ -187,8 +209,16 @@ export class GeolocationDetector implements IDetector {
         error: error instanceof Error ? error.message : "Unknown error",
       });
 
-      // Return null to skip detector (don't block detection)
-      return null;
+      // Return neutral result instead of null
+      return {
+        detectorId: this.id,
+        score: 0,
+        confidence: 0,
+        reason: "Geolocation detector error - skipped",
+        metadata: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      };
     }
   }
 }

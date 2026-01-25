@@ -3,6 +3,7 @@ import { GET } from "./route";
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import type { Session } from "@/lib/auth";
 
 // Mock modules
 vi.mock("@/lib/auth", () => ({
@@ -41,7 +42,7 @@ describe("GET /api/stripe/callback", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", activeOrganizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     // Request with mismatched state
     const request = new NextRequest(
@@ -67,7 +68,7 @@ describe("GET /api/stripe/callback", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", activeOrganizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     // Mock Stripe API response
     vi.mocked(global.fetch).mockResolvedValue({
@@ -76,7 +77,7 @@ describe("GET /api/stripe/callback", () => {
         stripe_user_id: "acct_test123",
         access_token: "sk_test_token",
       }),
-    } as any);
+    } as Response);
 
     const state = "test_state_123";
     const request = new NextRequest(
@@ -110,7 +111,7 @@ describe("GET /api/stripe/callback", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", activeOrganizationId: organizationId },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
@@ -118,7 +119,7 @@ describe("GET /api/stripe/callback", () => {
         stripe_user_id: "acct_test123",
         access_token: "sk_test_token",
       }),
-    } as any);
+    } as Session);
 
     const state = "test_state_123";
     const request = new NextRequest(
@@ -141,7 +142,7 @@ describe("GET /api/stripe/callback", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", activeOrganizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     // Mock Stripe API error
     vi.mocked(global.fetch).mockResolvedValue({
@@ -150,7 +151,7 @@ describe("GET /api/stripe/callback", () => {
         error: "invalid_grant",
         error_description: "Authorization code expired",
       }),
-    } as any);
+    } as Response);
 
     const state = "test_state_123";
     const request = new NextRequest(
@@ -175,7 +176,7 @@ describe("GET /api/stripe/callback", () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       user: { id: "user123", activeOrganizationId: "org123" },
       session: { id: "session123" },
-    } as any);
+    } as Session);
 
     // Mock network error
     vi.mocked(global.fetch).mockRejectedValue(new Error("Network error"));

@@ -8,6 +8,8 @@ import {
 } from "@orylo/fraud-engine";
 import { db } from "@/lib/db";
 import { fraudDetections } from "@orylo/database";
+import { logger } from "@/lib/logger";
+import { VelocityDetector, GeolocationDetector, TrustScoreDetector } from "./detectors";
 
 /**
  * Main Fraud Detection Orchestrator
@@ -48,10 +50,6 @@ export async function detectFraud(
     // Initialize fraud detection engine with detectors
     const engine = new FraudDetectionEngine(new AdditiveScoringStrategy());
 
-    // Import all detectors
-    const { VelocityDetector, GeolocationDetector, TrustScoreDetector } =
-      await import("./detectors");
-
     // Story 1.4: Register VelocityDetector
     const velocityDetector = new VelocityDetector();
     engine.registerDetector(velocityDetector);
@@ -66,18 +64,32 @@ export async function detectFraud(
     engine.registerDetector(trustScoreDetector);
 
     // AC6: Execute detection with error handling
+    // Story 3.4 AC3: Detectors run in parallel (verified via engine.detect)
     let result: FraudDetectionResult;
 
     try {
-      // Run all detectors
+      // AC3: All detectors run in parallel via engine.detect()
+      // Each detector target: <100ms
+      const detectionStartTime = Date.now();
       result = await engine.detect(context);
+      const detectionTime = Date.now() - detectionStartTime;
 
-      console.info("[detection_engine_success]", {
+      logger.info("Detection engine completed", {
         paymentIntentId: context.paymentIntentId,
         score: result.score,
         decision: result.decision,
         detectorsExecuted: result.detectorResults.length,
+        detectionTimeMs: detectionTime,
       });
+
+      // Story 3.4 AC3: Alert if parallel execution exceeds target
+      if (detectionTime > 350) {
+        logger.warn("Slow detection - exceeds P95 target", {
+          paymentIntentId: context.paymentIntentId,
+          detectionTimeMs: detectionTime,
+          targetMs: 350,
+        });
+      }
     } catch (error) {
       // AC6: Graceful degradation - if engine fails completely
       console.error("[detection_engine_error]", {
@@ -115,9 +127,9 @@ export async function detectFraud(
       context,
       {
         riskScore: result.score,
-        txCount: velocityResult?.metadata?.txCount || 0,
-        trustScore: trustScoreResult?.metadata?.trustScore || 50,
-        ipCountry: geoResult?.metadata?.ipCountry || null,
+        txCount: velocityResult?.metadata?.txCount ? Number(velocityResult.metadata.txCount) : 0,
+        trustScore: trustScoreResult?.metadata?.trustScore ? Number(trustScoreResult.metadata.trustScore) : 50,
+        ipCountry: geoResult?.metadata?.ipCountry ? String(geoResult.metadata.ipCountry) : null,
       },
       result.decision,
     );
@@ -186,17 +198,16 @@ async function saveFraudDetection(
 ): Promise<void> {
   try {
     await db.insert(fraudDetections).values({
-      organizationId: context.organizationId,
-      paymentIntentId: context.paymentIntentId,
-      customerId: context.customerId || null,
+      organizationId: String(context.organizationId),
+      paymentIntentId: String(context.paymentIntentId),
+      customerId: context.customerId ? String(context.customerId) : null,
       customerEmail: context.customerEmail || null,
       amount: context.amount,
       currency: context.currency,
-      decision: result.decision,
+      decision: String(result.decision),
       score: result.score,
-      confidence: calculateConfidence(result.detectorResults),
       detectorResults: result.detectorResults as any, // Cast for JSONB
-      executionTimeMs: result.executionTimeMs,
+      executionTimeMs: Math.round(result.executionTimeMs),
       createdAt: new Date(),
     });
 

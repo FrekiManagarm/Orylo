@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, webhookSecret } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { organizations } from "@orylo/database";
+import { organizations, webhookEvents } from "@orylo/database";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
+import { processWebhookWithRetry } from "@/lib/webhook-processor";
+import { logger, logWebhookReceived } from "@/lib/logger";
 
 /**
  * POST /api/webhooks/stripe
@@ -49,58 +51,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // AC8: Log webhook received
-    console.info("[stripe_webhook_received]", {
-      eventId: event.id,
-      eventType: event.type,
-      timestamp: new Date().toISOString(),
-    });
+    // AC8: Log webhook received (Story 3.3: Structured logging)
+    logWebhookReceived(event.id, event.type);
 
-    // AC3: Filter - only process payment_intent.created
-    if (event.type !== "payment_intent.created") {
-      console.info("[stripe_webhook_ignored]", {
+    // AC6: Supported events (expanded from Story 1.2)
+    const SUPPORTED_EVENTS = [
+      "payment_intent.created", // Existing from Story 1.2
+      "charge.succeeded", // NEW
+      "charge.failed", // NEW
+      "charge.dispute.created", // NEW (integrates with Story 3.2)
+    ];
+
+    // AC6: Filter events - return 200 for unsupported (Stripe doesn't retry)
+    if (!SUPPORTED_EVENTS.includes(event.type)) {
+      logger.info("Webhook ignored - unsupported event type", {
         eventId: event.id,
         eventType: event.type,
-        reason: "Not payment_intent.created",
       });
-      // Return 200 OK for other event types (Stripe doesn't retry)
-      return NextResponse.json({ received: true }, { status: 200 });
+      return NextResponse.json({ received: true, skipped: true }, { status: 200 });
     }
 
-    // AC4: Extract payment intent data
-    const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    
-    // AC4: Extract required fields
-    const paymentData = {
-      paymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
-      customerId: paymentIntent.customer as string | null,
-      metadata: paymentIntent.metadata || {},
-      status: paymentIntent.status,
-      created: paymentIntent.created,
-    };
+    // AC1: Idempotency check - check if event already processed
+    const existing = await db
+      .select()
+      .from(webhookEvents)
+      .where(eq(webhookEvents.stripeEventId, event.id))
+      .limit(1);
 
-    // Validate required fields
-    if (!paymentData.amount || !paymentData.currency) {
-      console.error("[stripe_webhook_missing_field]", {
-        eventId: event.id,
-        paymentIntentId: paymentData.paymentIntentId,
-        missingFields: {
-          amount: !paymentData.amount,
-          currency: !paymentData.currency,
-        },
-      });
-      // AC7: Return 500 for missing required fields (Stripe will retry)
+    if (existing.length > 0) {
+      logger.info("Duplicate webhook event detected", { eventId: event.id });
       return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 500 }
+        { received: true, duplicate: true },
+        { status: 200 }
       );
     }
 
     // Get organization ID from Stripe account
     // Note: In production, you'd get this from the connected account
-    // For now, we'll use a simpler approach
     const stripeAccountId = event.account as string | null;
     let organizationId: string | null = null;
 
@@ -115,42 +102,50 @@ export async function POST(request: NextRequest) {
       organizationId = orgs[0]?.id || null;
     }
 
+    // For payment_intent.created, also try to get org from metadata
+    if (!organizationId && event.type === "payment_intent.created") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      if (paymentIntent.metadata?.organizationId) {
+        organizationId = paymentIntent.metadata.organizationId;
+      }
+    }
+
     if (!organizationId) {
-      console.warn("[stripe_webhook_no_org]", {
+      logger.warn("No organization found for Stripe account", {
         eventId: event.id,
         stripeAccountId,
-        message: "No organization found for Stripe account",
       });
       // Still return 200 OK (we received the webhook successfully)
-      // But don't process fraud detection without an org
+      // But don't process without an org
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
-    // AC5: Trigger fraud detection asynchronously (fire-and-forget)
-    // Don't await - let it run in background
-    void processFraudDetection({
+    // AC1: Create webhook event record (marks event as received, before processing)
+    await db.insert(webhookEvents).values({
+      stripeEventId: event.id,
+      type: event.type,
       organizationId,
-      paymentIntentId: paymentData.paymentIntentId,
-      amount: paymentData.amount,
-      currency: paymentData.currency,
-      customerId: paymentData.customerId,
-      metadata: paymentData.metadata,
-      eventId: event.id,
+      processed: false,
+      retryCount: 0,
     });
 
-    // AC6: Return 200 OK immediately (response time <2s)
-    const responseTime = Date.now() - startTime;
-    console.info("[stripe_webhook_success]", {
+    // AC4 & AC5: Process webhook with retry logic (async, fire-and-forget)
+    // Don't await - let it run in background with retry logic
+    void processWebhookWithRetry(event, organizationId);
+
+    // AC7: Performance monitoring per webhook type (Story 3.3)
+    const duration = Date.now() - startTime;
+    logger.info("Webhook received and queued for processing", {
       eventId: event.id,
-      paymentIntentId: paymentData.paymentIntentId,
-      responseTimeMs: responseTime,
+      eventType: event.type,
+      responseTimeMs: duration,
     });
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
     // AC7: Return 500 for internal errors (Stripe will retry)
     const responseTime = Date.now() - startTime;
-    console.error("[stripe_webhook_error]", {
+    logger.error("Webhook processing error", {
       error: error instanceof Error ? error.message : "Unknown error",
       stack: error instanceof Error ? error.stack : undefined,
       responseTimeMs: responseTime,
@@ -163,76 +158,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Async Fraud Detection Processing
- * 
- * AC5: Runs in background, doesn't block webhook response
- * Builds FraudDetectionContext and triggers detection engine
- */
-async function processFraudDetection(data: {
-  organizationId: string;
-  paymentIntentId: string;
-  amount: number;
-  currency: string;
-  customerId: string | null;
-  metadata: Record<string, string>;
-  eventId: string;
-}) {
-  try {
-    console.info("[fraud_detection_triggered]", {
-      eventId: data.eventId,
-      organizationId: data.organizationId,
-      paymentIntentId: data.paymentIntentId,
-    });
-
-    // Story 1.3: Call fraud detection orchestrator
-    const { detectFraud } = await import("@/lib/fraud/detect-fraud");
-    const { OrganizationIdSchema, PaymentIntentIdSchema } = await import(
-      "@orylo/fraud-engine"
-    );
-
-    // Build FraudDetectionContext
-    const context = {
-      organizationId: OrganizationIdSchema.parse(data.organizationId),
-      paymentIntentId: PaymentIntentIdSchema.parse(data.paymentIntentId),
-      amount: data.amount,
-      currency: data.currency,
-      customerEmail: null, // TODO: Get from Stripe customer lookup (Story 1.4+)
-      customerIp: data.metadata.customer_ip || null,
-      cardCountry: null, // TODO: Get from payment method (Story 1.4+)
-      cardLast4: null, // TODO: Get from payment method (Story 1.4+)
-      metadata: data.metadata,
-      timestamp: new Date(),
-    };
-
-    // Run fraud detection
-    const result = await detectFraud(context);
-
-    console.info("[fraud_detection_completed]", {
-      eventId: data.eventId,
-      paymentIntentId: data.paymentIntentId,
-      decision: result.decision,
-      riskScore: result.riskScore,
-      latencyMs: result.latencyMs,
-    });
-
-    // Story 1.6: Update trust score async (AC6)
-    // Fire-and-forget: don't await, don't block webhook response
-    if (data.customerId && result.decision === "ALLOW") {
-      const { updateTrustScore } = await import("@/lib/fraud/trust-score");
-      void updateTrustScore(
-        data.organizationId,
-        data.customerId,
-        "successful_payment"
-      );
-    }
-  } catch (error) {
-    // AC5: Detection errors don't affect webhook response
-    console.error("[fraud_detection_error]", {
-      eventId: data.eventId,
-      paymentIntentId: data.paymentIntentId,
-      error: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-  }
-}

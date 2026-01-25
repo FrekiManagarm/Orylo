@@ -1,16 +1,33 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
-import { createId } from "@paralleldrive/cuid2";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
+import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { Invitation, invitation } from "./invitations";
+import { Member, member } from "./members";
 
-/**
- * Table Organizations
- * 
- * Multi-tenancy via organizationId isolation
- */
-export const organizations = pgTable("organizations", {
-  id: text("id").primaryKey().$defaultFn(() => createId()),
-  name: text("name").notNull(),
-  stripeAccountId: text("stripe_account_id"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-});
+export const organization = pgTable(
+  "organization",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull().unique(),
+    logo: text("logo"),
+    createdAt: timestamp("created_at").notNull(),
+    metadata: text("metadata"),
+  },
+  (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)],
+);
+
+export const organizationRelations = relations(organization, ({ many }) => ({
+  members: many(member),
+  invitations: many(invitation),
+}));
+
+export const organizationSchema = createSelectSchema(organization);
+export const createOrganizationSchema = createInsertSchema(organization);
+
+export type Organization = InferSelectModel<typeof organization> & {
+  members: Member[];
+  invitations: Invitation[];
+};
+
+export type NewOrganization = InferInsertModel<typeof organization>;

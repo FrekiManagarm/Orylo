@@ -1,6 +1,7 @@
-import { pgTable, text, timestamp, integer, json, index } from "drizzle-orm/pg-core";
-import { createId } from "@paralleldrive/cuid2";
-import { organizations } from "./organizations";
+import { pgTable, text, timestamp, integer, json } from "drizzle-orm/pg-core";
+import { Organization, organization } from "./organizations";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
 
 /**
  * Table FraudDetections
@@ -10,35 +11,44 @@ import { organizations } from "./organizations";
 export const fraudDetections = pgTable(
   "fraud_detections",
   {
-    id: text("id").primaryKey().$defaultFn(() => createId()),
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
     organizationId: text("organization_id")
       .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
-    
+      .references(() => organization.id, { onDelete: "cascade" }),
+
     // Stripe payment intent ID
     paymentIntentId: text("payment_intent_id").notNull(),
-    
+
     // Customer info
     customerId: text("customer_id"),
     customerEmail: text("customer_email"),
-    
+
     // Transaction details
     amount: integer("amount").notNull(), // en centimes
     currency: text("currency").notNull(),
-    
+
     // Fraud detection results
     decision: text("decision").notNull(), // ALLOW, REVIEW, BLOCK
     score: integer("score").notNull(), // 0-100
     detectorResults: json("detector_results").notNull(), // Array de DetectorResult
-    
+
     // Metadata
     executionTimeMs: integer("execution_time_ms").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    orgIdIdx: index("fraud_detections_org_id_idx").on(table.organizationId),
-    paymentIntentIdx: index("fraud_detections_payment_intent_idx").on(table.paymentIntentId),
-    decisionIdx: index("fraud_detections_decision_idx").on(table.decision),
-    createdAtIdx: index("fraud_detections_created_at_idx").on(table.createdAt),
-  })
+  }
 );
+
+export const fraudDetectionsRelations = relations(fraudDetections, ({ one }) => ({
+  organization: one(organization, {
+    fields: [fraudDetections.organizationId],
+    references: [organization.id],
+  }),
+}));
+
+export const fraudDetectionsSchema = createSelectSchema(fraudDetections);
+export const createFraudDetectionSchema = createInsertSchema(fraudDetections);
+
+export type FraudDetection = InferSelectModel<typeof fraudDetections> & {
+  organization: Organization;
+};
+export type NewFraudDetection = InferInsertModel<typeof fraudDetections>;

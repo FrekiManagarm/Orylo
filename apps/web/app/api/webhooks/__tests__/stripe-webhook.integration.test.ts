@@ -70,11 +70,12 @@ describe("Stripe Webhook Integration Tests", () => {
      */
 
     const timestamp = Math.floor(Date.now() / 1000);
-    const payload = JSON.stringify({
-      id: "evt_test",
-      type: "payment_intent.created",
-      data: { object: { id: "pi_test" } },
-    });
+    // Example payload structure (not used in this test)
+    // const payload = JSON.stringify({
+    //   id: "evt_test",
+    //   type: "payment_intent.created",
+    //   data: { object: { id: "pi_test" } },
+    // });
 
     // In real integration test, you would:
     // 1. Use Stripe's webhook secret

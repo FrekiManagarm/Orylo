@@ -13,7 +13,7 @@
 | Epic | Stories | Story Points | Timeline | Status |
 |------|---------|--------------|----------|--------|
 | [Epic 1](#epic-1---stripe-integration--detection-api) | 7 | 39 SP | Sprint 1-2 (Week 2-3) | ✅ Complete |
-| [Epic 2](#epic-2---dashboard-action-first-experience) | 12 | 51 SP | Sprint 3-4 (Week 4-5) | 📋 Ready |
+| [Epic 2](#epic-2---dashboard-action-first-experience) | 12 | 51 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
 | [Epic 3](#epic-3---integration--production-readiness) | 10 | 37 SP | Sprint 5-6 (Week 6) | 📋 Ready |
 
 **Total**: **29 stories**, **116 story points**, **6 weeks**
@@ -57,17 +57,17 @@
 
 | ID | Story | SP | Status | File |
 |----|-------|----|----|------|
-| 2.1 | [Feed Dashboard avec Detection Cards](#story-21-feed-dashboard-avec-detection-cards) | 5 | Draft | [2.1.feed-dashboard.md](2.1.feed-dashboard.md) |
-| 2.2 | [Stats Cards (Contextual Metrics)](#story-22-stats-cards-contextual-metrics) | 3 | Draft | [2.2.stats-cards.md](2.2.stats-cards.md) |
-| 2.3 | [Filters (Decision, Date Range)](#story-23-filters-decision-date-range) | 3 | Draft | [2.3.filters.md](2.3.filters.md) |
-| 2.4 | [Detection Details Dialog](#story-24-detection-details-dialog) | 5 | Draft | [2.4.detection-details-dialog.md](2.4.detection-details-dialog.md) |
-| 2.6 | [Mobile Navigation with Sheet](#story-26-mobile-navigation-with-sheet) | 3 | Draft | [2.6.mobile-navigation-sheet.md](2.6.mobile-navigation-sheet.md) |
-| 2.7 | [Block Customer Action](#story-27-block-customer-action) | 5 | Draft | [2.7.block-customer-action.md](2.7.block-customer-action.md) |
-| 2.8 | [Whitelist Customer Action](#story-28-whitelist-customer-action) | 5 | Draft | [2.8.whitelist-customer-action.md](2.8.whitelist-customer-action.md) |
-| 2.9 | [Quick Actions Menu (3-dot)](#story-29-quick-actions-menu-3-dot) | 2 | Draft | [2.9.quick-actions-menu.md](2.9.quick-actions-menu.md) |
-| 2.10 | [Server-Sent Events (SSE) Real-Time Updates](#story-210-server-sent-events-sse-real-time-updates) | 8 | Draft | [2.10.sse-real-time-updates.md](2.10.sse-real-time-updates.md) |
-| 2.11 | [Mobile Responsive Design](#story-211-mobile-responsive-design) | 5 | Draft | [2.11.mobile-responsive-design.md](2.11.mobile-responsive-design.md) |
-| 2.12 | [Dark Mode Support](#story-212-dark-mode-support-system-preference) | 2 | Draft | [2.12.dark-mode-support.md](2.12.dark-mode-support.md) |
+| 2.1 | [Feed Dashboard avec Detection Cards](#story-21-feed-dashboard-avec-detection-cards) | 5 | ✅ Approved | [2.1.feed-dashboard.md](2.1.feed-dashboard.md) |
+| 2.2 | [Stats Cards (Contextual Metrics)](#story-22-stats-cards-contextual-metrics) | 3 | ✅ Approved | [2.2.stats-cards.md](2.2.stats-cards.md) |
+| 2.3 | [Filters (Decision, Date Range)](#story-23-filters-decision-date-range) | 3 | ✅ Approved | [2.3.filters.md](2.3.filters.md) |
+| 2.4 | [Detection Details Dialog](#story-24-detection-details-dialog) | 5 | ✅ Approved | [2.4.detection-details-dialog.md](2.4.detection-details-dialog.md) |
+| 2.6 | [Mobile Navigation with Sheet](#story-26-mobile-navigation-with-sheet) | 3 | ✅ Approved | [2.6.mobile-navigation-sheet.md](2.6.mobile-navigation-sheet.md) |
+| 2.7 | [Block Customer Action](#story-27-block-customer-action) | 5 | ✅ Approved | [2.7.block-customer-action.md](2.7.block-customer-action.md) |
+| 2.8 | [Whitelist Customer Action](#story-28-whitelist-customer-action) | 5 | ✅ Approved | [2.8.whitelist-customer-action.md](2.8.whitelist-customer-action.md) |
+| 2.9 | [Quick Actions Menu (3-dot)](#story-29-quick-actions-menu-3-dot) | 2 | ✅ Approved | [2.9.quick-actions-menu.md](2.9.quick-actions-menu.md) |
+| 2.10 | [Server-Sent Events (SSE) Real-Time Updates](#story-210-server-sent-events-sse-real-time-updates) | 8 | ✅ Approved | [2.10.sse-real-time-updates.md](2.10.sse-real-time-updates.md) |
+| 2.11 | [Mobile Responsive Design](#story-211-mobile-responsive-design) | 5 | ✅ Approved | [2.11.mobile-responsive-design.md](2.11.mobile-responsive-design.md) |
+| 2.12 | [Dark Mode Support](#story-212-dark-mode-support-system-preference) | 2 | ✅ Approved | [2.12.dark-mode-support.md](2.12.dark-mode-support.md) |
 
 **Epic 2 Total**: **12 stories** (note: 2.5 skipped), **51 SP**
 
@@ -192,7 +192,7 @@
 ---
 
 ### Story 2.1: Feed Dashboard avec Detection Cards
-**SP**: 5 | **Status**: Draft | **Epic**: 2
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to see a real-time feed of fraud detections with key info at a glance, so that I can quickly identify risky transactions.
 
@@ -201,13 +201,14 @@
 - Card content: Customer email/ID, Amount, Decision badge, Risk score, Timestamp, Primary CTA "Block"
 - Badge variants: BLOCK (destructive), ALLOW (success), REVIEW (warning - NEW variant)
 - Infinite scroll pagination
+- API secured with Better Auth session & multi-tenancy
 
-**Highlight**: ⭐ Exemplary story - 10/10 validation score
+**Highlight**: ⭐ Exemplary story - 10/10 validation score (Auth security added)
 
 ---
 
 ### Story 2.2: Stats Cards (Contextual Metrics)
-**SP**: 3 | **Status**: Draft | **Epic**: 2
+**SP**: 3 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to see key metrics at the top of dashboard, so that I understand fraud trends at a glance.
 
@@ -219,7 +220,7 @@
 ---
 
 ### Story 2.3: Filters (Decision, Date Range)
-**SP**: 3 | **Status**: Draft | **Epic**: 2
+**SP**: 3 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to filter detections by decision type or date, so that I can focus on specific subsets.
 
@@ -231,7 +232,7 @@
 ---
 
 ### Story 2.4: Detection Details Dialog
-**SP**: 5 | **Status**: Draft | **Epic**: 2
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to view full detection details in a modal, so that I can understand why a transaction was flagged.
 
@@ -242,7 +243,7 @@
 ---
 
 ### Story 2.6: Mobile Navigation with Sheet
-**SP**: 3 | **Status**: Draft | **Epic**: 2
+**SP**: 3 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a mobile user, I want a hamburger menu to access navigation, so that I can navigate without desktop sidebar.
 
@@ -254,7 +255,7 @@
 ---
 
 ### Story 2.7: Block Customer Action
-**SP**: 5 | **Status**: Draft | **Epic**: 2
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to block a customer with one click, so that future transactions are auto-declined.
 
@@ -267,7 +268,7 @@
 ---
 
 ### Story 2.8: Whitelist Customer Action
-**SP**: 5 | **Status**: Draft | **Epic**: 2
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want to whitelist a trusted customer, so that their transactions are never flagged.
 
@@ -279,7 +280,7 @@
 ---
 
 ### Story 2.9: Quick Actions Menu (3-dot)
-**SP**: 2 | **Status**: Draft | **Epic**: 2
+**SP**: 2 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want secondary actions accessible via menu, so that UI stays clean but actions available.
 
@@ -291,7 +292,7 @@
 ---
 
 ### Story 2.10: Server-Sent Events (SSE) Real-Time Updates
-**SP**: 8 | **Status**: Draft | **Epic**: 2
+**SP**: 8 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a merchant, I want new detections to appear instantly without refresh, so that I can react to fraud in real-time.
 
@@ -306,7 +307,7 @@
 ---
 
 ### Story 2.11: Mobile Responsive Design
-**SP**: 5 | **Status**: Draft | **Epic**: 2
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a mobile user, I want the dashboard fully usable on phone, so that I can monitor fraud on the go.
 
@@ -319,7 +320,7 @@
 ---
 
 ### Story 2.12: Dark Mode Support (System Preference)
-**SP**: 2 | **Status**: Draft | **Epic**: 2
+**SP**: 2 | **Status**: ✅ Approved | **Epic**: 2
 
 **User Story**: As a user, I want dark mode based on system preference, so that UI matches my OS theme.
 
@@ -577,6 +578,6 @@ All stories follow the template defined in `.bmad-core/templates/story-tmpl.yaml
 
 ---
 
-**Last Updated**: 2026-01-13  
+**Last Updated**: 2026-01-24  
 **Created by**: Sarah (Product Owner)  
-**Validation Status**: ✅ All stories validated - Implementation Ready (8.5/10)
+**Validation Status**: ✅ Epic 2 Complete - All 11 Stories Approved (9.2/10 avg) 🎉

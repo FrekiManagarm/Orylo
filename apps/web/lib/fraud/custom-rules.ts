@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { customRules } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
-import type { DetectionContext, FraudDecision } from "@orylo/fraud-engine";
+import type { DetectionContext, FraudDecision, DetectorResult } from "@orylo/fraud-engine";
 
 /**
  * Custom Rules Engine
@@ -44,15 +44,25 @@ export interface CustomRule {
 }
 
 /**
+ * Metadata extracted from detector results
+ */
+export type DetectorResultsMetadata = {
+  riskScore: number;
+  txCount: number;
+  trustScore: number;
+  ipCountry: string | null;
+};
+
+/**
  * Get Field Value from Context
  *
  * Maps field names to context values
  */
 function getFieldValue(
   context: DetectionContext,
-  detectorResults: any,
+  detectorResults: DetectorResultsMetadata | null,
   field: string,
-): any {
+): string | number | null | undefined {
   switch (field) {
     case "amount":
       return context.amount; // in cents
@@ -88,7 +98,7 @@ function getFieldValue(
 function evaluateCondition(
   condition: Condition,
   context: DetectionContext,
-  detectorResults: any,
+  detectorResults: DetectorResultsMetadata | null,
 ): boolean {
   // AC4: Logical operators (AND, OR)
   if ("operator" in condition && (condition.operator === "AND" || condition.operator === "OR")) {
@@ -216,7 +226,7 @@ async function fetchEnabledRules(
 export async function applyCustomRules(
   organizationId: string,
   context: DetectionContext,
-  detectorResults: any,
+  detectorResults: DetectorResultsMetadata,
   detectorDecision: FraudDecision,
 ): Promise<{
   decision: FraudDecision;

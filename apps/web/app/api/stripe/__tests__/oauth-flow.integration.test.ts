@@ -1,7 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { db } from "@/lib/db";
-import { organizations } from "@orylo/database";
-import { eq } from "drizzle-orm";
 
 /**
  * Integration Tests - Stripe OAuth Flow
@@ -84,10 +81,9 @@ describe("Stripe OAuth Flow - Multi-tenancy Integration Tests", () => {
     // User A tries to access User B's data
     // In real implementation, query would be filtered by organizationId
     const queryOrgId = userAOrgId; // User A's org
-    const targetStripeId = userBStripeId; // User B's stripe account
 
     // This query should fail or return null because of multi-tenancy isolation
-    // Real implementation would use: WHERE organizationId = userAOrgId AND stripeAccountId = targetStripeId
+    // Real implementation would use: WHERE organizationId = userAOrgId AND stripeAccountId = userBStripeId
     const crossOrgAccessAttempt = queryOrgId !== userBOrgId;
 
     expect(crossOrgAccessAttempt).toBe(true);

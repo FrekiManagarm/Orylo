@@ -1,9 +1,8 @@
 import {
   IDetector,
-  FraudDetectionContext,
-  FraudDetectionResult,
-  FraudScoreSeverity,
-  DetectorIdSchema,
+  DetectionContext,
+  DetectorResult,
+  createDetectorId,
 } from "@orylo/fraud-engine";
 import { getTrustScore, getTrustScoreLevel } from "../trust-score";
 
@@ -19,26 +18,26 @@ import { getTrustScore, getTrustScoreLevel } from "../trust-score";
  * Updates happen async after detection (AC6 - via webhook handler)
  */
 export class TrustScoreDetector implements IDetector {
-  readonly id = DetectorIdSchema.parse("trust-score-detector");
+  readonly id = createDetectorId("trust-score-detector");
   readonly name = "Trust Score Detector";
   readonly description =
     "Rewards trusted repeat customers based on historical behavior";
-  readonly severity = 40; // Base score for HIGH risk
+  readonly priority = 3; // Lower priority - may require DB lookup
 
   /**
    * Execute trust score detection
    * 
    * @param context - Fraud detection context with customer data
-   * @returns Detection result or null if error
+   * @returns Detection result
    */
-  async execute(
-    context: FraudDetectionContext
-  ): Promise<FraudDetectionResult | null> {
+  async detect(
+    context: DetectionContext
+  ): Promise<DetectorResult> {
     const startTime = Date.now();
 
     try {
-      // Extract customerId from metadata
-      const customerId = context.metadata?.customerId as string | undefined;
+      // Extract customerId from context
+      const customerId = context.customerId;
 
       if (!customerId) {
         console.warn("[trust_score_detector_no_customer_id]", {
@@ -48,13 +47,10 @@ export class TrustScoreDetector implements IDetector {
         // Return neutral score for anonymous transactions
         return {
           detectorId: this.id,
-          score: {
-            value: 20, // MEDIUM risk for anonymous
-            severity: FraudScoreSeverity.MEDIUM,
-            reason: "No customer ID - cannot assess trust history",
-            detectorId: this.id,
-          },
-          details: {
+          score: 20, // MEDIUM risk for anonymous
+          confidence: 50,
+          reason: "No customer ID - cannot assess trust history",
+          metadata: {
             trustScore: 50,
             level: "MEDIUM_RISK",
             isNewCustomer: true,
@@ -70,7 +66,7 @@ export class TrustScoreDetector implements IDetector {
       );
 
       // AC4: Apply thresholds
-      const { score, severity, reason } = this.calculateRisk(trustScore);
+      const { score, reason, confidence } = this.calculateRisk(trustScore);
       const level = getTrustScoreLevel(trustScore);
 
       const latency = Date.now() - startTime;
@@ -95,13 +91,10 @@ export class TrustScoreDetector implements IDetector {
 
       return {
         detectorId: this.id,
-        score: {
-          value: score,
-          severity,
-          reason,
-          detectorId: this.id,
-        },
-        details: {
+        score,
+        confidence,
+        reason,
+        metadata: {
           trustScore,
           level,
           isNewCustomer: trustScore === 50, // Heuristic
@@ -115,8 +108,16 @@ export class TrustScoreDetector implements IDetector {
         error: error instanceof Error ? error.message : "Unknown error",
       });
 
-      // Return null to skip detector (don't block detection)
-      return null;
+      // Return neutral result instead of null
+      return {
+        detectorId: this.id,
+        score: 0,
+        confidence: 0,
+        reason: "Trust score detector error - skipped",
+        metadata: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      };
     }
   }
 
@@ -130,28 +131,28 @@ export class TrustScoreDetector implements IDetector {
    */
   private calculateRisk(trustScore: number): {
     score: number;
-    severity: FraudScoreSeverity;
     reason: string;
+    confidence: number;
   } {
     if (trustScore < 30) {
       // AC4: HIGH risk - untrusted customer
       return {
         score: 40,
-        severity: FraudScoreSeverity.HIGH,
+        confidence: 85,
         reason: `Low trust score: ${trustScore}/100 (threshold: <30)`,
       };
     } else if (trustScore <= 70) {
       // AC4: MEDIUM risk - neutral customer
       return {
         score: 20,
-        severity: FraudScoreSeverity.MEDIUM,
+        confidence: 75,
         reason: `Medium trust score: ${trustScore}/100 (threshold: 30-70)`,
       };
     } else {
       // AC4: LOW risk - trusted customer
       return {
         score: 0,
-        severity: FraudScoreSeverity.LOW,
+        confidence: 90,
         reason: `High trust score: ${trustScore}/100 (threshold: >70)`,
       };
     }

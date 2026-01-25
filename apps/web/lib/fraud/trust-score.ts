@@ -1,7 +1,11 @@
 import { db } from "@/lib/db";
-import { redis } from "@/lib/redis";
 import { customerTrustScores } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
+import {
+  getCachedTrustScore,
+  setCachedTrustScore,
+  invalidateTrustScoreCache,
+} from "@/lib/cache";
 
 /**
  * Trust Score Management
@@ -47,17 +51,16 @@ export async function getTrustScore(
   customerId: string,
 ): Promise<number> {
   try {
-    // AC5: Try cache first
-    const cacheKey = `trust:${organizationId}:${customerId}`;
-    const cached = await redis.get<{ score: number }>(cacheKey);
+    // Story 3.4 AC2: Try cache first (1h TTL)
+    const cachedScore = await getCachedTrustScore(organizationId, customerId);
 
-    if (cached && typeof cached.score === "number") {
+    if (cachedScore !== null) {
       console.info("[trust_score_cache_hit]", {
         organizationId,
         customerId,
-        score: cached.score,
+        score: cachedScore,
       });
-      return cached.score;
+      return cachedScore;
     }
 
     // Cache miss → Query DB
@@ -97,12 +100,8 @@ export async function getTrustScore(
       });
     }
 
-    // AC5: Cache for 1 hour
-    await redis.set(
-      cacheKey,
-      { score, updatedAt: new Date().toISOString() },
-      { ex: 3600 },
-    );
+    // Story 3.4 AC2: Cache for 1 hour
+    await setCachedTrustScore(organizationId, customerId, score);
 
     return score;
   } catch (error) {
@@ -210,9 +209,8 @@ export async function updateTrustScore(
       })
       .where(eq(customerTrustScores.id, record[0].id));
 
-    // AC5: Invalidate Redis cache
-    const cacheKey = `trust:${organizationId}:${customerId}`;
-    await redis.del(cacheKey);
+    // Story 3.4 AC2: Invalidate Redis cache
+    await invalidateTrustScoreCache(organizationId, customerId);
 
     console.info("[trust_score_update_complete]", {
       organizationId,

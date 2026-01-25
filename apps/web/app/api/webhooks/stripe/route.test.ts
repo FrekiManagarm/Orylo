@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { NextRequest } from "next/server";
-import { stripe, webhookSecret } from "@/lib/stripe";
-import { db } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
+import Stripe from "stripe";
 
 // Mock modules
 vi.mock("@/lib/stripe", () => ({
@@ -50,7 +50,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -122,7 +122,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -149,7 +149,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -189,7 +189,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -221,7 +221,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -256,7 +256,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {
@@ -311,7 +311,7 @@ describe("POST /api/webhooks/stripe", () => {
     };
 
     vi.mocked(stripe.webhooks.constructEvent).mockReturnValue(
-      mockEvent as any
+      mockEvent as Stripe.Event
     );
 
     const request = new NextRequest("http://localhost:3000/api/webhooks/stripe", {

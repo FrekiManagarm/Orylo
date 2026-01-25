@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins";
-import { Pool } from "pg";
+import { db } from "./db";
 
 /**
  * Better Auth Configuration - Orylo V3
@@ -8,49 +9,26 @@ import { Pool } from "pg";
  * Documentation: https://www.better-auth.com/docs
  */
 export const auth = betterAuth({
-  /**
-   * PostgreSQL Database (Neon Serverless)
-   * @see https://www.better-auth.com/docs/adapters/postgresql
-   */
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL!,
+  database: drizzleAdapter(db, {
+    provider: "pg",
   }),
-
-  /**
-   * Plugins
-   * @see https://www.better-auth.com/docs/plugins/organization
-   */
   plugins: [
-    // Organization plugin pour multi-tenancy
     organization(),
   ],
-
-  /**
-   * Authentication Methods
-   */
   emailAndPassword: {
     enabled: true,
-    autoSignIn: true, // Auto sign-in après inscription
+    autoSignIn: true,
   },
-
-  /**
-   * Session Management
-   * @see https://www.better-auth.com/docs/concepts/session-management
-   */
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 jours
-    updateAge: 60 * 60 * 24, // Update session tous les 1 jour
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // Cache session 5 minutes
+      maxAge: 5 * 60,
     },
   },
-
-  /**
-   * Advanced Options
-   */
   advanced: {
-    cookiePrefix: "orylo", // Préfixe pour les cookies
+    cookiePrefix: "orylo",
   },
 });
 
