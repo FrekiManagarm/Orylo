@@ -13,9 +13,14 @@ export const organization = pgTable(
     logo: text("logo"),
     createdAt: timestamp("created_at").notNull(),
     metadata: text("metadata"),
+    stripeAccountId: text("stripe_account_id"),
+    updatedAt: timestamp("updated_at"),
   },
   (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)],
 );
+
+// Alias for backward compatibility with existing code
+export const organizations = organization;
 
 export const organizationRelations = relations(organization, ({ many }) => ({
   members: many(member),

@@ -23,7 +23,7 @@ export function initSentry() {
       dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
       environment: process.env.NODE_ENV,
       tracesSampleRate: 0.1, // 10% sampling
-      beforeSend(event) {
+      beforeSend(event: any) {
         // Remove PII
         if (event.user) {
           delete event.user.email;

@@ -36,20 +36,24 @@ export function QuickActionsMenu({
   return (
     <DropdownMenu>
       {/* AC1: 3-dot icon trigger */}
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          aria-label="Open quick actions menu"
-          onClick={(e) => {
-            // Prevent card click event from bubbling
-            e.stopPropagation();
-          }}
-        >
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={(props) => (
+          <Button
+            {...props}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label="Open quick actions menu"
+            onClick={(e) => {
+              // Prevent card click event from bubbling
+              e.stopPropagation();
+              props.onClick?.(e);
+            }}
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        )}
+      />
 
       {/* AC2, AC4: Dropdown content aligned right */}
       <DropdownMenuContent align="end" className="w-48">

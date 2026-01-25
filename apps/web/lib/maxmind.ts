@@ -11,10 +11,10 @@
  * apps/web/lib/fraud/data/GeoLite2-City.mmdb
  */
 
-import { Reader } from "@maxmind/geoip2-node";
+import { Reader, ReaderModel } from "@maxmind/geoip2-node";
 import path from "path";
 
-let geoIPReader: Reader | null = null;
+let geoIPReader: ReaderModel | null = null;
 
 /**
  * Initialize MaxMind GeoIP database

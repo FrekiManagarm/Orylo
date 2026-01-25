@@ -45,7 +45,7 @@ const navigationItems: NavItem[] = [
   },
   {
     label: "Settings",
-    href: "/settings",
+    href: "/settings/stripe",
     icon: Settings,
   },
   {
@@ -83,12 +83,7 @@ export function MobileNav() {
     <Sheet open={open} onOpenChange={setOpen}>
       {/* AC1: Hamburger icon trigger - Story 2.11: 44px tap target */}
       <SheetTrigger>
-        <button
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-11 w-11 md:hidden"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <Menu className="h-5 w-5" />
       </SheetTrigger>
 
       {/* AC2: Sheet content (slide-in from left) */}

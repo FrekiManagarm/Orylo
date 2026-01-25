@@ -1,8 +1,8 @@
 # Orylo MVP - Story Index
 
 **Project**: Orylo V3 - Stripe Fraud Detection Platform  
-**Total Stories**: 29  
-**Total Story Points**: 116 SP  
+**Total Stories**: 30  
+**Total Story Points**: 119 SP  
 **Timeline**: 6 weeks (3 epics)  
 **Last Updated**: 2026-01-13
 
@@ -13,10 +13,10 @@
 | Epic | Stories | Story Points | Timeline | Status |
 |------|---------|--------------|----------|--------|
 | [Epic 1](#epic-1---stripe-integration--detection-api) | 7 | 39 SP | Sprint 1-2 (Week 2-3) | ✅ Complete |
-| [Epic 2](#epic-2---dashboard-action-first-experience) | 12 | 51 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
+| [Epic 2](#epic-2---dashboard-action-first-experience) | 14 | 61 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
 | [Epic 3](#epic-3---integration--production-readiness) | 10 | 37 SP | Sprint 5-6 (Week 6) | 📋 Ready |
 
-**Total**: **29 stories**, **116 story points**, **6 weeks**
+**Total**: **31 stories**, **126 story points**, **6 weeks**
 
 ---
 
@@ -68,8 +68,10 @@
 | 2.10 | [Server-Sent Events (SSE) Real-Time Updates](#story-210-server-sent-events-sse-real-time-updates) | 8 | ✅ Approved | [2.10.sse-real-time-updates.md](2.10.sse-real-time-updates.md) |
 | 2.11 | [Mobile Responsive Design](#story-211-mobile-responsive-design) | 5 | ✅ Approved | [2.11.mobile-responsive-design.md](2.11.mobile-responsive-design.md) |
 | 2.12 | [Dark Mode Support](#story-212-dark-mode-support-system-preference) | 2 | ✅ Approved | [2.12.dark-mode-support.md](2.12.dark-mode-support.md) |
+| 2.13 | [Settings Page - Stripe Connection Management & Desktop Navigation](#story-213-settings-page---stripe-connection-management--desktop-navigation) | 5 | ✅ Approved | [2.13.settings-stripe-page.md](2.13.settings-stripe-page.md) |
+| 2.14 | [Landing Page - Marketing & Conversion](#story-214-landing-page---marketing--conversion) | 5 | ✅ Approved | [2.14.landing-page.md](2.14.landing-page.md) |
 
-**Epic 2 Total**: **12 stories** (note: 2.5 skipped), **51 SP**
+**Epic 2 Total**: **14 stories** (note: 2.5 skipped), **61 SP**
 
 ---
 
@@ -328,6 +330,39 @@
 - Detection: CSS `prefers-color-scheme: dark`
 - Colors: Use `globals.css` `.dark` oklch variables
 - No manual toggle (MVP scope - post-MVP)
+
+---
+
+### Story 2.13: Settings Page - Stripe Connection Management & Desktop Navigation
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
+
+**User Story**: As a merchant, I want to access a settings page to manage my Stripe connection and navigate between pages with a desktop sidebar, so that I can view my connection status, reconnect if needed, and easily navigate between Dashboard and Settings.
+
+**Key AC**:
+- Settings page route: `/settings/stripe` accessible from navigation
+- Display current Stripe connection status (Connected / Not Connected)
+- "Connect Stripe" button using existing `StripeConnectButton` component
+- Desktop navigation: Sidebar component integrated with navigation items
+- Sidebar behavior: Collapsible on desktop, Sheet on mobile
+- Active state: Current page highlighted in sidebar navigation
+- Mobile responsive layout following dashboard patterns
+
+---
+
+### Story 2.14: Landing Page - Marketing & Conversion
+**SP**: 5 | **Status**: ✅ Approved | **Epic**: 2
+
+**User Story**: As a potential merchant, I want to see a compelling landing page that explains Orylo's value proposition and pricing, so that I can understand how Orylo protects my Stripe account and decide to sign up for a free trial.
+
+**Key AC**:
+- Hero section with headline from GTM positioning strategy
+- Primary CTA "Start Free Trial" linking to login/signup
+- Problem-Solution section highlighting Stripe Radar vs Orylo
+- Features section showcasing 3 key differentiators
+- Pricing section with 3 tiers (Free, Standard €99, Pro €399)
+- Mobile responsive design with touch-friendly CTAs
+- SEO optimization with meta tags and Open Graph
+- Performance: Page load <2s, Lighthouse score ≥90
 
 ---
 

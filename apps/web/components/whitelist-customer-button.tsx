@@ -120,13 +120,15 @@ export function WhitelistCustomerButton({
   return (
     <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {/* AC1: Whitelist button */}
-      <AlertDialogTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          className={className}
-          disabled={isWhitelisted || isWhitelisting}
-        >
+      <AlertDialogTrigger
+        render={(props) => (
+          <Button
+            {...props}
+            variant={variant}
+            size={size}
+            className={className}
+            disabled={isWhitelisted || isWhitelisting}
+          >
           {isWhitelisting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -137,8 +139,9 @@ export function WhitelistCustomerButton({
           ) : (
             "Whitelist"
           )}
-        </Button>
-      </AlertDialogTrigger>
+          </Button>
+        )}
+      />
 
       {/* AC2: Confirmation dialog */}
       <AlertDialogContent>

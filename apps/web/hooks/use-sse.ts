@@ -74,10 +74,12 @@ export function useSSE({
     });
 
     // Handle errors (EventSource auto-reconnects)
-    eventSource.onerror = (err) => {
-      console.error("[SSE] Connection error:", err);
+    eventSource.onerror = (event) => {
+      console.error("[SSE] Connection error:", event);
       setIsConnected(false);
-      setError(err as Error);
+      // Create a proper Error object from the event
+      const error = new Error("SSE connection error");
+      setError(error);
       
       // EventSource automatically attempts to reconnect
       // No manual reconnection logic needed (AC5)
