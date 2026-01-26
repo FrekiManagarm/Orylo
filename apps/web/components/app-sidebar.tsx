@@ -34,6 +34,11 @@ const navigationItems = [
     icon: Settings,
   },
   {
+    title: "Custom Rules",
+    href: "/settings/custom-rules",
+    icon: Settings,
+  },
+  {
     title: "Documentation",
     href: "https://docs.orylo.com",
     icon: FileText,
@@ -58,7 +63,9 @@ export function AppSidebar() {
             const isActive = item.external
               ? false
               : pathname === item.href || 
-                (item.href === "/dashboard" && pathname.startsWith("/dashboard"));
+                (item.href === "/dashboard" && pathname.startsWith("/dashboard")) ||
+                (item.href === "/settings/custom-rules" && pathname === "/settings/custom-rules") ||
+                (item.href === "/settings/stripe" && pathname === "/settings/stripe");
 
             if (item.external) {
               return (

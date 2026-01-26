@@ -1,0 +1,78 @@
+---
+description: Architecture et stack technique du projet Orylo
+alwaysApply: true
+---
+
+# Architecture & Stack Technique - Orylo
+
+## Structure Monorepo
+
+**Type**: Turborepo monorepo avec Bun  
+**Packages**:
+- `apps/web` - Application Next.js principale
+- `packages/database` - Schémas Drizzle ORM
+- `packages/fraud-engine` - Engine de détection de fraude
+
+## Stack Technique
+
+### Frontend
+- **Framework**: Next.js 16.1.1 (App Router)
+- **React**: 19.2.3
+- **UI**: Shadcn/ui + Base UI 1.0.0 + Tailwind CSS v4
+- **State**: Zustand + React Query (TanStack)
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+
+### Backend
+- **API**: Next.js API Routes (serverless)
+- **Auth**: Better Auth 1.3.3 (avec plugin Organizations)
+- **ORM**: Drizzle ORM 0.45.1
+- **Database**: Neon PostgreSQL (serverless)
+- **Cache**: Upstash Redis
+- **Background Jobs**: Trigger.dev v4
+
+### Infrastructure
+- **Runtime**: Bun >= 1.2.3
+- **Package Manager**: Bun
+- **Deployment**: Vercel (frontend + API)
+- **Database Hosting**: Neon Serverless PostgreSQL
+- **Cache Hosting**: Upstash Redis
+
+## Architecture des Packages
+
+### @orylo/database
+- **Schémas Drizzle** pour PostgreSQL
+- **Branded Types** (cuid2) pour type-safety
+- **Exports**: `organization`, `fraud_detections`, `customer_trust_scores`, `custom_rules`, etc.
+- **Usage**: `import { organization } from "@orylo/database"`
+
+### @orylo/fraud-engine
+- **Plugin-based architecture** avec `IDetector` interface
+- **Scoring strategies** pluggables
+- **Exécution parallèle** des détecteurs
+- **Branded types** pour IDs (OrganizationId, PaymentIntentId)
+
+## Patterns Clés
+
+### Multi-Tenancy
+- **Isolation stricte** par `organizationId` dans toutes les queries
+- Better Auth Organizations plugin pour gestion
+- Onboarding automatique : création d'organisation à l'inscription
+
+### Type Safety
+- **Branded types** pour éviter les erreurs d'IDs
+- **Zod schemas** pour validation runtime
+- **Drizzle** pour type-safety database
+
+### Performance
+- **Target**: <350ms P95 pour détection complète
+- **Parallélisation**: Promise.all pour détecteurs
+- **Cache Redis**: Trust scores (1h TTL), velocity (5min TTL)
+
+## Conventions
+
+- **Commandes**: Utiliser `bun` (pas `npm` ou `yarn`)
+- **Imports**: Alias `@/` pour `apps/web/`
+- **Workspace imports**: `@orylo/database`, `@orylo/fraud-engine`
+- **Components**: Shadcn/ui avec `render` prop (pas `asChild` avec base-ui)
+- **Routes**: Next.js App Router avec route groups `(authenticated)`

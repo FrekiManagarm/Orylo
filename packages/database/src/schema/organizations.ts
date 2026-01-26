@@ -1,5 +1,5 @@
 import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
-import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { Invitation, invitation } from "./invitations";
 import { Member, member } from "./members";
@@ -15,6 +15,10 @@ export const organization = pgTable(
     metadata: text("metadata"),
     stripeAccountId: text("stripe_account_id"),
     updatedAt: timestamp("updated_at"),
+    // Story 4.4: Privacy opt-in for feedback sharing
+    shareFeedbackForModelImprovement: boolean("share_feedback_for_model_improvement")
+      .default(false)
+      .notNull(),
   },
   (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)],
 );

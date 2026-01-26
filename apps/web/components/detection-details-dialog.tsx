@@ -27,6 +27,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Shield, ShieldAlert, ShieldCheck, Copy, CheckCircle } from "lucide-react";
 import { BlockCustomerButton } from "@/components/block-customer-button";
 import { WhitelistCustomerButton } from "@/components/whitelist-customer-button";
+import { AISuggestionCard, type AISuggestion } from "@/components/ai-suggestion-card";
+import { AIExplanation } from "@/components/ai-explanation";
 
 /**
  * DetectionDetailsDialog Component
@@ -87,6 +89,8 @@ export function DetectionDetailsDialog({
   const [detection, setDetection] = useState<DetectionDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [suggestion, setSuggestion] = useState<AISuggestion | null>(null);
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
 
   // Fetch detection details when dialog opens
   useEffect(() => {
@@ -109,6 +113,32 @@ export function DetectionDetailsDialog({
         setIsLoading(false);
       });
   }, [open, detectionId]);
+
+  // Fetch AI suggestion when detection is loaded
+  useEffect(() => {
+    if (!open || !detectionId || !detection) {
+      return;
+    }
+
+    setIsLoadingSuggestion(true);
+    
+    fetch(`/api/detections/${detectionId}/suggestions`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.suggestion) {
+          setSuggestion(data.suggestion);
+        } else {
+          setSuggestion(null);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching suggestion:", error);
+        setSuggestion(null);
+      })
+      .finally(() => {
+        setIsLoadingSuggestion(false);
+      });
+  }, [open, detectionId, detection]);
 
   // Copy to clipboard helper
   const copyToClipboard = async (text: string, field: string) => {
@@ -211,6 +241,29 @@ export function DetectionDetailsDialog({
                 {Math.round(detection.confidence * 100)}%
               </p>
             </div>
+
+            {/* Story 4.1: AI Suggestion Card */}
+            {isLoadingSuggestion ? (
+              <Skeleton className="h-32 w-full" />
+            ) : suggestion ? (
+              <AISuggestionCard
+                suggestion={suggestion}
+                detectionId={detection.id}
+                onAccept={() => {
+                  // Refresh detection to show updated status
+                  fetch(`/api/detections/${detectionId}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                      setDetection(data);
+                      setSuggestion(null); // Hide suggestion after accept
+                    })
+                    .catch(console.error);
+                }}
+                onReject={() => {
+                  setSuggestion(null); // Hide suggestion after reject
+                }}
+              />
+            ) : null}
 
             {/* AC3: Customer Info */}
             <div className="space-y-2">
@@ -343,6 +396,9 @@ export function DetectionDetailsDialog({
                 </div>
               </div>
             )}
+
+            {/* Story 4.2: AI Explanation Card */}
+            <AIExplanation detectionId={detection.id} />
 
             {/* AC3: Action Buttons - Story 2.11: 44px tap targets */}
             <div className="flex gap-3 pt-4 border-t">

@@ -10,6 +10,7 @@ import { db } from "@/lib/db";
 import { fraudDetections } from "@orylo/database";
 import { logger } from "@/lib/logger";
 import { VelocityDetector, GeolocationDetector, TrustScoreDetector } from "./detectors";
+import { generateAIExplanation } from "@/trigger/jobs/ai-explanation.job";
 
 /**
  * Main Fraud Detection Orchestrator
@@ -195,31 +196,89 @@ async function saveFraudDetection(
   context: DetectionContext,
   result: FraudDetectionResult,
   customRule: { id: string; name: string; action: string } | null,
-): Promise<void> {
+): Promise<string | null> {
   try {
-    await db.insert(fraudDetections).values({
-      organizationId: String(context.organizationId),
-      paymentIntentId: String(context.paymentIntentId),
-      customerId: context.customerId ? String(context.customerId) : null,
-      customerEmail: context.customerEmail || null,
-      amount: context.amount,
-      currency: context.currency,
-      decision: String(result.decision),
-      score: result.score,
-      detectorResults: result.detectorResults as unknown, // Cast for JSONB
-      executionTimeMs: Math.round(result.executionTimeMs),
-      createdAt: new Date(),
-    });
+    const [inserted] = await db
+      .insert(fraudDetections)
+      .values({
+        organizationId: String(context.organizationId),
+        paymentIntentId: String(context.paymentIntentId),
+        customerId: context.customerId ? String(context.customerId) : null,
+        customerEmail: context.customerEmail || null,
+        amount: context.amount,
+        currency: context.currency,
+        decision: String(result.decision),
+        score: result.score,
+        detectorResults: result.detectorResults as unknown, // Cast for JSONB
+        executionTimeMs: Math.round(result.executionTimeMs),
+        createdAt: new Date(),
+      })
+      .returning({ id: fraudDetections.id });
+
+    const detectionId = inserted?.id || null;
 
     console.info("[detection_db_save]", {
       paymentIntentId: context.paymentIntentId,
+      detectionId,
     });
+
+    // Story 4.2: AC1 - Trigger AI explanation job (non-blocking, fire-and-forget)
+    if (detectionId) {
+      try {
+        // Extract card country and IP from detector results if available
+        const geoResult = result.detectorResults.find((r) =>
+          String(r.detectorId).includes("geolocation")
+        );
+        const cardCountry =
+          (geoResult?.metadata as { cardCountry?: string } | undefined)?.cardCountry;
+        const customerIp =
+          (geoResult?.metadata as { customerIp?: string } | undefined)?.customerIp ||
+          (context as { customerIp?: string }).customerIp;
+
+        // AC1: Set priority: HIGH for BLOCK, NORMAL for REVIEW/ALLOW
+        const priority =
+          result.decision === FraudDecision.BLOCK ? ("HIGH" as const) : ("NORMAL" as const);
+
+        // AC1: Trigger job (non-blocking, fire-and-forget)
+        // Use void to ensure it doesn't block detection flow
+        void generateAIExplanation.trigger({
+          detectionId,
+          organizationId: String(context.organizationId),
+          context: {
+            amount: context.amount,
+            currency: context.currency,
+            customerEmail: context.customerEmail || null,
+            cardCountry,
+            customerIp,
+            riskScore: result.score,
+            decision: String(result.decision) as "ALLOW" | "REVIEW" | "BLOCK",
+          },
+          detectorResults: result.detectorResults,
+          priority,
+        });
+
+        console.info("[ai_explanation_triggered]", {
+          detectionId,
+          priority,
+        });
+      } catch (triggerError) {
+        // Log but don't fail detection save
+        console.error("[ai_explanation_trigger_error]", {
+          detectionId,
+          error:
+            triggerError instanceof Error ? triggerError.message : "Unknown error",
+        });
+      }
+    }
+
+    return detectionId;
   } catch (error) {
     // AC7: Log but don't crash detection
     console.error("[detection_db_error]", {
       paymentIntentId: context.paymentIntentId,
       error: error instanceof Error ? error.message : "Unknown error",
     });
+    return null;
   }
 }
 
