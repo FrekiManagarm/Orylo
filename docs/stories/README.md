@@ -16,7 +16,8 @@
 | [Epic 2](#epic-2---dashboard-action-first-experience) | 14 | 61 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
 | [Epic 3](#epic-3---integration--production-readiness) | 10 | 37 SP | Sprint 5-6 (Week 6) | 📋 Ready |
 
-**Total**: **31 stories**, **126 story points**, **6 weeks**
+**Total MVP**: **29 stories**, **126 story points**, **6 weeks** (Epics 1-3)  
+**Total Post-MVP**: **33 stories**, **160 story points** (Epic 4: Sprints 6-7)
 
 ---
 
@@ -99,6 +100,27 @@
 | 3.10 | [Beta Launch Checklist & Epic 3 Validation](#story-310-beta-launch-checklist--epic-3-validation) | 3 | Draft | [3.10.beta-launch-checklist.md](3.10.beta-launch-checklist.md) |
 
 **Epic 3 Total**: **10 stories**, **37 SP**
+
+---
+
+## Epic 4 - Système de Décisions Assisté par IA
+
+**Goal**: Implémenter un système de décisions assisté par IA qui aide les marchands à prendre des décisions éclairées sur les transactions frauduleuses. L'epic inclut des suggestions IA pour whitelist/blacklist, des explications IA des décisions, des recommandations de règles custom, et un feedback loop.
+
+**Timeline**: Post-MVP (Sprint 6-7, 10 jours ouvrés)  
+**Story Points**: 34 SP  
+**File**: [docs/epics/epic-4-ai-assisted-decisions.md](../epics/epic-4-ai-assisted-decisions.md)
+
+### Stories
+
+| ID | Story | SP | Status | File |
+|----|-------|----|----|------|
+| 4.1 | [Suggestions IA pour Whitelist/Blacklist](#story-41-suggestions-ia-pour-whitelistblacklist) | 8 | 📋 Draft | [4.1.ai-whitelist-blacklist-suggestions.md](4.1.ai-whitelist-blacklist-suggestions.md) |
+| 4.2 | [Explications IA des Décisions de Fraude](#story-42-explications-ia-des-décisions-de-fraude) | 8 | 📋 Draft | [4.2.ai-fraud-explanations.md](4.2.ai-fraud-explanations.md) |
+| 4.3 | [Recommandations de Règles Custom Personnalisées](#story-43-recommandations-de-règles-custom-personnalisées) | 8 | 📋 Draft | [4.3.ai-custom-rules-recommendations.md](4.3.ai-custom-rules-recommendations.md) |
+| 4.4 | [Feedback Loop & Apprentissage des Overrides](#story-44-feedback-loop--apprentissage-des-overrides) | 10 | 📋 Draft | [4.4.ai-feedback-loop.md](4.4.ai-feedback-loop.md) |
+
+**Epic 4 Total**: **4 stories**, **34 SP**
 
 ---
 
@@ -500,6 +522,67 @@
 
 ---
 
+### Story 4.1: Suggestions IA pour Whitelist/Blacklist
+**SP**: 8 | **Status**: 📋 Draft | **Epic**: 4
+
+**User Story**: As a merchant, I want to receive AI-powered suggestions for whitelisting or blacklisting customers based on historical patterns, so that I can make faster, more informed decisions while reducing false positives.
+
+**Key AC**:
+- System analyzes historical transaction patterns (successful payments, chargebacks, blocked transactions)
+- AI suggests whitelist for customers with high trust score (>80) and multiple successful transactions
+- AI suggests blacklist for customers with clear fraud patterns (card testing, multiple chargebacks)
+- Suggestions displayed in dashboard with confidence score (0-1) and reasoning summary
+- Merchant can accept/reject/modify suggestion with one click
+- Performance: Suggestions generated <500ms (cached patterns)
+
+---
+
+### Story 4.2: Explications IA des Décisions de Fraude
+**SP**: 8 | **Status**: 📋 Draft | **Epic**: 4
+
+**User Story**: As a merchant, I want to understand why a transaction was flagged as fraudulent in plain French language, so that I can make informed decisions and learn from detection patterns.
+
+**Key AC**:
+- Explanation generated asynchronously after detection (non-blocking via Trigger.dev)
+- LLM API call (OpenAI GPT-4o-mini or Anthropic Claude) with detection context
+- Explanation includes: which detectors triggered, why they flagged, risk factors identified
+- Language: French (with fallback to English if LLM unavailable)
+- Performance: Generation <2s async (displayed progressively)
+- Error handling: Fallback to template-based explanation if LLM fails
+
+---
+
+### Story 4.3: Recommandations de Règles Custom Personnalisées
+**SP**: 8 | **Status**: 📋 Draft | **Epic**: 4
+
+**User Story**: As a merchant, I want AI to suggest optimal custom rules based on my business context and transaction history, so that I can configure protection tailored to my specific needs without manual analysis.
+
+**Key AC**:
+- AI analyzes merchant's transaction patterns (amounts, frequencies, geolocations)
+- AI identifies common fraud patterns specific to merchant's business
+- Suggestions include: rule conditions (amount thresholds, velocity limits, geo restrictions)
+- Merchant can preview rule impact before applying (estimated blocks/allowances)
+- Applied rules tracked for effectiveness (success rate)
+- Performance: Recommendations generated <1s (cached analysis)
+
+---
+
+### Story 4.4: Feedback Loop & Apprentissage des Overrides
+**SP**: 10 | **Status**: 📋 Draft | **Epic**: 4
+
+**User Story**: As a system, I want to track merchant overrides (accept/reject suggestions) and learn from them, so that future suggestions become more accurate and aligned with merchant preferences.
+
+**Key AC**:
+- Track all merchant actions on AI suggestions (accepted, rejected, modified)
+- Store feedback in `ai_feedback` table with context (detection data, suggestion, action)
+- Optional merchant reason field when rejecting suggestion
+- Feedback data used to improve suggestion confidence scores
+- A/B testing framework: Compare suggestion acceptance rates over time
+- Dashboard metric: "AI Suggestion Accuracy" (acceptance rate)
+- Privacy: Feedback data anonymized for model improvement (opt-in)
+
+---
+
 ## 🎯 **Quick Reference**
 
 ### By Priority (Recommended Implementation Order)
@@ -548,9 +631,10 @@
 
 ### Story Points Distribution
 
-- **Epic 1**: 39 SP (34% of total)
-- **Epic 2**: 51 SP (44% of total)
-- **Epic 3**: 37 SP (32% of total)
+- **Epic 1**: 39 SP (31% of MVP total)
+- **Epic 2**: 51 SP (40% of MVP total)
+- **Epic 3**: 37 SP (29% of MVP total)
+- **Epic 4**: 34 SP (Post-MVP)
 
 ### Quality Targets
 
@@ -581,6 +665,7 @@
   - [Epic 1](../epics/epic-1-stripe-integration.md)
   - [Epic 2](../epics/epic-2-dashboard-experience.md)
   - [Epic 3](../epics/epic-3-production-readiness.md)
+  - [Epic 4](../epics/epic-4-ai-assisted-decisions.md)
 
 ---
 
@@ -613,6 +698,7 @@ All stories follow the template defined in `.bmad-core/templates/story-tmpl.yaml
 
 ---
 
-**Last Updated**: 2026-01-24  
+**Last Updated**: 2026-01-26  
 **Created by**: Sarah (Product Owner)  
-**Validation Status**: ✅ Epic 2 Complete - All 11 Stories Approved (9.2/10 avg) 🎉
+**Validation Status**: ✅ Epic 2 Complete - All 11 Stories Approved (9.2/10 avg) 🎉  
+**Epic 4 Status**: 📋 Draft - 4 Stories Created (Post-MVP)

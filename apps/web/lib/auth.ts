@@ -6,9 +6,9 @@ import { createUserOrganization } from "./onboarding";
 
 /**
  * Better Auth Configuration - Orylo V3
- * 
+ *
  * Documentation: https://www.better-auth.com/docs
- * 
+ *
  * Onboarding: Automatically creates an organization for new users
  */
 export const auth = betterAuth({
@@ -19,7 +19,7 @@ export const auth = betterAuth({
     organization({
       organizationHooks: {
         // Hook called after organization is created via Better Auth API
-        afterCreateOrganization: async ({ organization, member, user }) => {
+        afterCreateOrganization: async ({ organization, user }) => {
           console.log(
             `[Onboarding] Organization created: ${organization.name} for user ${user.email}`
           );

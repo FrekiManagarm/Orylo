@@ -7,12 +7,11 @@ import { createOrganizationId, createPaymentIntentId } from "@orylo/fraud-engine
 import { detectFraud } from "@/lib/fraud/detect-fraud";
 import { applyChargebackPenalty } from "@/lib/trust-score-updater";
 import { stripe } from "@/lib/stripe";
-import { trackWebhookProcessed } from "@/lib/posthog";
 import { logger } from "@/lib/logger";
 
 /**
  * Webhook Processor with Retry Logic and Dead Letter Queue
- * 
+ *
  * AC4: Retry logic with exponential backoff (3 attempts: 1s, 2s, 4s)
  * AC5: Dead letter queue for failed events after max retries
  * AC3: Atomic transaction for processing state updates
@@ -68,7 +67,7 @@ function buildDetectionContext(
 
 /**
  * Process webhook with retry logic and exponential backoff
- * 
+ *
  * AC4: Retries up to 3 times with delays: 1s, 2s, 4s
  * AC3: Atomic transaction for marking as processed
  * AC5: Saves to dead letter queue after max retries
@@ -119,9 +118,6 @@ export async function processWebhookWithRetry(
         retryCount,
       });
 
-      // Story 3.3 AC4: Track webhook processed event
-      trackWebhookProcessed(organizationId, event.type, duration, retryCount, true);
-
       return; // Success - exit retry loop
     } catch (error) {
       retryCount++;
@@ -145,10 +141,6 @@ export async function processWebhookWithRetry(
       } else {
         // AC5: Save to dead letter queue after 3 retries
         await saveToDeadLetterQueue(event, error as Error, retryCount, organizationId);
-
-        // Track failed webhook
-        const duration = Date.now() - startTime;
-        trackWebhookProcessed(organizationId, event.type, duration, retryCount, false);
       }
     }
   }
@@ -156,7 +148,7 @@ export async function processWebhookWithRetry(
 
 /**
  * Handle charge.dispute.created event
- * 
+ *
  * Story 3.2: Apply chargeback penalty to trust score
  */
 async function handleChargeDispute(
@@ -196,7 +188,7 @@ async function handleChargeDispute(
 
 /**
  * Save failed event to dead letter queue
- * 
+ *
  * AC5: Stores event payload, error details, and retry count
  */
 async function saveToDeadLetterQueue(
@@ -209,7 +201,7 @@ async function saveToDeadLetterQueue(
     await db.insert(deadLetterQueue).values({
       stripeEventId: event.id,
       eventType: event.type,
-      payload: event as any, // Full Stripe event (JSON field)
+      payload: event as unknown, // Full Stripe event (JSON field)
       errorMessage: error.message,
       errorStack: error.stack || null,
       retryCount,

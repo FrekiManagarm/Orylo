@@ -1,11 +1,10 @@
 import { db } from "./db";
 import { organization, member } from "@orylo/database";
 import { createId } from "@paralleldrive/cuid2";
-import { eq } from "drizzle-orm";
 
 /**
  * Onboarding Utility
- * 
+ *
  * Creates an organization automatically for new users
  */
 
@@ -36,7 +35,7 @@ async function isSlugAvailable(slug: string): Promise<boolean> {
  * Generate a unique slug
  */
 async function generateUniqueSlug(baseName: string): Promise<string> {
-  let baseSlug = generateSlug(baseName);
+  const baseSlug = generateSlug(baseName);
   let slug = baseSlug;
   let counter = 1;
 
@@ -50,7 +49,7 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
 
 /**
  * Create an organization and add user as owner member
- * 
+ *
  * @param userId - The user ID
  * @param userName - The user's name (used to generate organization name)
  * @returns The created organization

@@ -17,8 +17,9 @@
 5. [Epic 1: Stripe Integration & Detection API](#epic-1-stripe-integration--detection-api)
 6. [Epic 2: Dashboard Action-First Experience](#epic-2-dashboard-action-first-experience)
 7. [Epic 3: Integration & Production Readiness](#epic-3-integration--production-readiness)
-8. [Checklist Results Report](#checklist-results-report)
-9. [Next Steps](#next-steps)
+8. [Epic 4: Système de Décisions Assisté par IA](#epic-4-système-de-décisions-assisté-par-ia)
+9. [Checklist Results Report](#checklist-results-report)
+10. [Next Steps](#next-steps)
 
 ---
 
@@ -274,7 +275,13 @@ const badgeVariants = cva(
 **Stories**: 10 stories  
 **Goal**: Production deployment, tests E2E, beta documentation, monitoring.
 
-**Total**: 29 stories sur 5 sprints (25 jours ouvrés + 1 semaine buffer)
+### Epic 4: Système de Décisions Assisté par IA
+**Timeline**: Post-MVP (Sprint 6-7, 10 jours ouvrés)  
+**Stories**: 4 stories  
+**Goal**: Assistance IA pour décisions (suggestions whitelist/blacklist, explications, recommandations règles custom, feedback loop).
+
+**Total MVP**: 29 stories sur 5 sprints (25 jours ouvrés + 1 semaine buffer)  
+**Total Post-MVP**: 33 stories avec Epic 4 (35 jours ouvrés)
 
 ---
 
@@ -709,6 +716,76 @@ const badgeVariants = cva(
 
 ---
 
+## Epic 4: Système de Décisions Assisté par IA
+
+**Epic Goal**: Implémenter un système de décisions assisté par IA qui aide les marchands à prendre des décisions éclairées sur les transactions frauduleuses. L'epic inclut des suggestions IA pour whitelist/blacklist basées sur l'analyse des patterns, des explications IA des décisions de fraude en langage naturel, des recommandations de règles custom personnalisées, et un feedback loop qui permet à l'IA d'apprendre des overrides manuels des marchands. À l'issue de cet epic, les marchands bénéficient d'une assistance intelligente qui réduit les faux positifs, améliore la confiance dans les décisions, et personnalise la protection selon leur contexte business.
+
+### Story 4.1: Suggestions IA pour Whitelist/Blacklist
+
+**As a** merchant,  
+**I want** to receive AI-powered suggestions for whitelisting or blacklisting customers based on historical patterns,  
+**so that** I can make faster, more informed decisions while reducing false positives.
+
+**Acceptance Criteria**:
+- AC1: System analyzes historical transaction patterns (successful payments, chargebacks, blocked transactions)
+- AC2: AI suggests whitelist for customers with high trust score (>80) and multiple successful transactions
+- AC3: AI suggests blacklist for customers with clear fraud patterns (card testing, multiple chargebacks)
+- AC4: Suggestions displayed in dashboard with confidence score (0-1) and reasoning summary
+- AC5: Merchant can accept/reject/modify suggestion with one click
+- AC6: Accepted suggestions automatically apply whitelist/blacklist action
+- AC7: Performance: Suggestions generated <500ms (cached patterns)
+- AC8: Integration test: Verify suggestion logic with mock historical data
+
+### Story 4.2: Explications IA des Décisions de Fraude
+
+**As a** merchant,  
+**I want** to understand why a transaction was flagged as fraudulent in plain French language,  
+**so that** I can make informed decisions and learn from detection patterns.
+
+**Acceptance Criteria**:
+- AC1: Explanation generated asynchronously after detection (non-blocking)
+- AC2: LLM API call (OpenAI GPT-4 or Anthropic Claude) with detection context
+- AC3: Explanation includes: which detectors triggered, why they flagged, risk factors identified
+- AC4: Explanation displayed in Detection Details Dialog with loading state
+- AC5: Language: French (with fallback to English if LLM unavailable)
+- AC6: Performance: Generation <2s async (displayed progressively)
+- AC7: Error handling: Fallback to template-based explanation if LLM fails
+- AC8: Cost control: Rate limiting, caching similar detections
+
+### Story 4.3: Recommandations de Règles Custom Personnalisées
+
+**As a** merchant,  
+**I want** AI to suggest optimal custom rules based on my business context and transaction history,  
+**so that** I can configure protection tailored to my specific needs without manual analysis.
+
+**Acceptance Criteria**:
+- AC1: AI analyzes merchant's transaction patterns (amounts, frequencies, geolocations)
+- AC2: AI identifies common fraud patterns specific to merchant's business
+- AC3: Suggestions include: rule conditions (amount thresholds, velocity limits, geo restrictions)
+- AC4: Suggestions displayed in Settings page with "Apply Rule" button
+- AC5: Merchant can preview rule impact before applying (estimated blocks/allowances)
+- AC6: Applied rules tracked for effectiveness (success rate)
+- AC7: Performance: Recommendations generated <1s (cached analysis)
+- AC8: Integration test: Verify recommendation logic with merchant-specific data
+
+### Story 4.4: Feedback Loop & Apprentissage des Overrides
+
+**As a** system,  
+**I want** to track merchant overrides (accept/reject suggestions) and learn from them,  
+**so that** future suggestions become more accurate and aligned with merchant preferences.
+
+**Acceptance Criteria**:
+- AC1: Track all merchant actions on AI suggestions (accepted, rejected, modified)
+- AC2: Store feedback in `ai_feedback` table with context (detection data, suggestion, action)
+- AC3: Optional merchant reason field when rejecting suggestion
+- AC4: Feedback data used to improve suggestion confidence scores
+- AC5: A/B testing framework: Compare suggestion acceptance rates over time
+- AC6: Dashboard metric: "AI Suggestion Accuracy" (acceptance rate)
+- AC7: Privacy: Feedback data anonymized for model improvement (opt-in)
+- AC8: Integration test: Verify feedback tracking and model update triggers
+
+---
+
 ## Checklist Results Report
 
 ### 1. User Focus ✅ PASS
@@ -912,14 +989,19 @@ Prêt à builder Orylo MVP ? Let's ship it! 🚀
 ## 🎉 PRD COMPLET ET VALIDÉ
 
 **Document Statistics**:
-- **29 User Stories** réparties en 3 epics
-- **5 Sprints** planifiés (6 semaines)
+- **29 User Stories MVP** réparties en 3 epics (Sprints 1-5)
+- **4 User Stories Post-MVP** dans Epic 4 (Sprints 6-7)
+- **Total: 33 User Stories** réparties en 4 epics
+- **5 Sprints MVP** planifiés (6 semaines)
+- **2 Sprints Post-MVP** pour Epic 4 (2 semaines)
 - **34/51 Shadcn Components** mappés
 - **7 KPIs** mesurables
 - **5 Risks** identifiés avec mitigation
 - **Quality Score**: 5/5 PASS ✅
 
-**Status**: **READY FOR EXECUTION** 🚀
+**Status**: **READY FOR EXECUTION** 🚀  
+**MVP Status**: ✅ APPROVED (Epics 1-3)  
+**Post-MVP Status**: 📋 PLANNED (Epic 4)
 
 ---
 

@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { customRules } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
-import type { DetectionContext, FraudDecision, DetectorResult } from "@orylo/fraud-engine";
+import type { DetectionContext, FraudDecision } from "@orylo/fraud-engine";
 
 /**
  * Custom Rules Engine

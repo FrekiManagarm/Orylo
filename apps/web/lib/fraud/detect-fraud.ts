@@ -206,7 +206,7 @@ async function saveFraudDetection(
       currency: context.currency,
       decision: String(result.decision),
       score: result.score,
-      detectorResults: result.detectorResults as any, // Cast for JSONB
+      detectorResults: result.detectorResults as unknown, // Cast for JSONB
       executionTimeMs: Math.round(result.executionTimeMs),
       createdAt: new Date(),
     });
