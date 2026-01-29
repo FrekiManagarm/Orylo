@@ -1,8 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Network, Settings, CheckCircle2, ArrowUpRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Shield, Network, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 
 /**
@@ -14,49 +13,33 @@ import { motion } from "framer-motion";
 export function FeaturesSection() {
   const features = [
     {
-      title: "Protection Réelle",
-      description: "95%+ détection card testing vs Stripe Radar 60-70%",
-      proofPoint: "Sauvez votre business, pas juste vos transactions",
+      title: "Intelligence Artificielle",
+      description: "L'IA analyse vos transactions en temps réel, détecte les patterns de fraude et vous suggère des actions basées sur l'historique.",
+      proofPoint: "Détection 95%+ vs Stripe Radar 60-70%",
       icon: Shield,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
-      className: "md:col-span-2 md:row-span-2",
-      visual: (
-        <div className="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-tl from-blue-500/20 to-transparent rounded-tl-full opacity-50" />
-      )
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
-      title: "Intelligence Collective",
-      description: "Network effect, apprend de 100+ marchands",
-      proofPoint: "Fraudeur détecté chez A = protège B, C, D",
+      title: "Détection Automatisée",
+      description: "Bloquez automatiquement les fraudes évidentes et recevez des alertes pour les cas nécessitant votre attention.",
+      proofPoint: "Protection proactive 24/7",
       icon: Network,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
-      className: "md:col-span-1 md:row-span-1",
-      visual: (
-        <div className="absolute right-4 top-4">
-          <div className="flex gap-1">
-            <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-            <div className="w-2 h-2 rounded-full bg-purple-500/50 animate-pulse delay-75" />
-            <div className="w-2 h-2 rounded-full bg-purple-500/30 animate-pulse delay-150" />
-          </div>
-        </div>
-      )
+      color: "text-success",
+      bg: "bg-success/10",
     },
     {
-      title: "Empathie & Contrôle",
-      description: "Règles custom, gestion clients, explications françaises",
-      proofPoint: "Personnalisez chaque règle",
+      title: "Règles Personnalisées",
+      description: "Créez des règles custom adaptées à votre business, gérez vos clients et recevez des explications en français.",
+      proofPoint: "Contrôle total sur votre protection",
       icon: Settings,
-      color: "text-green-500",
-      bg: "bg-green-500/10",
-      className: "md:col-span-1 md:row-span-1",
-      visual: null
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
   ];
 
   return (
-    <section id="features" className="w-full py-20 md:py-32 bg-slate-50 dark:bg-slate-900/50">
+    <section id="features" className="w-full py-20 md:py-32 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center mb-16">
           <motion.div
@@ -65,16 +48,19 @@ export function FeaturesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              Pourquoi choisir Orylo ?
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl mb-3 text-muted-foreground">
+              Plateforme tout-en-un
             </h2>
+            <h3 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
+              Conçu pour votre tranquillité d'esprit
+            </h3>
             <p className="mx-auto max-w-[700px] text-lg text-muted-foreground">
-              Une approche radicalement différente de la lutte contre la fraude
+              Libérez-vous des préoccupations de fraude et concentrez-vous sur ce qui compte vraiment : développer votre business.
             </p>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto auto-rows-[minmax(200px,auto)]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
@@ -84,28 +70,22 @@ export function FeaturesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={cn(feature.className, "group")}
+                className="group"
               >
-                <Card className="h-full relative overflow-hidden border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-950">
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-transparent via-transparent to-${feature.color.split('-')[1]}-500/5`} />
-                  
-                  {feature.visual}
-
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div className={`inline-flex items-center justify-center p-3 rounded-xl w-fit mb-4 ${feature.bg}`}>
-                        <Icon className={`h-6 w-6 ${feature.color}`} />
-                      </div>
-                      <ArrowUpRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                <Card className="h-full relative overflow-hidden border bg-card hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="space-y-3">
+                    <div className={`inline-flex items-center justify-center p-2.5 rounded-lg w-fit ${feature.bg}`}>
+                      <Icon className={`h-5 w-5 ${feature.color}`} />
                     </div>
-                    <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
-                    <CardDescription className="text-base mt-2">{feature.description}</CardDescription>
+                    <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
+                    <CardDescription className="text-base leading-relaxed">
+                      {feature.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-start gap-2 text-sm font-medium text-muted-foreground bg-muted/30 p-3 rounded-lg backdrop-blur-sm">
-                      <CheckCircle2 className={`h-5 w-5 ${feature.color} shrink-0`} />
-                      <p>{feature.proofPoint}</p>
-                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {feature.proofPoint}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
