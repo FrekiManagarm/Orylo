@@ -1,42 +1,48 @@
-import type { Metadata } from "next";
-import { LandingHeader } from "@/components/landing/header";
-import { HeroSection } from "@/components/landing/hero-section";
-import { ProblemSolutionSection } from "@/components/landing/problem-solution";
-import { FeaturesSection } from "@/components/landing/features-section";
-import { PricingSection } from "@/components/landing/pricing-section";
-import { SocialProofSection } from "@/components/landing/social-proof";
-import { LandingFooter } from "@/components/landing/footer";
+import Cta from "@/components/landing/cta";
+import Features from "@/components/landing/features-section";
+import RoiCalculator from "@/components/landing/roi-calculator";
+import Footer from "@/components/landing/footer";
+import Hero from "@/components/landing/hero-section";
+import Navbar from "@/components/landing/navbar";
+import Pricing from "@/components/landing/pricing-section";
+import { Metadata } from "next";
 
-/**
- * Landing Page
- * 
- * Story 2.14:
- * - AC1-AC12: Complete landing page with hero, features, pricing, footer
- * - AC11: SEO optimization with metadata
- */
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Orylo - Protect Your Stripe Account from Fraud | AI-Powered Detection",
-  description: "Orylo détecte et bloque les fraudes que Stripe Radar manque. IA collective, 95%+ détection, règles custom. Start free trial.",
+  title: "Orylo - Stop Card Testing. Understand Why.",
+  description:
+    "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Orylo - Protect Your Stripe Account from Fraud",
-    description: "AI-powered fraud detection for Stripe merchants",
-    type: "website",
+    title: "Orylo - Stop Card Testing. Understand Why.",
+    description:
+      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+    url: baseUrl,
+  },
+  twitter: {
+    title: "Orylo - Stop Card Testing. Understand Why.",
+    description:
+      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
   },
 };
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <LandingHeader />
-      <main className="flex-1">
-        <HeroSection />
-        <ProblemSolutionSection />
-        <FeaturesSection />
-        <PricingSection />
-        <SocialProofSection />
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-primary/20 selection:text-primary">
+      <Navbar />
+
+      <main>
+        <Hero />
+        <Features />
+        <RoiCalculator />
+        <Pricing />
+        <Cta />
       </main>
-      <LandingFooter />
+
+      <Footer />
     </div>
   );
 }

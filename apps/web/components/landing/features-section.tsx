@@ -1,97 +1,389 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Network, Settings } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Zap,
+  ArrowRight,
+  Clock,
+  Sparkles,
+  CreditCard,
+  Eye,
+  RefreshCw,
+  Target,
+} from "lucide-react";
 
-/**
- * Features Section Component
- * 
- * Story 2.14:
- * - AC5: Features section showcasing 3 key differentiators
- */
-export function FeaturesSection() {
-  const features = [
-    {
-      title: "Intelligence Artificielle",
-      description: "L'IA analyse vos transactions en temps réel, détecte les patterns de fraude et vous suggère des actions basées sur l'historique.",
-      proofPoint: "Détection 95%+ vs Stripe Radar 60-70%",
-      icon: Shield,
-      color: "text-primary",
-      bg: "bg-primary/10",
-    },
-    {
-      title: "Détection Automatisée",
-      description: "Bloquez automatiquement les fraudes évidentes et recevez des alertes pour les cas nécessitant votre attention.",
-      proofPoint: "Protection proactive 24/7",
-      icon: Network,
-      color: "text-success",
-      bg: "bg-success/10",
-    },
-    {
-      title: "Règles Personnalisées",
-      description: "Créez des règles custom adaptées à votre business, gérez vos clients et recevez des explications en français.",
-      proofPoint: "Contrôle total sur votre protection",
-      icon: Settings,
-      color: "text-primary",
-      bg: "bg-primary/10",
-    },
-  ];
+const features = [
+  {
+    id: "card-testing",
+    title: "Card Testing Detection",
+    description:
+      "Automatically detect and block card testing attacks. Multiple cards on same session? Blocked. Fail-fail-fail-success pattern? Blocked. Auto-refund fraudulent payments.",
+    icon: CreditCard,
+    stat: "Real-time",
+    statLabel: "detection",
+    gradient: "from-rose-500 to-orange-500",
+    bgGradient: "from-rose-500/20 via-rose-500/5 to-transparent",
+    shadowColor: "shadow-rose-500/20",
+    tags: ["Auto-block", "Auto-refund", "Blacklist"],
+  },
+  {
+    id: "setup",
+    title: "Live in 5 minutes",
+    description:
+      "One-click Stripe OAuth connection, zero code. Instantly start monitoring all your transactions.",
+    icon: Zap,
+    stat: "5",
+    statLabel: "min to get started",
+    gradient: "from-violet-500 to-purple-500",
+    bgGradient: "from-violet-500/20 via-violet-500/5 to-transparent",
+    shadowColor: "shadow-violet-500/20",
+  },
+  {
+    id: "explainable",
+    title: "Visual Explanations",
+    description:
+      "Every block is justified with clear, visual reasons. See exactly why a transaction was flagged. No more black box decisions.",
+    icon: Eye,
+    stat: "100%",
+    statLabel: "transparent",
+    gradient: "from-purple-500 to-fuchsia-500",
+    bgGradient: "from-purple-500/20 via-purple-500/5 to-transparent",
+    shadowColor: "shadow-purple-500/20",
+    example: '"3 different cards used • fail-fail-fail-success pattern • 5 attempts in 2 minutes"',
+  },
+  {
+    id: "auto-actions",
+    title: "Automatic Actions",
+    description:
+      "Block and auto-refund fraudulent payments. Add IPs to blacklist. Send real-time alerts. All without lifting a finger.",
+    icon: RefreshCw,
+    stat: "Zero",
+    statLabel: "manual work",
+    gradient: "from-emerald-500 to-teal-500",
+    bgGradient: "from-emerald-500/20 via-emerald-500/5 to-transparent",
+    shadowColor: "shadow-emerald-500/20",
+    tags: ["Auto-refund", "Blacklist", "Alerts"],
+  },
+  {
+    id: "custom-rules",
+    title: "Custom Rules",
+    description:
+      "Create your own rules: whitelist VIP customers, block specific countries, set amount thresholds. Your business, your rules.",
+    icon: Target,
+    stat: "∞",
+    statLabel: "flexibility",
+    gradient: "from-indigo-500 to-blue-500",
+    bgGradient: "from-indigo-500/20 via-indigo-500/5 to-transparent",
+    shadowColor: "shadow-indigo-500/20",
+  },
+];
 
+export default function Features() {
   return (
-    <section id="features" className="w-full py-20 md:py-32 bg-background">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-4 text-center mb-16">
+    <section id="features" className="py-32 relative overflow-hidden bg-black">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top, var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent" />
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] -translate-y-1/2" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] -translate-y-1/2" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Header */}
+        <div className="text-center max-w-4xl mx-auto mb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-indigo-500/20 bg-indigo-500/10"
           >
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl mb-3 text-muted-foreground">
-              Plateforme tout-en-un
-            </h2>
-            <h3 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              Conçu pour votre tranquillité d'esprit
-            </h3>
-            <p className="mx-auto max-w-[700px] text-lg text-muted-foreground">
-              Libérez-vous des préoccupations de fraude et concentrez-vous sur ce qui compte vraiment : développer votre business.
-            </p>
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span className="text-sm font-medium text-indigo-400">
+              Simple & Effective
+            </span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
+          >
+            Stop card testing.
+            <br />
+            <span className="bg-linear-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              Understand why.
+            </span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-xl text-zinc-400 max-w-2xl mx-auto"
+          >
+            Rule-based detection with visual explanations.
+            See exactly why each transaction was blocked.
+          </motion.p>
+        </div>
+
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          {/* Feature 1 - Card Testing - Large */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-2 group"
+          >
+            <div className="relative h-full min-h-80 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-rose-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${features[0].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[0].gradient} mb-6 shadow-lg shadow-rose-500/20`}
+                  >
+                    <CreditCard className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                    {features[0].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-md">
+                    {features[0].description}
+                  </p>
+                </div>
+
+                <div className="flex items-end justify-between mt-8">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {features[0].tags?.map((tag) => (
+                      <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20">
+                        <span className="text-rose-400 font-medium text-xs">
+                          {tag}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="text-right">
+                    <div
+                      className={`text-3xl md:text-4xl font-black bg-linear-to-r ${features[0].gradient} bg-clip-text text-transparent`}
+                    >
+                      {features[0].stat}
+                    </div>
+                    <div className="text-zinc-500 text-sm font-medium">
+                      {features[0].statLabel}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 2 - Setup - Small */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="group"
+          >
+            <div className="relative h-full min-h-80 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-violet-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${features[1].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
+                  >
+                    <Zap className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {features[1].title}
+                  </h3>
+                  <p className="text-zinc-400 text-sm">
+                    {features[1].description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 mt-6">
+                  <Clock className="w-5 h-5 text-violet-400" />
+                  <span
+                    className={`text-3xl font-black bg-linear-to-r ${features[1].gradient} bg-clip-text text-transparent`}
+                  >
+                    {features[1].stat}
+                  </span>
+                  <span className="text-zinc-500 text-sm">
+                    {features[1].statLabel}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 3 - Visual Explanations - Full width */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-3 group"
+          >
+            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-purple-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${features[2].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                <div className="flex-1">
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[2].gradient} mb-6 shadow-lg shadow-purple-500/20`}
+                  >
+                    <Eye className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                    {features[2].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-xl">
+                    {features[2].description}
+                  </p>
+                </div>
+
+                {/* Example explanation */}
+                <div className="shrink-0 md:max-w-sm">
+                  <div className="rounded-2xl bg-black/50 border border-purple-500/10 p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                      <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
+                        Card Testing Blocked
+                      </span>
+                    </div>
+                    <p className="text-white font-mono text-sm leading-relaxed">
+                      {features[2].example}
+                    </p>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
+                      <div
+                        className={`text-xs font-bold bg-linear-to-r ${features[2].gradient} bg-clip-text text-transparent`}
+                      >
+                        Score: 85/100 → Auto-refunded
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 4 - Auto Actions - Medium */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="lg:col-span-2 group"
+          >
+            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-emerald-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-emerald-500/20`}
+                  >
+                    <RefreshCw className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    {features[3].title}
+                  </h3>
+                  <p className="text-zinc-400 text-lg max-w-md">
+                    {features[3].description}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 mt-6">
+                  {features[3].tags?.map((tag) => (
+                    <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                      <span className="text-emerald-400 font-medium text-xs">
+                        {tag}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature 5 - Custom Rules - Small */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="group"
+          >
+            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
+                  >
+                    <Target className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {features[4].title}
+                  </h3>
+                  <p className="text-zinc-400 text-sm">
+                    {features[4].description}
+                  </p>
+                </div>
+
+                <div className="mt-6">
+                  <div
+                    className={`text-3xl font-black bg-linear-to-r ${features[4].gradient} bg-clip-text text-transparent`}
+                  >
+                    {features[4].stat}
+                  </div>
+                  <div className="text-zinc-500 text-sm">
+                    {features[4].statLabel}
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group"
-              >
-                <Card className="h-full relative overflow-hidden border bg-card hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="space-y-3">
-                    <div className={`inline-flex items-center justify-center p-2.5 rounded-lg w-fit ${feature.bg}`}>
-                      <Icon className={`h-5 w-5 ${feature.color}`} />
-                    </div>
-                    <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
-                    <CardDescription className="text-base leading-relaxed">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {feature.proofPoint}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-center mt-16"
+        >
+          <a
+            href="#pricing"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 transition-colors group"
+          >
+            View pricing
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

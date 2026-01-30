@@ -2,7 +2,7 @@ import type { DetectorResult } from "@orylo/fraud-engine";
 
 /**
  * Explanation Prompt Builder
- * 
+ *
  * Story 4.2: AC2, AC5 - Build LLM prompt for fraud explanation in French
  */
 
@@ -35,14 +35,14 @@ function formatDetectorResults(detectorResults: DetectorResult[]): string {
         d.reason ||
         (d.metadata as { reason?: string } | undefined)?.reason ||
         "Détecteur déclenché";
-      return `- ${d.detectorId}: Score ${d.score}/100, Décision: ${d.decision} (${reason})`;
+      return `- ${d.detectorId}: Score ${d.score}/100, Décision: ${d.reason} (${reason})`;
     })
     .join("\n");
 }
 
 /**
  * Build explanation prompt in French
- * 
+ *
  * AC5: Language: French (LLM prompt in French)
  */
 export function buildExplanationPrompt(
@@ -70,10 +70,10 @@ Explique en français pourquoi cette transaction est suspecte, en mentionnant le
 
 /**
  * System message for LLM
- * 
+ *
  * AC5: System message in French
  */
-export const EXPLANATION_SYSTEM_MESSAGE = `Tu es un expert en détection de fraude. Ton rôle est d'expliquer de manière claire et concise pourquoi une transaction a été signalée comme suspecte. 
+export const EXPLANATION_SYSTEM_MESSAGE = `Tu es un expert en détection de fraude. Ton rôle est d'expliquer de manière claire et concise pourquoi une transaction a été signalée comme suspecte.
 
 Instructions:
 - Explique en français (2-3 phrases maximum)

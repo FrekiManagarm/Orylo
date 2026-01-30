@@ -3,7 +3,7 @@ import { AlertTriangle, Shield } from "lucide-react";
 
 /**
  * Problem-Solution Section Component
- * 
+ *
  * Story 2.14:
  * - AC4: Problem-Solution section highlighting Stripe Radar limitations vs Orylo
  */
@@ -15,7 +15,7 @@ export function ProblemSolutionSection() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             Le problème avec Stripe Radar
           </h2>
-          <p className="mx-auto max-w-[700px] text-lg text-muted-foreground">
+          <p className="mx-auto max-w-175 text-lg text-muted-foreground">
             Stripe Radar laisse passer des fraudes. Résultat : votre compte est suspendu et vous devez mettre la clé sous la porte.
           </p>
 
@@ -49,7 +49,7 @@ export function ProblemSolutionSection() {
                   <CardTitle>Orylo</CardTitle>
                 </div>
                 <CardDescription>
-                  IA collective qui bloque les fraudes AVANT qu'elles n'impactent votre compte
+                  IA collective qui bloque les fraudes AVANT qu&apos;elles n&apos;impactent votre compte
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -1,113 +1,406 @@
 "use client";
 
+import { motion } from "framer-motion";
+import {
+  Check,
+  Zap,
+  Crown,
+  Rocket,
+  ArrowRight,
+  Lock,
+  Flame,
+} from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-/**
- * Pricing Section Component
- * 
- * Story 2.14:
- * - AC6: Pricing section displaying pricing with monthly/annual toggle
- * 
- * Design inspired by biume.com with Orylo brand colors
- */
-export function PricingSection() {
+const plans = [
+  {
+    name: "FREE",
+    monthlyPrice: 0,
+    annualPrice: 0,
+    description: "Perfect for testing",
+    icon: Zap,
+    popular: false,
+    earlyBird: false,
+    features: [
+      "1,000 transactions/mo",
+      "Card testing detection",
+      "Visual explanations",
+      "7-day history",
+      "Email alerts",
+    ],
+    cta: "Start Free",
+    ctaVariant: "outline" as const,
+  },
+  {
+    name: "PRO",
+    monthlyPrice: 39,
+    annualPrice: 351, // 29.25€/mo
+    originalMonthlyPrice: 79,
+    description: "Lock this price forever",
+    icon: Crown,
+    popular: true,
+    earlyBird: true,
+    features: [
+      "Everything in Free",
+      "Unlimited transactions",
+      "30-day history",
+      "3 custom rules",
+      "Priority email support",
+      "Price locked forever",
+    ],
+    cta: "Get Started",
+    ctaVariant: "default" as const,
+    note: "First 100 customers only",
+  },
+  {
+    name: "BUSINESS",
+    monthlyPrice: 99,
+    annualPrice: 891, // 74.25€/mo
+    description: "For power users",
+    icon: Rocket,
+    popular: false,
+    earlyBird: false,
+    features: [
+      "Everything in Pro",
+      "90-day history",
+      "Unlimited custom rules",
+      "Webhooks + API access",
+      "Slack/Discord alerts",
+      "Support < 24h",
+    ],
+    cta: "Get Started",
+    ctaVariant: "outline" as const,
+  },
+];
+
+const faqs = [
+  {
+    question: "What counts as a transaction?",
+    answer: "Every payment attempt analyzed by Orylo, whether successful or failed.",
+  },
+  {
+    question: "Can I change plans anytime?",
+    answer: "Yes. Upgrade or downgrade anytime. No hidden fees.",
+  },
+  {
+    question: "What if I exceed my transaction limit?",
+    answer: "We'll notify you. You can upgrade or we'll pause detection until next month.",
+  },
+  {
+    question: "How long does the early bird price last?",
+    answer: "Lock in €39/mo forever if you're among the first 100 customers. This price never increases for you.",
+  },
+];
+
+export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
-  const monthlyPrice = 99;
-  const annualPrice = Math.round(monthlyPrice * 12 * 0.75); // 25% discount
-  const savings = monthlyPrice * 12 - annualPrice;
-
-  const features = [
-    "Assistant IA illimité",
-    "Détection en temps réel",
-    "Règles custom personnalisées",
-    "Dashboard complet & Analytics",
-    "Clients & Transactions illimités",
-    "Support prioritaire 7j/7",
-  ];
 
   return (
-    <section className="w-full py-20 md:py-32 bg-muted/30">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-8 text-center max-w-3xl mx-auto">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              Un tarif unique, tout inclus
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Accédez à toutes les fonctionnalités sans limite.
-            </p>
-          </div>
+    <section id="pricing" className="py-24 relative overflow-hidden bg-black">
+      {/* Background Glows */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[128px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] pointer-events-none" />
 
-          {/* Monthly/Annual Toggle */}
-          <div className="flex items-center gap-3">
-            <Label htmlFor="billing-toggle" className={cn("text-sm font-medium", !isAnnual && "text-foreground")}>
-              Mensuel
-            </Label>
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-amber-500/20 bg-amber-500/10"
+          >
+            <Flame className="w-4 h-4 text-amber-400" />
+            <span className="text-sm font-medium text-amber-400">
+              Limited Time: 50% off for early adopters
+            </span>
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl md:text-5xl font-bold mb-6 text-white"
+          >
+            Simple, honest pricing
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-lg text-zinc-400 mb-8"
+          >
+            Start free. Upgrade when you need more.
+            <br />
+            <span className="text-amber-400 font-medium">First 100 customers lock in 39€/mo forever.</span>
+          </motion.p>
+
+          {/* Billing Toggle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex items-center justify-center gap-3 p-1 bg-white/5 rounded-full border border-white/10 w-fit mx-auto backdrop-blur-sm"
+          >
+            <span
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                !isAnnual ? "bg-zinc-800 text-white" : "text-zinc-400",
+              )}
+            >
+              Monthly
+            </span>
             <Switch
-              id="billing-toggle"
               checked={isAnnual}
               onCheckedChange={setIsAnnual}
+              className="data-[state=checked]:bg-amber-500"
             />
-            <div className="flex items-center gap-2">
-              <Label htmlFor="billing-toggle" className={cn("text-sm font-medium", isAnnual && "text-foreground")}>
-                Annuel
-              </Label>
-              {isAnnual && (
-                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
-                  -25%
-                </span>
+            <span
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2",
+                isAnnual ? "bg-zinc-800 text-white" : "text-zinc-400",
               )}
-            </div>
-          </div>
-
-          {/* Pricing Card */}
-          <Card className="w-full max-w-md border-2 border-primary/20 shadow-lg">
-            <CardHeader className="text-center space-y-4 pb-6">
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-5xl font-bold tracking-tight">
-                  {isAnnual ? annualPrice : monthlyPrice}€
-                </span>
-                <span className="text-muted-foreground">/{isAnnual ? "an" : "mois"}</span>
-              </div>
-              {isAnnual && (
-                <p className="text-sm font-medium text-success">
-                  Vous économisez {savings}€ par an
-                </p>
-              )}
-              <CardDescription className="text-base">
-                Une solution complète pour protéger votre business de A à Z. Sans frais cachés. Annulable à tout moment.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ul className="space-y-3">
-                {features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-3 pt-6">
-              <Link
-                href="/login"
-                className={cn(buttonVariants({ size: "lg" }), "w-full")}
-              >
-                Commencer l'essai gratuit (15j)
-              </Link>
-              <p className="text-xs text-muted-foreground">
-                Pas de carte bancaire requise
-              </p>
-            </CardFooter>
-          </Card>
+            >
+              Annual
+              <span className="text-xs font-bold bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full border border-green-500/20">
+                Save 25%
+              </span>
+            </span>
+          </motion.div>
         </div>
+
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
+          {plans.map((plan, index) => {
+            const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+            const pricePerMonth = isAnnual && plan.annualPrice > 0
+              ? (plan.annualPrice / 12).toFixed(2)
+              : plan.monthlyPrice;
+
+            return (
+              <motion.div
+                key={plan.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="h-full"
+              >
+                <Card
+                  className={cn(
+                    "flex flex-col h-full transition-all duration-300 bg-zinc-900/40 backdrop-blur-xl border-white/10 hover:border-white/20 relative overflow-visible",
+                    plan.popular &&
+                    "border-amber-500/50 shadow-2xl shadow-amber-500/10 scale-[1.02] z-10",
+                  )}
+                >
+                  {/* Early Bird Badge */}
+                  {plan.earlyBird && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-amber-500 text-black font-bold px-4 py-1 text-xs shadow-lg shadow-amber-500/30">
+                        <Flame className="w-3 h-3 mr-1" />
+                        LIMITED TIME
+                      </Badge>
+                    </div>
+                  )}
+
+                  {plan.popular && (
+                    <div className="absolute inset-x-0 -top-px h-px bg-linear-to-r from-transparent via-amber-500 to-transparent" />
+                  )}
+
+                  <CardHeader className="pb-4 pt-8 px-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div
+                        className={cn(
+                          "p-2 rounded-xl",
+                          plan.popular
+                            ? "bg-amber-500/20 text-amber-400"
+                            : "bg-white/5 text-zinc-400",
+                        )}
+                      >
+                        <plan.icon className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    <CardTitle className="text-xl font-bold text-white mb-1">
+                      {plan.name}
+                    </CardTitle>
+                    <CardDescription className="text-zinc-400 text-sm">
+                      {plan.description}
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="flex-1 px-6 pb-4">
+                    {/* Price */}
+                    <div className="mb-6 pb-6 border-b border-white/5">
+                      {isAnnual && plan.annualPrice > 0 ? (
+                        // Annual pricing
+                        <>
+                          <div className="flex items-baseline gap-2 mb-2">
+                            {plan.originalMonthlyPrice && (
+                              <span className="text-lg text-zinc-500 line-through">
+                                €{plan.originalMonthlyPrice * 12}
+                              </span>
+                            )}
+                            <span
+                              className={cn(
+                                "text-4xl font-bold tracking-tight",
+                                plan.popular ? "text-amber-400" : "text-white",
+                              )}
+                            >
+                              €{price}
+                            </span>
+                            <span className="text-zinc-500 font-medium">/year</span>
+                          </div>
+                          <div className="text-sm text-zinc-400">
+                            €{pricePerMonth}/mo billed annually
+                          </div>
+                          {plan.originalMonthlyPrice && (
+                            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+                              <span className="font-bold">Save 50% + 25%</span>
+                              <span className="text-zinc-500">• forever</span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        // Monthly pricing or Free
+                        <>
+                          <div className="flex items-baseline gap-2">
+                            {plan.originalMonthlyPrice && (
+                              <span className="text-lg text-zinc-500 line-through">
+                                €{plan.originalMonthlyPrice}
+                              </span>
+                            )}
+                            <span
+                              className={cn(
+                                "text-4xl font-bold tracking-tight",
+                                plan.popular ? "text-amber-400" : "text-white",
+                              )}
+                            >
+                              €{price}
+                            </span>
+                            <span className="text-zinc-500 font-medium">/mo</span>
+                          </div>
+                          {plan.originalMonthlyPrice && (
+                            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+                              <span className="font-bold">Save 50%</span>
+                              <span className="text-zinc-500">• forever</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Features */}
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, i) => {
+                        const isLocked = feature.includes("locked forever");
+                        return (
+                          <li key={i} className="flex items-start gap-3">
+                            <div
+                              className={cn(
+                                "mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0",
+                                isLocked
+                                  ? "bg-amber-500/20"
+                                  : plan.popular
+                                    ? "bg-amber-500/10"
+                                    : "bg-white/10",
+                              )}
+                            >
+                              {isLocked ? (
+                                <Lock className="h-3 w-3 text-amber-400" />
+                              ) : (
+                                <Check
+                                  className={cn(
+                                    "h-3 w-3",
+                                    plan.popular ? "text-amber-400" : "text-white",
+                                  )}
+                                />
+                              )}
+                            </div>
+                            <span
+                              className={cn(
+                                "text-sm",
+                                isLocked
+                                  ? "text-amber-400 font-medium"
+                                  : "text-zinc-300",
+                              )}
+                            >
+                              {feature}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </CardContent>
+
+                  <CardFooter className="px-6 pb-6 pt-2 flex flex-col gap-2">
+                    <Button
+                      className={cn(
+                        "w-full h-11 rounded-lg text-sm font-semibold transition-all duration-300",
+                        plan.popular
+                          ? "bg-amber-500 text-black hover:bg-amber-400 shadow-lg shadow-amber-500/20"
+                          : plan.ctaVariant === "outline"
+                            ? "bg-white/5 text-white border border-white/10 hover:bg-white/10"
+                            : "bg-white text-black hover:bg-white/90",
+                      )}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                    {plan.note && (
+                      <p className="text-xs text-center text-zinc-500">
+                        {plan.note}
+                      </p>
+                    )}
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl mx-auto"
+        >
+          <h3 className="text-xl font-bold text-white text-center mb-8">
+            Frequently Asked Questions
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
+              >
+                <h4 className="text-sm font-semibold text-white mb-2">
+                  {faq.question}
+                </h4>
+                <p className="text-sm text-zinc-400">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
