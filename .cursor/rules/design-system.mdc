@@ -1,0 +1,70 @@
+---
+description: Design System & UI Consistency Rules based on the project's visual identity
+globs: **/*.tsx,**/*.css
+alwaysApply: false
+---
+# Orylo Design System & UI Rules
+
+This project follows a strict "Dark Mode / Cyber / Fintech" visual identity, heavily inspired by `app/(main)/page.tsx`.
+All new components and pages MUST adhere to these guidelines.
+
+## 1. Core Visual Identity (Dark Theme Default)
+
+- **Backgrounds**:
+  - Main background: `bg-black` (or very dark zinc).
+  - Cards/Surfaces: `bg-zinc-900/50` with `backdrop-blur-xl` (Glassmorphism).
+  - Overlays: Subtle radial gradients (e.g., `bg-indigo-500/10 rounded-full blur-3xl`).
+  - Patterns: Grid patterns (e.g., linear-gradient with transparency) for texture.
+
+- **Borders**:
+  - Subtle, semi-transparent white borders: `border-white/10` or `border-white/5`.
+  - Avoid harsh solid borders.
+
+- **Typography**:
+  - Headings: White (`text-white`), bold/extrabold.
+  - Body text: Zinc greys (`text-zinc-400` for secondary, `text-zinc-300` for labels).
+  - Links/Accents: Indigo/Purple (`text-indigo-400`, `hover:text-indigo-300`).
+  - Font: Sans-serif (Geist/Inter), clean and modern.
+
+- **Interactive Elements (Buttons/Inputs)**:
+  - **Primary Button**: White background (`bg-white`), Black text (`text-black`), subtle hover effect (`hover:bg-zinc-200`).
+  - **Secondary/Ghost Button**: Transparent with light text, hover with slight white background (`hover:bg-white/5`).
+  - **Inputs**: Dark background (`bg-zinc-900/50`), light border (`border-white/10`), white text, Indigo focus ring (`focus-visible:ring-indigo-500`).
+
+## 2. Component Implementation Patterns
+
+### Cards & Containers
+When creating a card or container, use this structure:
+```tsx
+<Card className="w-full border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-xl">
+  <CardHeader>
+    <CardTitle className="text-white">...</CardTitle>
+    <CardDescription className="text-zinc-400">...</CardDescription>
+  </CardHeader>
+  {/* ... */}
+</Card>
+```
+
+### Inputs & Forms
+```tsx
+<Input 
+  className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
+  {...props} 
+/>
+```
+
+### Animation (Framer Motion)
+- Use `framer-motion` for smooth entrances (fade-in up).
+- Standard transition: `initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}`.
+
+## 3. Tailwind Utility Classes Preference
+- Prefer `zinc` colors for grays (neutral cool tone).
+- Prefer `indigo` or `purple` for brand accents.
+- Use `backdrop-blur` heavily for depth.
+- Use `opacity` modifiers for text hierarchy (`text-white` vs `text-zinc-400`).
+
+## 4. "Do Not" Rules
+- ❌ DO NOT use default white backgrounds (`bg-white`) for main pages.
+- ❌ DO NOT use standard blue browser links.
+- ❌ DO NOT use solid black borders.
+- ❌ DO NOT use shadows without purpose (prefer glows/blurs).

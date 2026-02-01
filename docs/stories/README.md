@@ -13,7 +13,7 @@
 | Epic | Stories | Story Points | Timeline | Status |
 |------|---------|--------------|----------|--------|
 | [Epic 1](#epic-1---stripe-integration--detection-api) | 7 | 39 SP | Sprint 1-2 (Week 2-3) | ✅ Complete |
-| [Epic 2](#epic-2---dashboard-action-first-experience) | 14 | 61 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
+| [Epic 2](#epic-2---dashboard-action-first-experience) | 15 | 66 SP | Sprint 3-4 (Week 4-5) | ✅ All Approved |
 | [Epic 3](#epic-3---integration--production-readiness) | 10 | 37 SP | Sprint 5-6 (Week 6) | 📋 Ready |
 
 **Total MVP**: **29 stories**, **126 story points**, **6 weeks** (Epics 1-3)  
@@ -51,7 +51,7 @@
 **Goal**: Build real-time, action-first dashboard for merchants to monitor detections, block/whitelist customers, and react to fraud instantly via SSE updates.
 
 **Timeline**: Sprint 3-4 (Week 4-5, 10 jours ouvrés)  
-**Story Points**: 51 SP  
+**Story Points**: 66 SP  
 **File**: [docs/epics/epic-2-dashboard-experience.md](../epics/epic-2-dashboard-experience.md)
 
 ### Stories
@@ -71,8 +71,9 @@
 | 2.12 | [Dark Mode Support](#story-212-dark-mode-support-system-preference) | 2 | ✅ Approved | [2.12.dark-mode-support.md](2.12.dark-mode-support.md) |
 | 2.13 | [Settings Page - Stripe Connection Management & Desktop Navigation](#story-213-settings-page---stripe-connection-management--desktop-navigation) | 5 | ✅ Approved | [2.13.settings-stripe-page.md](2.13.settings-stripe-page.md) |
 | 2.14 | [Landing Page - Marketing & Conversion](#story-214-landing-page---marketing--conversion) | 5 | ✅ Approved | [2.14.landing-page.md](2.14.landing-page.md) |
+| 2.15 | [SSE Production Improvements & Rate Limiting](#story-215-sse-production-improvements--rate-limiting) | 5 | 📋 Ready | [2.15.sse-production-improvements.md](2.15.sse-production-improvements.md) |
 
-**Epic 2 Total**: **14 stories** (note: 2.5 skipped), **61 SP**
+**Epic 2 Total**: **15 stories** (note: 2.5 skipped), **66 SP**
 
 ---
 
@@ -385,6 +386,20 @@
 - Mobile responsive design with touch-friendly CTAs
 - SEO optimization with meta tags and Open Graph
 - Performance: Page load <2s, Lighthouse score ≥90
+
+---
+
+### Story 2.15: SSE Production Improvements & Rate Limiting
+**SP**: 5 | **Status**: 📋 Ready | **Epic**: 2
+
+**User Story**: As a system administrator, I want SSE connections to be rate-limited and monitored, so that the system can handle production load gracefully and prevent resource exhaustion.
+
+**Key AC**:
+- Rate limiting: Max 100 concurrent SSE connections per organization
+- Connection tracking in Redis with TTL
+- Graceful rejection: HTTP 429 when limit exceeded
+- Support `detection.updated` events (when explanation generated, suggestion accepted)
+- E2E tests for rate limiting
 
 ---
 

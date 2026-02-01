@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RuleRecommendationsList } from "@/components/rule-recommendations-list";
-import { AIMetricsCard } from "@/components/ai-metrics-card";
-import { PrivacySettingsCard } from "@/components/privacy-settings-card";
+import { RuleRecommendationsList } from "@/components/dashboard/components/rule-recommendations-list";
+import { AIMetricsCard } from "@/components/dashboard/components/ai-metrics-card";
+import { PrivacySettingsCard } from "@/components/dashboard/components/privacy-settings-card";
 
 /**
  * Settings Page - Custom Rules Recommendations

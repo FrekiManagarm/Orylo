@@ -22,5 +22,8 @@
   "engines": {
     "node": ">=20.0.0",
     "bun": ">=1.2.3"
+  },
+  "dependencies": {
+    "@better-fetch/fetch": "^1.1.21"
   }
 }

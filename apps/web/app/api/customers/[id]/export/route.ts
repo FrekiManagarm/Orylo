@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { fraudDetections, customerTrustScores } from "@orylo/database";
 import { eq, and } from "drizzle-orm";

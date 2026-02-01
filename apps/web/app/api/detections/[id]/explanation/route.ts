@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { fraudDetections, aiExplanations } from "@orylo/database";
 import { eq, and } from "drizzle-orm";

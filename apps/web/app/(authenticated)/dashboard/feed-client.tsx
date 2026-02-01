@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { DetectionCard, type Detection } from "@/components/detection-card";
-import { DetectionDetailsDialog } from "@/components/detection-details-dialog";
+import { DetectionCard, type Detection } from "@/components/dashboard/components/detection-card";
+import { DetectionDetailsDialog } from "@/components/dashboard/components/detection-details-dialog";
 import { useSSE } from "@/hooks/use-sse";
 import { motion, AnimatePresence } from "framer-motion";
 

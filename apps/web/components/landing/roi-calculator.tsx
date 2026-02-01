@@ -22,17 +22,17 @@ export default function RoiCalculator() {
     const rate = fraudRate / 100;
     const orderValue = avgOrder;
 
-    // Perte directe (marchandise/revenu perdu)
+    // Direct loss (lost merchandise/revenue)
     const directLoss = monthlyVolume * rate;
 
-    // Frais Stripe (environ 15€ par contestation + frais de dossier)
-    // Nombre de fraudes estimé
+    // Stripe fees (approx €15 per dispute + administrative fees)
+    // Estimated number of frauds
     const fraudCount = directLoss / orderValue;
     const stripeDisputeFees = fraudCount * 15;
 
     const monthlyTotalLoss = directLoss + stripeDisputeFees;
 
-    // Orylo bloque ~95% de la fraude
+    // Orylo blocks ~95% of fraud
     const estimatedSavings = monthlyTotalLoss * 0.95;
 
     setTotalLoss(monthlyTotalLoss);
@@ -41,7 +41,7 @@ export default function RoiCalculator() {
   }, [volume, fraudRate, avgOrder]);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+    return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
   };
 
   return (

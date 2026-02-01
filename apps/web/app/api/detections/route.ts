@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { fraudDetections } from "@orylo/database";
 import { eq, desc, count, and, gte, lte } from "drizzle-orm";
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       100
     ); // Cap at 100
     const offset = Math.max(0, parseInt(searchParams.get("offset") || "0"));
-    
+
     // Story 2.3: Filter parameters
     const decision = searchParams.get("decision");
     const dateFrom = searchParams.get("dateFrom");
@@ -67,12 +67,12 @@ export async function GET(request: NextRequest) {
 
     // 4. Build query conditions (AC7: server-side filtering)
     const conditions = [eq(fraudDetections.organizationId, organizationId)];
-    
+
     // Filter by decision (AC3)
     if (decision && decision !== "ALL") {
       conditions.push(eq(fraudDetections.decision, decision));
     }
-    
+
     // Filter by date range (AC3)
     if (dateFrom) {
       conditions.push(gte(fraudDetections.createdAt, new Date(dateFrom)));
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     // 5. Query DB with filters
     // AC1: SELECT only needed columns (avoid heavy JSON fields like detectorResults)
     const whereClause = and(...conditions);
-    
+
     const [detectionsResult, totalResult] = await Promise.all([
       // Fetch detections - optimized query (AC1)
       db

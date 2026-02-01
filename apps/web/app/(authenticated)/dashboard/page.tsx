@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { FeedClient } from "./feed-client";
-import { StatsPanel } from "@/components/stats-panel";
-import { FiltersBar } from "@/components/filters-bar";
+import { StatsPanel } from "@/components/dashboard/components/stats-panel";
+import { FiltersBar } from "@/components/dashboard/components/filters-bar";
 
 /**
  * Dashboard Page - Server Component

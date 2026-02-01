@@ -1,67 +1,113 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Shield } from "lucide-react";
+"use client";
 
-/**
- * Problem-Solution Section Component
- *
- * Story 2.14:
- * - AC4: Problem-Solution section highlighting Stripe Radar limitations vs Orylo
- */
+import { motion } from "framer-motion";
+import { AlertTriangle, Shield, Check, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 export function ProblemSolutionSection() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Le problème avec Stripe Radar
-          </h2>
-          <p className="mx-auto max-w-175 text-lg text-muted-foreground">
-            Stripe Radar laisse passer des fraudes. Résultat : votre compte est suspendu et vous devez mettre la clé sous la porte.
-          </p>
+    <section className="w-full py-24 relative overflow-hidden bg-black">
+      {/* Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-zinc-900/50 via-black to-black" />
 
-          <div className="grid gap-6 md:grid-cols-2 w-full max-w-4xl mt-8">
-            {/* Problem Card */}
-            <Card>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="flex flex-col items-center space-y-8 text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-white"
+          >
+            The problem with <span className="text-red-500">Stripe Radar</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mx-auto max-w-2xl text-lg text-zinc-400"
+          >
+            Stripe Radar lets fraud slip through. Result: your account gets suspended and you lose money.
+          </motion.p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+          {/* Problem Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="h-full border-red-500/20 bg-red-500/5 backdrop-blur-sm">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                  <CardTitle>Stripe Radar</CardTitle>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-red-500/10">
+                    <AlertTriangle className="h-6 w-6 text-red-500" />
+                  </div>
+                  <CardTitle className="text-2xl text-white">Stripe Radar</CardTitle>
                 </div>
-                <CardDescription>
-                  Détection limitée, trop de faux positifs
-                </CardDescription>
+                <p className="text-red-200/60 text-sm font-medium">
+                  Limited detection, too many false positives
+                </p>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground text-left">
-                  <li>• 60-70% de détection card testing seulement</li>
-                  <li>• 77% de faux positifs = temps perdu</li>
-                  <li>• Règles statiques qui manquent les nouvelles fraudes</li>
-                  <li>• Risque de suspension de compte Stripe</li>
+                <ul className="space-y-4">
+                  {[
+                    "Only 60-70% card testing detection",
+                    "77% false positives = wasted time",
+                    "Static rules miss evolving fraud",
+                    "Risk of Stripe account suspension",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-zinc-300">
+                      <X className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
+          </motion.div>
 
-            {/* Solution Card */}
-            <Card className="border-primary">
-              <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <CardTitle>Orylo</CardTitle>
+          {/* Solution Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="h-full border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute inset-0 bg-emerald-500/5 opacity-50 pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+
+              <CardHeader className="relative z-10">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-500/10">
+                    <Shield className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <CardTitle className="text-2xl text-white">Orylo</CardTitle>
                 </div>
-                <CardDescription>
-                  IA collective qui bloque les fraudes AVANT qu&apos;elles n&apos;impactent votre compte
-                </CardDescription>
+                <p className="text-emerald-200/60 text-sm font-medium">
+                  Collective AI that blocks fraud BEFORE impact
+                </p>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground text-left">
-                  <li>• 95%+ de détection card testing</li>
-                  <li>• &lt;10% de faux positifs</li>
-                  <li>• IA qui apprend de 100+ marchands</li>
-                  <li>• Protection proactive de votre compte</li>
+              <CardContent className="relative z-10">
+                <ul className="space-y-4">
+                  {[
+                    "95%+ card testing detection",
+                    "<10% false positives",
+                    "AI learning from 100+ merchants",
+                    "Proactive account protection",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-white">
+                      <Check className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                      <span className="font-medium">{item}</span>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

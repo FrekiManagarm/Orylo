@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StripeConnectButton } from "@/components/stripe-connect-button";
+import { StripeConnectButton } from "@/components/dashboard/components/stripe-connect-button";
 import { Suspense } from "react";
 
 /**

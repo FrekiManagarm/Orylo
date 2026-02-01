@@ -241,7 +241,7 @@ async function saveFraudDetection(
 
         // AC1: Trigger job (non-blocking, fire-and-forget)
         // Use void to ensure it doesn't block detection flow
-        void generateAIExplanation.trigger({
+        await generateAIExplanation.trigger({
           detectionId,
           organizationId: String(context.organizationId),
           context: {

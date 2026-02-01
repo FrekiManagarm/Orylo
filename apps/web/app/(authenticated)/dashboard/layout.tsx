@@ -1,0 +1,65 @@
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { cookies, headers } from "next/headers";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { DashboardSidebar } from "@/components/dashboard/layout/dashboard-sidebar";
+import { auth } from "@/lib/auth/auth";
+import { Organization } from "@orylo/database";
+import { Toaster } from "sonner";
+import { DashboardHeader } from "@/components/dashboard/layout/dashboard-header";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Dashboard",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  const cookieStore = await cookies();
+  const sidebarOpen = cookieStore.get("sidebar_state")?.value === "true";
+
+  const [session, organizations, org] = await Promise.all([
+    auth.api.getSession({
+      headers: await headers(),
+    }),
+    auth.api.listOrganizations({
+      headers: await headers(),
+    }),
+    auth.api.getFullOrganization({
+      headers: await headers(),
+    }),
+  ]);
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  if (!organizations.length || !org?.id) {
+    redirect("/create-organization");
+  }
+
+  if (!org?.id) {
+    redirect("/select-organization");
+  }
+
+  return (
+    <SidebarProvider defaultOpen={sidebarOpen}>
+      <div className="flex w-screen h-screen">
+        <DashboardSidebar
+          session={session}
+          organizations={organizations as Organization[]}
+        />
+        <SidebarInset>
+          <DashboardHeader />
+          <div className="w-full overflow-y-auto mb-4">{children}</div>
+        </SidebarInset>
+      </div>
+      <Toaster />
+    </SidebarProvider>
+  );
+};
+
+export default DashboardLayout;

@@ -1,9 +1,13 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
+import { db } from "@/lib/db";
+import { fraudDetections } from "@orylo/database";
+import { eq, and, gte, desc } from "drizzle-orm";
 
 /**
  * GET /api/events
  * 
  * Story 2.10 - Server-Sent Events (SSE) Real-Time Updates
+ * ADR-008: Real-Time Updates Strategy (Polling-based SSE)
  * 
  * Security (from Dev Notes):
  * - AC3: Requires Better Auth session
@@ -15,11 +19,10 @@ import { auth } from "@/lib/auth";
  * - AC2: Event types: detection.created, detection.updated
  * - AC5: Auto-reconnect support (EventSource built-in)
  * - AC9: Heartbeat every 30s
+ * - ADR-008: Poll DB every 5s for new detections (backend polling strategy)
  * 
  * TODO (Epic 3):
  * - AC8: Rate limiting (max 100 concurrent connections)
- * - Integrate with event emitter for webhook-triggered events
- * - Connect to fraud detection webhook processing
  */
 export async function GET(request: Request) {
   try {
@@ -32,11 +35,13 @@ export async function GET(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    // AC4: Extract organizationId for multi-tenancy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const organizationId = (session.user as any).organizationId as string | undefined;
+    const organization = await auth.api.getFullOrganization({
+      headers: request.headers,
+    });
 
-    if (!organizationId) {
+    // AC4: Extract organizationId for multi-tenancy
+
+    if (!organization) {
       return new Response("Organization ID not found", { status: 400 });
     }
 
@@ -48,43 +53,68 @@ export async function GET(request: Request) {
         // Send initial connection message
         controller.enqueue(
           encoder.encode(
-            `event: connected\ndata: ${JSON.stringify({ organizationId })}\n\n`
+            `event: connected\ndata: ${JSON.stringify({ id: organization.id, name: organization.name })}\n\n`
           )
         );
 
-        // AC9: Heartbeat to keep connection alive (every 30s)
-        const heartbeatInterval = setInterval(() => {
-          try {
-            controller.enqueue(encoder.encode(": ping\n\n"));
-          } catch {
-            clearInterval(heartbeatInterval);
-          }
-        }, 30000);
+        // ADR-008: Poll DB every 5s for new detections (backend polling strategy)
+        // Initialize lastCheck to now to avoid sending historical detections on first poll
+        let lastCheck = Date.now();
+        let lastHeartbeat = Date.now();
 
-        // TODO (Epic 3): Listen for detection events from webhook processing
-        // Example implementation:
-        // eventEmitter.on(`detection.created:${organizationId}`, (detection) => {
-        //   controller.enqueue(
-        //     encoder.encode(
-        //       `event: detection.created\ndata: ${JSON.stringify(detection)}\n\n`
-        //     )
-        //   );
-        // });
-        //
-        // eventEmitter.on(`detection.updated:${organizationId}`, (detection) => {
-        //   controller.enqueue(
-        //     encoder.encode(
-        //       `event: detection.updated\ndata: ${JSON.stringify(detection)}\n\n`
-        //     )
-        //   );
-        // });
+        const pollInterval = setInterval(async () => {
+          try {
+            const pollStartTime = Date.now();
+
+            // Poll for new detections since last check
+            const newDetections = await db
+              .select()
+              .from(fraudDetections)
+              .where(
+                and(
+                  eq(fraudDetections.organizationId, organization.id),
+                  gte(fraudDetections.createdAt, new Date(lastCheck))
+                )
+              )
+              .orderBy(desc(fraudDetections.createdAt))
+              .limit(50);
+
+            // AC2: Send detection.created events for new detections
+            for (const detection of newDetections) {
+              controller.enqueue(
+                encoder.encode(
+                  `event: detection.created\ndata: ${JSON.stringify({
+                    id: detection.id,
+                    paymentIntentId: detection.paymentIntentId,
+                    customerEmail: detection.customerEmail,
+                    amount: detection.amount,
+                    currency: detection.currency,
+                    decision: detection.decision,
+                    score: detection.score,
+                    createdAt: detection.createdAt.toISOString(),
+                  })}\n\n`
+                )
+              );
+            }
+
+            // Update last check time after poll (to avoid duplicates)
+            lastCheck = pollStartTime;
+
+            // AC9: Heartbeat every 30s to keep connection alive
+            const now = Date.now();
+            if (now - lastHeartbeat >= 30000) {
+              controller.enqueue(encoder.encode(": ping\n\n"));
+              lastHeartbeat = now;
+            }
+          } catch (error) {
+            console.error("[SSE] Poll error:", error);
+            // Don't close connection on error, just log it
+          }
+        }, 5000); // Poll every 5s (ADR-008)
 
         // Cleanup on connection close
         request.signal.addEventListener("abort", () => {
-          clearInterval(heartbeatInterval);
-          // TODO (Epic 3): Remove event listeners
-          // eventEmitter.off(`detection.created:${organizationId}`, handler);
-          // eventEmitter.off(`detection.updated:${organizationId}`, handler);
+          clearInterval(pollInterval);
         });
       },
     });

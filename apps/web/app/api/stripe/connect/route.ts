@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 
 /**
@@ -26,11 +26,11 @@ export async function GET() {
 
     // Generate CSRF state parameter
     const state = crypto.randomUUID();
-    
+
     // Store state in session for verification in callback
     // Note: In production, store in Redis or encrypted cookie
     // For now, we'll pass it through and verify in callback
-    
+
     // Build Stripe OAuth URL (AC1, AC2)
     const stripeClientId = process.env.STRIPE_CLIENT_ID;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { fraudDetections } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
@@ -78,7 +78,7 @@ export async function POST(
     // 5. TODO (Epic 3): Update customer_trust_scores table
     // For now, we'll simulate success since customer_trust_scores table
     // implementation is part of Epic 3 (Integration & Production Readiness)
-    
+
     // Future implementation:
     // await db
     //   .update(customerTrustScores)

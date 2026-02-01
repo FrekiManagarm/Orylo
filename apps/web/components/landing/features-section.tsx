@@ -3,37 +3,37 @@
 import { motion } from "framer-motion";
 import {
   Zap,
-  ArrowRight,
-  Clock,
-  Sparkles,
-  CreditCard,
+  Network,
   Eye,
-  RefreshCw,
   Target,
+  Shield,
+  Sparkles,
+  Users,
+  ArrowRight,
 } from "lucide-react";
 
 const features = [
   {
-    id: "card-testing",
-    title: "Card Testing Detection",
+    id: "real-protection",
+    title: "Real Protection",
     description:
-      "Automatically detect and block card testing attacks. Multiple cards on same session? Blocked. Fail-fail-fail-success pattern? Blocked. Auto-refund fraudulent payments.",
-    icon: CreditCard,
-    stat: "Real-time",
-    statLabel: "detection",
+      "Detect and block 95%+ of card testing attacks. Where Stripe Radar lets 30% of fraud slip through, Orylo acts with precision.",
+    icon: Shield,
+    stat: "95%+",
+    statLabel: "detection rate",
     gradient: "from-rose-500 to-orange-500",
     bgGradient: "from-rose-500/20 via-rose-500/5 to-transparent",
     shadowColor: "shadow-rose-500/20",
-    tags: ["Auto-block", "Auto-refund", "Blacklist"],
+    tags: ["Anti-Card Testing", "Auto-refund", "Blacklist"],
   },
   {
-    id: "setup",
-    title: "Live in 5 minutes",
+    id: "collective-intelligence",
+    title: "Collective Intelligence",
     description:
-      "One-click Stripe OAuth connection, zero code. Instantly start monitoring all your transactions.",
-    icon: Zap,
-    stat: "5",
-    statLabel: "min to get started",
+      "A fraudster detected on one merchant is instantly blocked for everyone. Benefit from the network's protection.",
+    icon: Network,
+    stat: "100+",
+    statLabel: "connected merchants",
     gradient: "from-violet-500 to-purple-500",
     bgGradient: "from-violet-500/20 via-violet-500/5 to-transparent",
     shadowColor: "shadow-violet-500/20",
@@ -42,39 +42,39 @@ const features = [
     id: "explainable",
     title: "Visual Explanations",
     description:
-      "Every block is justified with clear, visual reasons. See exactly why a transaction was flagged. No more black box decisions.",
+      "No more black boxes. Every block is justified with a clear, visual explanation. Understand exactly why a transaction was declined.",
     icon: Eye,
     stat: "100%",
-    statLabel: "transparent",
+    statLabel: "transparency",
     gradient: "from-purple-500 to-fuchsia-500",
     bgGradient: "from-purple-500/20 via-purple-500/5 to-transparent",
     shadowColor: "shadow-purple-500/20",
     example: '"3 different cards used • fail-fail-fail-success pattern • 5 attempts in 2 minutes"',
   },
   {
-    id: "auto-actions",
-    title: "Automatic Actions",
-    description:
-      "Block and auto-refund fraudulent payments. Add IPs to blacklist. Send real-time alerts. All without lifting a finger.",
-    icon: RefreshCw,
-    stat: "Zero",
-    statLabel: "manual work",
-    gradient: "from-emerald-500 to-teal-500",
-    bgGradient: "from-emerald-500/20 via-emerald-500/5 to-transparent",
-    shadowColor: "shadow-emerald-500/20",
-    tags: ["Auto-refund", "Blacklist", "Alerts"],
-  },
-  {
     id: "custom-rules",
-    title: "Custom Rules",
+    title: "Empathy & Control",
     description:
-      "Create your own rules: whitelist VIP customers, block specific countries, set amount thresholds. Your business, your rules.",
+      "Your business is unique. Create your own rules: whitelist your VIPs, block specific countries, set custom thresholds.",
     icon: Target,
     stat: "∞",
     statLabel: "flexibility",
     gradient: "from-indigo-500 to-blue-500",
     bgGradient: "from-indigo-500/20 via-indigo-500/5 to-transparent",
     shadowColor: "shadow-indigo-500/20",
+    tags: ["Custom Rules", "Whitelist", "Geo-blocking"],
+  },
+  {
+    id: "setup",
+    title: "Live in 5 minutes",
+    description:
+      "One-click Stripe OAuth connection. Zero code required. Start protecting your account immediately.",
+    icon: Zap,
+    stat: "5",
+    statLabel: "min to start",
+    gradient: "from-emerald-500 to-teal-500",
+    bgGradient: "from-emerald-500/20 via-emerald-500/5 to-transparent",
+    shadowColor: "shadow-emerald-500/20",
   },
 ];
 
@@ -122,14 +122,14 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-zinc-400 max-w-2xl mx-auto"
           >
-            Rule-based detection with visual explanations.
-            See exactly why each transaction was blocked.
+            AI-powered detection with visual explanations.
+            See exactly why every transaction was blocked.
           </motion.p>
         </div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {/* Feature 1 - Card Testing - Large */}
+          {/* Feature 1 - Real Protection - Large */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -147,7 +147,7 @@ export default function Features() {
                   <div
                     className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[0].gradient} mb-6 shadow-lg shadow-rose-500/20`}
                   >
-                    <CreditCard className="w-7 h-7 text-white" />
+                    <Shield className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
@@ -184,7 +184,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 2 - Setup - Small */}
+          {/* Feature 2 - Collective Intelligence - Small */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -202,7 +202,7 @@ export default function Features() {
                   <div
                     className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[1].gradient} mb-6 shadow-lg shadow-violet-500/20`}
                   >
-                    <Zap className="w-7 h-7 text-white" />
+                    <Network className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-xl font-bold text-white mb-2">
@@ -214,7 +214,7 @@ export default function Features() {
                 </div>
 
                 <div className="flex items-center gap-2 mt-6">
-                  <Clock className="w-5 h-5 text-violet-400" />
+                  <Users className="w-5 h-5 text-violet-400" />
                   <span
                     className={`text-3xl font-black bg-linear-to-r ${features[1].gradient} bg-clip-text text-transparent`}
                   >
@@ -273,7 +273,7 @@ export default function Features() {
                       <div
                         className={`text-xs font-bold bg-linear-to-r ${features[2].gradient} bg-clip-text text-transparent`}
                       >
-                        Score: 85/100 → Auto-refunded
+                        Score: 85/100 → Auto-refund
                       </div>
                     </div>
                   </div>
@@ -282,7 +282,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 4 - Auto Actions - Medium */}
+          {/* Feature 4 - Custom Rules - Medium */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -290,7 +290,7 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="lg:col-span-2 group"
           >
-            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-emerald-500/30 transition-all duration-500">
+            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
               <div
                 className={`absolute inset-0 bg-linear-to-br ${features[3].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
@@ -298,9 +298,9 @@ export default function Features() {
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-emerald-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[3].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
                   >
-                    <RefreshCw className="w-7 h-7 text-white" />
+                    <Target className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-2xl font-bold text-white mb-3">
@@ -313,8 +313,8 @@ export default function Features() {
 
                 <div className="flex flex-wrap items-center gap-2 mt-6">
                   {features[3].tags?.map((tag) => (
-                    <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                      <span className="text-emerald-400 font-medium text-xs">
+                    <div key={tag} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                      <span className="text-indigo-400 font-medium text-xs">
                         {tag}
                       </span>
                     </div>
@@ -324,7 +324,7 @@ export default function Features() {
             </div>
           </motion.div>
 
-          {/* Feature 5 - Custom Rules - Small */}
+          {/* Feature 5 - Setup - Small */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -332,7 +332,7 @@ export default function Features() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="group"
           >
-            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-indigo-500/30 transition-all duration-500">
+            <div className="relative h-full min-h-70 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl overflow-hidden p-8 hover:border-emerald-500/30 transition-all duration-500">
               <div
                 className={`absolute inset-0 bg-linear-to-br ${features[4].bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
@@ -340,9 +340,9 @@ export default function Features() {
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
                   <div
-                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-indigo-500/20`}
+                    className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-linear-to-br ${features[4].gradient} mb-6 shadow-lg shadow-emerald-500/20`}
                   >
-                    <Target className="w-7 h-7 text-white" />
+                    <Zap className="w-7 h-7 text-white" />
                   </div>
 
                   <h3 className="text-xl font-bold text-white mb-2">
@@ -380,7 +380,7 @@ export default function Features() {
             href="#pricing"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 transition-colors group"
           >
-            View pricing
+            View Pricing
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </motion.div>

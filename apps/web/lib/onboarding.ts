@@ -61,13 +61,11 @@ export async function createUserOrganization(
   // Generate organization name from user name
   const orgName = `${userName}'s Organization`;
   const slug = await generateUniqueSlug(orgName);
-  const orgId = createId();
 
   // Create organization
   const [newOrg] = await db
     .insert(organization)
     .values({
-      id: orgId,
       name: orgName,
       slug,
       createdAt: new Date(),
@@ -77,7 +75,7 @@ export async function createUserOrganization(
   // Add user as owner member
   await db.insert(member).values({
     id: createId(),
-    organizationId: orgId,
+    organizationId: newOrg.id,
     userId: userId,
     role: "owner", // Better Auth default role for organization creator
     createdAt: new Date(),
