@@ -1,32 +1,31 @@
-import Features from "@/components/landing/features-section";
-import RoiCalculator from "@/components/landing/roi-calculator";
-import Footer from "@/components/landing/footer";
-import Hero from "@/components/landing/hero-section";
-import Navbar from "@/components/landing/navbar";
-import Pricing from "@/components/landing/pricing-section";
-import { ProblemSolutionSection } from "@/components/landing/problem-solution";
-import { SocialProof } from "@/components/landing/social-proof";
+import Hero from "@/components/landing-v2/hero";
+import BentoFeatures from "@/components/landing-v2/bento-features";
+import InfiniteTicker from "@/components/landing-v2/ticker";
+import HowItWorks from "@/components/landing-v2/how-it-works";
+import CTA from "@/components/landing-v2/cta";
+import Navbar from "@/components/landing-v2/navbar";
+import Footer from "@/components/landing-v2/footer";
 import { Metadata } from "next";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Orylo - Stop Card Testing. Understand Why.",
+  title: "Orylo - La sécurité des paiements, réinventée.",
   description:
-    "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+    "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Orylo - Stop Card Testing. Understand Why.",
+    title: "Orylo - La sécurité des paiements, réinventée.",
     description:
-      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+      "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
     url: baseUrl,
   },
   twitter: {
-    title: "Orylo - Stop Card Testing. Understand Why.",
+    title: "Orylo - La sécurité des paiements, réinventée.",
     description:
-      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+      "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
   },
 };
 
@@ -37,11 +36,10 @@ export default function Home() {
 
       <main>
         <Hero />
-        <ProblemSolutionSection />
-        <Features />
-        <RoiCalculator />
-        <Pricing />
-        <SocialProof />
+        <InfiniteTicker />
+        <BentoFeatures />
+        <HowItWorks />
+        <CTA />
       </main>
 
       <Footer />
