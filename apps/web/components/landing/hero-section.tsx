@@ -1,177 +1,221 @@
 "use client";
 
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { ArrowRight, CheckCircle, CreditCard, Eye, Zap } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import React from "react";
-// import { HeroDashboardAnimation } from "@/components/landing/hero-dashboard-animation";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
+import React, { useRef } from "react";
+import { cn } from "@/lib/utils";
 
-export default function Hero() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+export default function HeroSection() {
+  // 3D Tilt Logic
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  function handleMouseMove({
-    currentTarget,
-    clientX,
-    clientY,
-  }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-40 pb-20 bg-black"
+      className="relative min-h-[110vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-black selection:bg-indigo-500/30"
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      ref={ref}
     >
       {/* Dynamic Background */}
-      <motion.div
-        className="absolute inset-0 opacity-30 pointer-events-none"
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              1000px circle at ${mouseX}px ${mouseY}px,
-              rgba(99, 102, 241, 0.1),
-              transparent 80%
-            )
-          `,
-        }}
-      />
+      <div className="absolute inset-0 bg-grid-white/[0.02] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      <div className="absolute inset-0 bg-noise pointer-events-none opacity-20" />
 
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%) pointer-events-none" />
+      {/* Spotlight Effect behind text */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 blur-[150px] rounded-full pointer-events-none animate-pulse" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8"
-          >
-            <Badge
-              variant="outline"
-              className="p-3 rounded-full bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 transition-colors cursor-default backdrop-blur-sm"
-            >
-              <span className="relative flex h-2 w-2 mr-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              Beta coming soon
-            </Badge>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-8xl font-bold tracking-tight mb-8 text-white"
-          >
-            Stop card testing. <br />
-            <span className="bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
-              Understand why.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-zinc-400 mb-12 max-w-2xl leading-relaxed"
-          >
-            Detect and block card testing attacks with visual explanations.
-            See exactly why each transaction was flagged. Setup in 5 minutes.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-16"
-          >
-            <Button
-              size="lg"
-              className="rounded-full px-8 py-7 text-lg bg-white text-black hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-xl shadow-white/10"
-            >
-              <Link href="#pricing" className="flex items-center space-x-2">
-                Start for free
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full px-8 py-7 text-lg bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white backdrop-blur-md transition-all duration-300"
-            >
-              <Link href="#features">Explore features</Link>
-            </Button>
-          </motion.div>
-
-          {/* Feature Pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm mb-8"
-          >
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20">
-              <CreditCard className="h-4 w-4 text-rose-400" />
-              <span className="text-rose-300">Card Testing Detection</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20">
-              <Eye className="h-4 w-4 text-purple-400" />
-              <span className="text-purple-300">Visual Explanations</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-              <Zap className="h-4 w-4 text-emerald-400" />
-              <span className="text-emerald-300">Auto-Actions</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm text-zinc-500"
-          >
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-indigo-500" />
-              <span>5-minute Stripe OAuth setup</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-indigo-500" />
-              <span>Clear explanations for every block</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-indigo-500" />
-              <span>Start FREE • Scale from €99/month</span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Hero Dashboard Mockup */}
+      <div className="container relative z-10 mx-auto px-4 text-center perspective-[1000px]">
+        {/* Floating Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 40, rotateX: 20 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{
-            duration: 1,
-            delay: 0.6,
-            type: "spring",
-            stiffness: 50,
-          }}
-          className="mt-20 relative perspective-1000"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/50 border border-white/10 text-xs font-medium text-indigo-300 mb-8 backdrop-blur-md shadow-lg shadow-indigo-500/10"
         >
-          {/*<div className="relative mx-auto max-w-6xl rounded-2xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-sm shadow-2xl shadow-indigo-500/10 h-[500px]">
-            <HeroDashboardAnimation />
-          </div>*/}
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+          </span>
+          Stripe Shield Active
+        </motion.div>
 
-          {/* Glow effect behind dashboard */}
-          <div className="absolute -inset-4 bg-linear-to-r from-indigo-500 to-purple-500 opacity-20 blur-3xl -z-10 rounded-[3rem]" />
+        {/* Massive Typography */}
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter text-white mb-6 leading-[0.9] text-glow select-none"
+        >
+          FRAUD <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-200 to-zinc-600">
+            ZERO.
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-lg md:text-xl text-zinc-400 mb-10 max-w-xl mx-auto font-light"
+        >
+          The{" "}
+          <span className="text-indigo-400 font-semibold">latency-free</span>{" "}
+          protection layer for modern commerce. Stop card testing before it hits
+          your balance.
+        </motion.p>
+
+        {/* Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24"
+        >
+          <Button
+            render={<Link href="/auth/sign-up">Deploy Protection</Link>}
+            size="lg"
+            className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 h-12 text-sm font-bold uppercase tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-transform hover:scale-105"
+          />
+          <div className="text-xs text-zinc-500 font-mono flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            SYSTEM OPERATIONAL
+          </div>
+        </motion.div>
+
+        {/* 3D Tilted Interface */}
+        <motion.div
+          style={{
+            rotateX,
+            rotateY,
+            transformStyle: "preserve-3d",
+          }}
+          className="relative max-w-5xl mx-auto"
+        >
+          <div className="relative rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl overflow-hidden aspect-[16/9] md:aspect-[2.35/1] group">
+            {/* Glossy Reflection */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20" />
+
+            {/* UI Content - Abstract Radar */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {/* Grid Lines moving */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 animate-grid-flow" />
+
+              {/* Central Radar */}
+              <div className="relative w-64 h-64 z-10">
+                <div className="absolute inset-0 border border-indigo-500/30 rounded-full animate-[spin_10s_linear_infinite]" />
+                <div className="absolute inset-4 border border-indigo-500/20 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
+                <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-xl" />
+
+                {/* Scanning Beam */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-indigo-500/20 to-transparent w-[2px] h-full left-1/2 -translate-x-1/2 animate-[spin_2s_linear_infinite]" />
+
+                {/* Center Icon */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black border border-indigo-500 text-indigo-400 p-4 rounded-full shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+                  <ShieldCheck className="h-8 w-8" />
+                </div>
+              </div>
+
+              {/* Floating Data Points */}
+              <FloatingCard
+                className="absolute left-[10%] top-[20%]"
+                label="THREAT BLOCKED"
+                value="IP MISMATCH"
+                color="text-red-500"
+                delay={0}
+              />
+              <FloatingCard
+                className="absolute right-[10%] bottom-[20%]"
+                label="TRUST SCORE"
+                value="98/100"
+                color="text-green-500"
+                delay={1}
+              />
+              <FloatingCard
+                className="absolute left-[20%] bottom-[10%]"
+                label="VELOCITY"
+                value="NORMAL"
+                color="text-indigo-400"
+                delay={2}
+              />
+            </div>
+
+            {/* Bottom Bar UI */}
+            <div className="absolute bottom-0 left-0 right-0 h-10 bg-black/60 border-t border-white/10 flex items-center px-4 justify-between text-[10px] font-mono text-zinc-500 uppercase tracking-widest z-30">
+              <div className="flex gap-4">
+                <span>LATENCY: 32ms</span>
+                <span>STATUS: ACTIVE</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="w-1 h-1 bg-zinc-500 rounded-full" />
+                <span className="w-1 h-1 bg-zinc-500 rounded-full" />
+                <span className="w-1 h-1 bg-zinc-500 rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* Depth Shadow */}
+          <div className="absolute -bottom-10 left-10 right-10 h-20 bg-indigo-500/20 blur-[60px] -z-10 rounded-full" />
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function FloatingCard({
+  className,
+  label,
+  value,
+  color,
+  delay,
+}: {
+  className: string;
+  label: string;
+  value: string;
+  color: string;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5 + delay * 0.2, duration: 0.5 }}
+      className={cn(
+        "px-4 py-2 bg-black/80 border border-white/10 backdrop-blur-md rounded-sm shadow-xl",
+        "flex flex-col gap-0.5",
+        "transform hover:scale-110 transition-transform cursor-crosshair",
+        className,
+      )}
+    >
+      <span className="text-[9px] text-zinc-500 font-mono tracking-wider">
+        {label}
+      </span>
+      <span className={cn("text-xs font-bold font-mono", color)}>{value}</span>
+    </motion.div>
   );
 }

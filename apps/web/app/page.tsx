@@ -1,31 +1,30 @@
-import Hero from "@/components/landing-v2/hero";
-import BentoFeatures from "@/components/landing-v2/bento-features";
-import InfiniteTicker from "@/components/landing-v2/ticker";
-import HowItWorks from "@/components/landing-v2/how-it-works";
-import CTA from "@/components/landing-v2/cta";
-import Navbar from "@/components/landing-v2/navbar";
-import Footer from "@/components/landing-v2/footer";
+import Features from "@/components/landing/features-section";
+import RoiCalculator from "@/components/landing/roi-calculator";
+import Footer from "@/components/landing/footer";
+import Hero from "@/components/landing/hero-section";
+import Navbar from "@/components/landing/navbar";
+import Pricing from "@/components/landing/pricing-section";
 import { Metadata } from "next";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Orylo - La sécurité des paiements, réinventée.",
+  title: "Orylo - Fraud Protection for Stripe",
   description:
-    "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
+    "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Orylo - La sécurité des paiements, réinventée.",
+    title: "Orylo - Fraud Protection for Stripe",
     description:
-      "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
+      "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
     url: baseUrl,
   },
   twitter: {
-    title: "Orylo - La sécurité des paiements, réinventée.",
+    title: "Orylo - Fraud Protection for Stripe",
     description:
-      "Détectez et bloquez la fraude en temps réel avec Orylo. Intégration Stripe native, latence <350ms, et décisions assistées par IA.",
+      "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
   },
 };
 
@@ -36,10 +35,9 @@ export default function Home() {
 
       <main>
         <Hero />
-        <InfiniteTicker />
-        <BentoFeatures />
-        <HowItWorks />
-        <CTA />
+        <Features />
+        <RoiCalculator />
+        <Pricing />
       </main>
 
       <Footer />
