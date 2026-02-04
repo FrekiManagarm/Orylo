@@ -11,7 +11,12 @@ import {
   CardFooter,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const plans = [
   {
@@ -21,7 +26,7 @@ const plans = [
     description: "For early adopters testing the system.",
     features: ["1k tx/mo volume", "Auto-Blocking", "Discord Access"],
     cta: "INIT_ACCESS",
-    href: "/auth/sign-up",
+    href: "/auth/register",
     popular: false,
   },
   {
@@ -36,7 +41,7 @@ const plans = [
       "Priority Support",
     ],
     cta: "ACTIVATE_CORE",
-    href: "/auth/sign-up",
+    href: "/auth/register",
     popular: true,
   },
   {
@@ -56,10 +61,35 @@ const plans = [
   },
 ];
 
-export default function Pricing() {
+export default function PricingSection() {
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const cards = gsap.utils.toArray<HTMLElement>(".pricing-card");
+
+      gsap.fromTo(
+        cards,
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: container.current,
+            start: "top 70%",
+          },
+        }
+      );
+    },
+    { scope: container }
+  );
+
   return (
     <section id="pricing" className="py-32 bg-black relative">
-      <div className="container mx-auto px-4 relative z-10">
+      <div ref={container} className="container mx-auto px-4 relative z-10">
         <h2 className="text-4xl md:text-6xl font-bold text-white mb-20 text-center tracking-tighter">
           ACCESS <span className="text-zinc-600">TIERS</span>
         </h2>
@@ -68,11 +98,10 @@ export default function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col bg-black border-white/10 hover:border-white/20 transition-all duration-300 ${
-                plan.popular
+              className={`pricing-card relative flex flex-col bg-black border-white/10 hover:border-white/20 transition-all duration-300 opacity-0 ${plan.popular
                   ? "border-indigo-500/50 shadow-2xl shadow-indigo-900/20"
                   : ""
-              }`}
+                }`}
             >
               {plan.popular && (
                 <div className="absolute top-0 right-0 bg-indigo-600 text-[10px] font-bold px-3 py-1 text-white uppercase tracking-widest font-mono">
@@ -115,11 +144,10 @@ export default function Pricing() {
               <CardFooter>
                 <Button
                   render={<Link href={plan.href}>{plan.cta}</Link>}
-                  className={`w-full rounded-none h-12 font-mono text-sm tracking-widest ${
-                    plan.popular
+                  className={`w-full rounded-none h-12 font-mono text-sm tracking-widest ${plan.popular
                       ? "bg-white text-black hover:bg-zinc-200"
                       : "bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10"
-                  }`}
+                    }`}
                 />
               </CardFooter>
             </Card>

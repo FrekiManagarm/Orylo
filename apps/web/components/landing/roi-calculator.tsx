@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Terminal } from "lucide-react";
 

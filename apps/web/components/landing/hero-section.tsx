@@ -1,51 +1,102 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 export default function HeroSection() {
-  // 3D Tilt Logic
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  const container = useRef<HTMLDivElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const btnRef = useRef<HTMLDivElement>(null);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+      // Entrance
+      tl.fromTo(
+        badgeRef.current,
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.8 }
+      )
+        .fromTo(
+          titleRef.current,
+          { opacity: 0, scale: 0.9 },
+          { opacity: 1, scale: 1, duration: 1 },
+          "-=0.6"
+        )
+        .fromTo(
+          subtitleRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          "-=0.8"
+        )
+        .fromTo(
+          btnRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          "-=0.6"
+        )
+        .fromTo(
+          tiltRef.current,
+          { opacity: 0, rotateX: 20, z: -100 },
+          { opacity: 1, rotateX: 0, z: 0, duration: 1.2, ease: "back.out(1.2)" },
+          "-=0.8"
+        );
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
+      // Mouse Tilt Effect
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!tiltRef.current) return;
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+        const rect = container.current?.getBoundingClientRect();
+        if (!rect) return;
+
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(tiltRef.current, {
+          rotateY: x * 15,
+          rotateX: -y * 15,
+          duration: 0.5,
+          ease: "power1.out",
+          transformPerspective: 1000,
+        });
+      };
+
+      const handleMouseLeave = () => {
+        gsap.to(tiltRef.current, {
+          rotateY: 0,
+          rotateX: 0,
+          duration: 0.5,
+          ease: "power1.out",
+        });
+      };
+
+      container.current?.addEventListener("mousemove", handleMouseMove);
+      container.current?.addEventListener("mouseleave", handleMouseLeave);
+
+      return () => {
+        container.current?.removeEventListener("mousemove", handleMouseMove);
+        container.current?.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    },
+    { scope: container }
+  );
 
   return (
     <section
+      ref={container}
       className="relative min-h-[110vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-black selection:bg-indigo-500/30"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      ref={ref}
     >
       {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-grid-white/[0.02] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      <div className="absolute inset-0 bg-grid-white/[0.02] mask-image-radial-gradient-ellipse-at-center-transparent-20%-black" />
       <div className="absolute inset-0 bg-noise pointer-events-none opacity-20" />
 
       {/* Spotlight Effect behind text */}
@@ -53,52 +104,45 @@ export default function HeroSection() {
 
       <div className="container relative z-10 mx-auto px-4 text-center perspective-[1000px]">
         {/* Floating Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/50 border border-white/10 text-xs font-medium text-indigo-300 mb-8 backdrop-blur-md shadow-lg shadow-indigo-500/10"
+        <div
+          ref={badgeRef}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/50 border border-white/10 text-xs font-medium text-indigo-300 mb-8 backdrop-blur-md shadow-lg shadow-indigo-500/10 opacity-0"
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
           </span>
           Stripe Shield Active
-        </motion.div>
+        </div>
 
         {/* Massive Typography */}
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter text-white mb-6 leading-[0.9] text-glow select-none"
+        <h1
+          ref={titleRef}
+          className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter text-white mb-6 leading-[0.9] text-glow select-none opacity-0"
         >
           FRAUD <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-200 to-zinc-600">
+          <span className="text-transparent bg-clip-text bg-linear-to-b from-zinc-200 to-zinc-600">
             ZERO.
           </span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-zinc-400 mb-10 max-w-xl mx-auto font-light"
+        <p
+          ref={subtitleRef}
+          className="text-lg md:text-xl text-zinc-400 mb-10 max-w-xl mx-auto font-light opacity-0"
         >
           The{" "}
           <span className="text-indigo-400 font-semibold">latency-free</span>{" "}
           protection layer for modern commerce. Stop card testing before it hits
           your balance.
-        </motion.p>
+        </p>
 
         {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24"
+        <div
+          ref={btnRef}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24 opacity-0"
         >
           <Button
-            render={<Link href="/auth/sign-up">Deploy Protection</Link>}
+            render={<Link href="/auth/register">Deploy Protection</Link>}
             size="lg"
             className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 h-12 text-sm font-bold uppercase tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-transform hover:scale-105"
           />
@@ -106,25 +150,22 @@ export default function HeroSection() {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             SYSTEM OPERATIONAL
           </div>
-        </motion.div>
+        </div>
 
         {/* 3D Tilted Interface */}
-        <motion.div
-          style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
-          }}
-          className="relative max-w-5xl mx-auto"
+        <div
+          ref={tiltRef}
+          className="relative max-w-5xl mx-auto opacity-0"
+          style={{ transformStyle: "preserve-3d" }}
         >
-          <div className="relative rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl overflow-hidden aspect-[16/9] md:aspect-[2.35/1] group">
+          <div className="relative rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl overflow-hidden aspect-video md:aspect-[2.35/1] group">
             {/* Glossy Reflection */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20" />
+            <div className="absolute inset-0 bg-linear-to-tr from-white/5 to-transparent pointer-events-none z-20" />
 
             {/* UI Content - Abstract Radar */}
             <div className="absolute inset-0 flex items-center justify-center">
               {/* Grid Lines moving */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 animate-grid-flow" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[40px_40px] opacity-20 animate-grid-flow" />
 
               {/* Central Radar */}
               <div className="relative w-64 h-64 z-10">
@@ -133,7 +174,7 @@ export default function HeroSection() {
                 <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-xl" />
 
                 {/* Scanning Beam */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-indigo-500/20 to-transparent w-[2px] h-full left-1/2 -translate-x-1/2 animate-[spin_2s_linear_infinite]" />
+                <div className="absolute inset-0 rounded-full bg-linear-to-t from-transparent via-indigo-500/20 to-transparent w-[2px] h-full left-1/2 -translate-x-1/2 animate-[spin_2s_linear_infinite]" />
 
                 {/* Center Icon */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black border border-indigo-500 text-indigo-400 p-4 rounded-full shadow-[0_0_30px_rgba(99,102,241,0.4)]">
@@ -181,7 +222,7 @@ export default function HeroSection() {
 
           {/* Depth Shadow */}
           <div className="absolute -bottom-10 left-10 right-10 h-20 bg-indigo-500/20 blur-[60px] -z-10 rounded-full" />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -200,14 +241,22 @@ function FloatingCard({
   color: string;
   delay: number;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.fromTo(
+      cardRef.current,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, delay: 1.5 + delay * 0.2, duration: 0.5 }
+    )
+  }, { scope: cardRef });
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 + delay * 0.2, duration: 0.5 }}
+    <div
+      ref={cardRef}
       className={cn(
         "px-4 py-2 bg-black/80 border border-white/10 backdrop-blur-md rounded-sm shadow-xl",
-        "flex flex-col gap-0.5",
+        "flex flex-col gap-0.5 opacity-0",
         "transform hover:scale-110 transition-transform cursor-crosshair",
         className,
       )}
@@ -216,6 +265,6 @@ function FloatingCard({
         {label}
       </span>
       <span className={cn("text-xs font-bold font-mono", color)}>{value}</span>
-    </motion.div>
+    </div>
   );
 }

@@ -1,19 +1,18 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   ShieldAlert,
   Zap,
   Brain,
   Lock,
-  Activity,
-  BarChart3,
-  Fingerprint,
-  ScanEye,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = [
   {
@@ -32,12 +31,7 @@ const features = [
             <span>[BLOCKING]</span>
           </div>
           <div className="h-1 w-full bg-red-900/30 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: "0%" }}
-              whileInView={{ width: "100%" }}
-              transition={{ duration: 1.5, ease: "circOut" }}
-              className="h-full bg-red-500"
-            />
+            <div className="h-full bg-red-500 animate-[width-fill_1.5s_ease-out_forwards]" style={{ width: '100%' }} />
           </div>
           <div className="text-zinc-600">
             ID: tx_8923...9902 blocked successfully.
@@ -98,7 +92,7 @@ const features = [
     className: "md:col-span-2",
     visual: (
       <div className="mt-6 flex items-center justify-center gap-12 relative">
-        <div className="absolute h-px w-32 bg-gradient-to-r from-transparent via-indigo-500 to-transparent top-1/2 -translate-y-1/2 animate-pulse" />
+        <div className="absolute h-px w-32 bg-linear-to-r from-transparent via-indigo-500 to-transparent top-1/2 -translate-y-1/2 animate-pulse" />
 
         <div className="h-14 w-14 bg-zinc-900 border border-white/10 rounded flex items-center justify-center relative z-10 group">
           <span className="text-indigo-400 font-bold text-xl group-hover:scale-110 transition-transform">
@@ -116,10 +110,35 @@ const features = [
   },
 ];
 
-export default function Features() {
+export default function FeaturesSection() {
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const cards = gsap.utils.toArray<HTMLElement>(".feature-card");
+
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: container.current,
+            start: "top 80%",
+          },
+        }
+      );
+    },
+    { scope: container }
+  );
+
   return (
     <section id="features" className="py-32 bg-black relative overflow-hidden">
-      <div className="container mx-auto px-4 relative z-10">
+      <div ref={container} className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-white/10 pb-8">
           <div>
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tighter">
@@ -142,13 +161,9 @@ export default function Features() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto">
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className={`${feature.className} group`}
+              className={`${feature.className} feature-card group opacity-0`}
             >
               <Card className="h-full bg-black/40 border-white/10 hover:border-indigo-500/50 transition-all duration-500 overflow-hidden backdrop-blur-sm relative">
                 {/* Corner Markers */}
@@ -178,7 +193,7 @@ export default function Features() {
                 </CardHeader>
                 <CardContent className="pt-0">{feature.visual}</CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
