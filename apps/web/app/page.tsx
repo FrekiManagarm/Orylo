@@ -4,29 +4,27 @@ import Footer from "@/components/landing/footer";
 import Hero from "@/components/landing/hero-section";
 import Navbar from "@/components/landing/navbar";
 import Pricing from "@/components/landing/pricing-section";
-import { ProblemSolutionSection } from "@/components/landing/problem-solution";
-import { SocialProof } from "@/components/landing/social-proof";
 import { Metadata } from "next";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
 
 export const metadata: Metadata = {
-  title: "Orylo - Stop Card Testing. Understand Why.",
+  title: "Orylo - Fraud Protection for Stripe",
   description:
-    "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+    "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Orylo - Stop Card Testing. Understand Why.",
+    title: "Orylo - Fraud Protection for Stripe",
     description:
-      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+      "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
     url: baseUrl,
   },
   twitter: {
-    title: "Orylo - Stop Card Testing. Understand Why.",
+    title: "Orylo - Fraud Protection for Stripe",
     description:
-      "Detect and block card testing attacks with visual explanations. See exactly why each transaction was flagged. Setup in 5 minutes. From €99/month.",
+      "Stop card testing and chargebacks automatically. Native Stripe integration, real-time detection, and AI explanations.",
   },
 };
 
@@ -37,11 +35,9 @@ export default function Home() {
 
       <main>
         <Hero />
-        <ProblemSolutionSection />
         <Features />
         <RoiCalculator />
         <Pricing />
-        <SocialProof />
       </main>
 
       <Footer />
