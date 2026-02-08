@@ -99,8 +99,8 @@ export default function PricingSection() {
             <Card
               key={plan.name}
               className={`pricing-card relative flex flex-col bg-black border-white/10 hover:border-white/20 transition-all duration-300 opacity-0 ${plan.popular
-                  ? "border-indigo-500/50 shadow-2xl shadow-indigo-900/20"
-                  : ""
+                ? "border-indigo-500/50 shadow-2xl shadow-indigo-900/20"
+                : ""
                 }`}
             >
               {plan.popular && (
@@ -145,8 +145,8 @@ export default function PricingSection() {
                 <Button
                   render={<Link href={plan.href}>{plan.cta}</Link>}
                   className={`w-full rounded-none h-12 font-mono text-sm tracking-widest ${plan.popular
-                      ? "bg-white text-black hover:bg-zinc-200"
-                      : "bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10"
+                    ? "bg-white text-black hover:bg-zinc-200"
+                    : "bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10"
                     }`}
                 />
               </CardFooter>

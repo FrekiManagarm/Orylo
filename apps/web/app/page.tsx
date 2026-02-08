@@ -1,6 +1,10 @@
 import HeroSection from "@/components/landing/hero-section";
+import HowItWorks from "@/components/landing/how-it-works";
 import FeaturesSection from "@/components/landing/features-section";
+import AIExplainerSection from "@/components/landing/ai-explainer-section";
+import ComparisonSection from "@/components/landing/comparison-section";
 import PricingSection from "@/components/landing/pricing-section";
+import RoiCalculator from "@/components/landing/roi-calculator";
 import FAQSection from "@/components/landing/faq-section";
 import CTASection from "@/components/landing/cta-section";
 import Navbar from "@/components/landing/navbar";
@@ -36,7 +40,11 @@ export default function Home() {
 
       <main>
         <HeroSection />
+        <HowItWorks />
         <FeaturesSection />
+        <AIExplainerSection />
+        <ComparisonSection />
+        <RoiCalculator />
         <PricingSection />
         <FAQSection />
         <CTASection />

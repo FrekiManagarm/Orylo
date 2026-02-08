@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Orylo - Protect Your Stripe Account from Fraud | AI-Powered Detection",
-  description: "Orylo détecte et bloque les fraudes que Stripe Radar manque. IA collective, 95%+ détection, règles custom. Start free trial.",
+  description: "Orylo detects and blocks fraud that Stripe Radar misses. Collective AI, 95%+ detection, custom rules. Start free trial.",
   openGraph: {
     title: "Orylo - Protect Your Stripe Account from Fraud",
     description: "AI-powered fraud detection for Stripe merchants",

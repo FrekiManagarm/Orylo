@@ -47,6 +47,14 @@ export default function Footer() {
                   [03] Access
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="#comparison"
+                  className="hover:text-indigo-400 transition-colors"
+                >
+                  [04] Radar vs Orylo
+                </Link>
+              </li>
             </ul>
           </div>
 
