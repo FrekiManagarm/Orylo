@@ -62,38 +62,50 @@ export function DashboardHeader() {
   }, [breadcrumb, pathname]);
 
   return (
-    <div className="flex flex-row justify-between items-center h-16 px-4 py-4">
-      <div className="flex items-center gap-2">
+    <header className="flex flex-row justify-between items-center h-18 px-4 md:px-6 sticky top-0 z-10">
+      <div className="flex items-center gap-3">
         <Button
           variant="outline"
-          className="h-10 w-10 rounded-xl bg-card border-border transition-all duration-300 hover:shadow-md p-0 m-0"
+          size="icon"
+          className="h-9 w-9 rounded-lg border border-white/10 bg-zinc-900/50 text-zinc-400 hover:text-white hover:bg-white/5 hover:border-indigo-500/50 transition-all p-0"
           onClick={toggleSidebar}
         >
           <PanelLeft className="h-4 w-4" />
         </Button>
-        <Separator orientation="vertical" className="mx-2 h-4 bg-border" />
+        <Separator orientation="vertical" className="h-8 bg-white/10" />
         <Breadcrumb>
-          <BreadcrumbList>
+          <BreadcrumbList className="gap-2">
             {trail.map((crumb, index) => {
               const isLast = index === trail.length - 1;
               return (
                 <Fragment key={crumb.href}>
                   <BreadcrumbItem>
                     {isLast ? (
-                      <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
+                      <BreadcrumbPage className="text-white font-medium font-mono text-sm">
+                        {crumb.title}
+                      </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink>
-                        <Link href={crumb.href}>{crumb.title}</Link>
-                      </BreadcrumbLink>
+                      <BreadcrumbLink
+                        render={
+                          <Link
+                            href={crumb.href}
+                            className="text-zinc-400 hover:text-white font-mono text-sm transition-colors"
+                          >
+                            {crumb.title}
+                          </Link>
+                        }
+                      />
                     )}
                   </BreadcrumbItem>
-                  {!isLast ? <BreadcrumbSeparator /> : null}
+                  {!isLast ? (
+                    <BreadcrumbSeparator className="text-zinc-600" />
+                  ) : null}
                 </Fragment>
               );
             })}
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-    </div>
+    </header>
   );
 }

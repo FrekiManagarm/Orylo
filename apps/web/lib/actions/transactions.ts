@@ -211,11 +211,44 @@ export async function getFraudAnalysisById(id: string) {
   }
 }
 
+/** Single item in card testing trackers array (one attempt) */
+export type CardTestingTrackerItem = {
+  cardTesting: {
+    result: string;
+    fingerprint: string;
+    ipAddress?: string | null;
+    createdAt: string;
+  };
+};
+
 export type CardTestingData = {
-  trackers: any[];
+  trackers: CardTestingTrackerItem[];
   totalSuspicionScore: number;
   totalAttempts: number;
   hasCardTesting: boolean;
+};
+
+/** Fraud detection row with optional card testing and UI/computed fields */
+export type FraudDetectionWithCardTesting = FraudDetectionRow & {
+  cardTestingTracker?: CardTestingData | null;
+  /** Alias / override for score (UI) */
+  riskScore?: number;
+  compositeScore?: number | null;
+  compositeRiskLevel?: string | null;
+  cardTestingSuspicionScore?: number | null;
+  confidence?: string;
+  aiExplanation?: string | null;
+  detectionContext?: Record<string, unknown> | null;
+  signals?: Record<string, unknown>;
+  agentsUsed?: string[];
+  blocked?: boolean;
+  actualOutcome?: string | null;
+  factors?: Array<{
+    type: string;
+    weight: number;
+    description: string;
+    severity: "low" | "medium" | "high";
+  }>;
 };
 
 export async function getCardTestingDataByPaymentIntent(
@@ -250,6 +283,59 @@ export async function getCardTestingDataByPaymentIntent(
       totalAttempts: 0,
       hasCardTesting: false,
     };
+  }
+}
+
+export async function getCardTestingStats(): Promise<{
+  last24hBlocked: number;
+  totalSuspicious: number;
+  totalBlocked: number;
+}> {
+  try {
+    const org = await auth.api.getFullOrganization({
+      headers: await headers(),
+    });
+    if (!org?.id) {
+      return { last24hBlocked: 0, totalSuspicious: 0, totalBlocked: 0 };
+    }
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const [blocked24h, blockedAll, reviewAll] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(fraudDetections)
+        .where(
+          and(
+            eq(fraudDetections.organizationId, org.id),
+            eq(fraudDetections.decision, "BLOCK"),
+            gte(fraudDetections.createdAt, since24h)
+          )
+        ),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(fraudDetections)
+        .where(
+          and(
+            eq(fraudDetections.organizationId, org.id),
+            eq(fraudDetections.decision, "BLOCK")
+          )
+        ),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(fraudDetections)
+        .where(
+          and(
+            eq(fraudDetections.organizationId, org.id),
+            eq(fraudDetections.decision, "REVIEW")
+          )
+        ),
+    ]);
+    return {
+      last24hBlocked: blocked24h[0]?.count ?? 0,
+      totalSuspicious: reviewAll[0]?.count ?? 0,
+      totalBlocked: blockedAll[0]?.count ?? 0,
+    };
+  } catch {
+    return { last24hBlocked: 0, totalSuspicious: 0, totalBlocked: 0 };
   }
 }
 

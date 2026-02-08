@@ -63,21 +63,21 @@ export const StatsGrid = async ({
   ];
 
   return (
-    <div className="relative z-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {statsConfig.map((stat, index) => (
         <Card
           key={index}
-          className="bg-zinc-900/50 border border-white/5 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 group"
+          className="border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl hover:border-indigo-500/50 transition-all duration-300 group"
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300 transition-colors">
+            <CardTitle className="text-xs font-mono uppercase tracking-widest text-zinc-500 group-hover:text-zinc-400 transition-colors">
               {stat.title}
             </CardTitle>
             <stat.icon className="h-4 w-4 text-zinc-500 group-hover:text-indigo-400 transition-colors" />
           </CardHeader>
           <CardContent>
             <div
-              className={`text-2xl font-bold ${stat.textColor || "text-white"}`}
+              className={`text-2xl font-bold font-mono ${stat.textColor ?? "text-white"}`}
             >
               {stat.value}
             </div>

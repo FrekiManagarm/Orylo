@@ -170,14 +170,14 @@
   --input: oklch(1 0 0 / 0.2);
   --ring: oklch(0.59 0.23 277);
 
-  /* Sidebar: Darker than content to separate */
-  --sidebar: oklch(0.02 0 0); /* Almost Pure Black */
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.59 0.23 277);
+  /* Sidebar: design system — zinc-900/50, border white/10, indigo accent */
+  --sidebar: oklch(0.141 0.005 285.8); /* Zinc 900 */
+  --sidebar-foreground: oklch(0.708 0 0); /* Zinc 400 */
+  --sidebar-primary: oklch(0.59 0.23 277); /* Indigo 500 */
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.141 0.005 285.8); /* Zinc 900 */
+  --sidebar-accent: oklch(1 0 0 / 0.05); /* white/5 hover */
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 0.15);
+  --sidebar-border: oklch(1 0 0 / 0.1); /* border-white/10 */
   --sidebar-ring: oklch(0.59 0.23 277);
 }
 

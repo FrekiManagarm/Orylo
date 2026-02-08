@@ -2,7 +2,7 @@ import { ShieldAlert, Lock, AlertTriangle, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getCardTestingDataByPaymentIntent } from "@/lib/actions/transactions";
+import { getCardTestingStats } from "@/lib/actions/transactions";
 import { cn } from "@/lib/utils";
 
 export const CardTestingWidget = async () => {
@@ -17,9 +17,9 @@ export const CardTestingWidget = async () => {
   const hasActivity = stats.totalBlocked > 0 || stats.totalSuspicious > 0;
 
   return (
-    <Card className="bg-zinc-900/50 border border-white/5 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 group">
+    <Card className="border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl hover:border-indigo-500/50 transition-all duration-300 group">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300 transition-colors flex items-center gap-2">
+        <CardTitle className="text-xs font-mono uppercase tracking-widest text-zinc-500 group-hover:text-zinc-400 transition-colors flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-indigo-400" />
           Card Testing Protection
         </CardTitle>
@@ -27,7 +27,7 @@ export const CardTestingWidget = async () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-zinc-500 hover:text-white"
+            className="text-xs text-zinc-500 hover:text-white hover:bg-white/10 border border-white/5 rounded-full px-3 py-1.5"
           >
             View all
             <ArrowRight className="ml-1 h-3 w-3" />
@@ -76,7 +76,7 @@ export const CardTestingWidget = async () => {
 
         {/* Status Indicator */}
         <div className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm",
+          "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm",
           hasActivity
             ? "bg-orange-500/5 border-orange-500/20 text-orange-400"
             : "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"

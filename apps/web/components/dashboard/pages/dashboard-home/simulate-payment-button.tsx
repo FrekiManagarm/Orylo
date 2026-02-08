@@ -98,18 +98,18 @@ export function SimulatePaymentButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger render={<Button
         variant="outline"
-        className="w-full h-24 flex flex-col items-center justify-center gap-2 bg-zinc-900/50 border-white/5 hover:bg-white/5 hover:border-indigo-500/30 hover:text-indigo-400 transition-all group"
+        className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-white/10 bg-zinc-900/50 hover:bg-white/5 hover:border-indigo-500/50 hover:text-indigo-400 transition-all group"
       >
         <Zap className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-        <span className="text-xs font-medium">Test Payment</span>
+        <span className="text-xs font-mono uppercase tracking-wider">Test Payment</span>
       </Button>}
       />
-      <DialogContent className="bg-zinc-900 border-white/10">
+      <DialogContent className="border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-white font-semibold">
             Simuler une Checkout Session
           </DialogTitle>
-          <DialogDescription className="text-zinc-400">
+          <DialogDescription className="text-zinc-400 font-light">
             Créez une session de paiement Stripe pour tester votre système de
             détection de fraude.
           </DialogDescription>
@@ -132,14 +132,14 @@ export function SimulatePaymentButton() {
                 </span>
               </div>
             ) : error ? (
-              <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
-                <p className="text-sm text-red-400">
+              <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3">
+                <p className="text-sm text-rose-400">
                   Erreur lors du chargement des comptes Stripe
                 </p>
               </div>
             ) : connections.length === 0 ? (
-              <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3">
-                <p className="text-sm text-amber-400">
+              <div className="rounded-xl bg-orange-500/10 border border-orange-500/20 p-3">
+                <p className="text-sm text-orange-400">
                   Aucun compte Stripe connecté. Connectez d&apos;abord votre
                   compte dans les paramètres.
                 </p>
@@ -149,7 +149,7 @@ export function SimulatePaymentButton() {
                 value={selectedAccountId}
                 onValueChange={(value: string | null) => setSelectedAccountId(value ?? "")}
               >
-                <SelectTrigger className="bg-zinc-800 border-white/10 text-white">
+                <SelectTrigger className="bg-zinc-900/50 border border-white/10 text-white focus-visible:ring-indigo-500">
                   <SelectValue>
                     {selectedConnection && (
                       <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export function SimulatePaymentButton() {
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-white/10">
+                <SelectContent className="bg-zinc-900/95 border border-white/10 backdrop-blur-xl">
                   {connections
                     .filter((c) => c.isActive)
                     .map((connection) => (
@@ -202,12 +202,12 @@ export function SimulatePaymentButton() {
                 setRiskLevel(value ?? "medium")
               }
             >
-              <SelectTrigger className="bg-zinc-800 border-white/10 text-white">
+              <SelectTrigger className="bg-zinc-900/50 border border-white/10 text-white focus-visible:ring-indigo-500">
                 <SelectValue>
                   {riskLevel}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-white/10">
+              <SelectContent className="bg-zinc-900/95 border border-white/10 backdrop-blur-xl">
                 <SelectItem value="low" className="text-white">
                   🟢 Faible risque - Client de confiance
                 </SelectItem>
@@ -221,7 +221,7 @@ export function SimulatePaymentButton() {
             </Select>
           </div>
 
-          <div className="rounded-lg bg-zinc-800/50 border border-white/5 p-4 space-y-2">
+          <div className="rounded-xl bg-zinc-900/30 border border-white/10 p-4 space-y-2">
             <h4 className="text-sm font-medium text-zinc-300">
               À propos de cette simulation
             </h4>
@@ -249,14 +249,14 @@ export function SimulatePaymentButton() {
             variant="outline"
             onClick={() => setIsOpen(false)}
             disabled={isLoading}
-            className="bg-zinc-800 border-white/10 hover:bg-zinc-700"
+            className="border border-white/10 bg-zinc-900/30 text-zinc-300 hover:bg-white/5 hover:text-white"
           >
             Annuler
           </Button>
           <Button
             onClick={() => { }}
             disabled={isLoading || connections.length === 0 || !selectedAccountId}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="bg-white text-black hover:bg-zinc-200"
           >
             {isLoading ? (
               <>

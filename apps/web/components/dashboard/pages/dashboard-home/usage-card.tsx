@@ -32,14 +32,14 @@ export async function UsageCard() {
   );
 
   return (
-    <Card className="border-white/5 backdrop-blur-xl relative overflow-hidden bg-linear-to-br from-indigo-500/10 via-zinc-900/50 to-zinc-900/50">
-      <div className="absolute top-0 right-0 p-4 opacity-10">
+    <Card className="border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
         <Activity className="w-24 h-24 text-indigo-500" />
       </div>
 
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-white">Utilisation</CardTitle>
+          <CardTitle className="text-white font-semibold">Utilisation</CardTitle>
           <Badge
             variant="secondary"
             className={`${isOverLimit
@@ -101,13 +101,13 @@ export async function UsageCard() {
         </div>
 
         {isNearLimit && (
-          <Button className="w-full bg-white text-black hover:bg-zinc-200 transition-colors font-medium">
+          <Button className="w-full bg-white text-black hover:bg-zinc-200 transition-colors font-medium rounded-none">
             Mettre à niveau
           </Button>
         )}
 
         {!allowed && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
+          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl">
             <p className="text-xs text-rose-400 font-medium">
               🚫 Les nouvelles transactions sont actuellement bloquées car vous
               avez dépassé votre limite.

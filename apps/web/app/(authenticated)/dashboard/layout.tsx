@@ -46,15 +46,20 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <SidebarProvider defaultOpen={sidebarOpen}>
+    <SidebarProvider defaultOpen={sidebarOpen} className="dark bg-black">
       <div className="flex w-screen h-screen">
         <DashboardSidebar
           session={session}
           organizations={organizations as Organization[]}
         />
-        <SidebarInset>
+        <SidebarInset className="relative overflow-hidden">
+          {/* Halo en haut à droite — visible sur toutes les pages du dashboard */}
+          <div className="absolute top-0 right-0 w-md h-112 bg-indigo-600/20 blur-[150px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/15 blur-[120px] rounded-full pointer-events-none -translate-y-1/3 translate-x-1/3" />
           <DashboardHeader />
-          <div className="w-full overflow-y-auto mb-4">{children}</div>
+          <div className="relative w-full overflow-y-auto mb-4 p-4">
+            {children}
+          </div>
         </SidebarInset>
       </div>
       <Toaster />

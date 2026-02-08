@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, webhookSecret } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { organizations, webhookEvents } from "@orylo/database";
+import { organization, webhookEvents } from "@orylo/database";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { processWebhookWithRetry } from "@/lib/webhook-processor";
@@ -94,9 +94,9 @@ export async function POST(request: NextRequest) {
     if (stripeAccountId) {
       // Query organization by Stripe account ID
       const orgs = await db
-        .select({ id: organizations.id })
-        .from(organizations)
-        .where(eq(organizations.stripeAccountId, stripeAccountId))
+        .select({ id: organization.id })
+        .from(organization)
+        .where(eq(organization.stripeAccountId, stripeAccountId))
         .limit(1);
 
       organizationId = orgs[0]?.id || null;

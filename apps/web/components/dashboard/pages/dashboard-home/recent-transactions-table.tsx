@@ -105,11 +105,11 @@ const RecentTransactionsTable = async ({
   };
 
   return (
-    <Card className="bg-zinc-900/50 border-white/5 backdrop-blur-xl overflow-hidden p-0 gap-0">
-      <CardHeader className="flex flex-row items-center justify-between border-white/5 bg-white/2 p-5">
+    <Card className="w-full border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl overflow-hidden p-0 gap-0">
+      <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 bg-white/2 p-5">
         <div className="space-y-1">
-          <CardTitle className="text-white">Recent Transactions</CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardTitle className="text-white font-semibold">Recent Transactions</CardTitle>
+          <CardDescription className="text-zinc-400 font-light">
             Live feed of processed payments and risk scores
           </CardDescription>
         </div>
@@ -117,7 +117,7 @@ const RecentTransactionsTable = async ({
           <Button
             variant="ghost"
             size="sm"
-            className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 gap-2"
+            className="text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5 rounded-full px-3 py-1.5 gap-2 font-mono text-xs uppercase tracking-wider"
           >
             View Full Report <ArrowUpRight className="h-4 w-4" />
           </Button>
@@ -125,27 +125,27 @@ const RecentTransactionsTable = async ({
       </CardHeader>
       <CardContent className="p-0 border-t border-white/5">
         <Table>
-          <TableHeader className="bg-white/2">
-            <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="text-zinc-500 font-medium pl-6">
+          <TableHeader>
+            <TableRow className="border-white/5 hover:bg-transparent bg-white/2">
+              <TableHead className="text-zinc-500 font-mono text-xs uppercase tracking-widest pl-6">
                 Transaction ID
               </TableHead>
-              <TableHead className="text-zinc-500 font-medium">
+              <TableHead className="text-zinc-500 font-mono text-xs uppercase tracking-widest">
                 Amount
               </TableHead>
-              <TableHead className="text-zinc-500 font-medium">
+              <TableHead className="text-zinc-500 font-mono text-xs uppercase tracking-widest">
                 Score Total
               </TableHead>
-              <TableHead className="text-zinc-500 font-medium">
+              <TableHead className="text-zinc-500 font-mono text-xs uppercase tracking-widest">
                 Action
               </TableHead>
-              <TableHead className="text-zinc-500 font-medium">
+              <TableHead className="text-zinc-500 font-mono text-xs uppercase tracking-widest">
                 Reasoning
               </TableHead>
-              <TableHead className="text-right text-zinc-500 font-medium">
+              <TableHead className="text-right text-zinc-500 font-mono text-xs uppercase tracking-widest">
                 Date
               </TableHead>
-              <TableHead className="text-right text-zinc-500 font-medium pr-6">
+              <TableHead className="text-right text-zinc-500 font-mono text-xs uppercase tracking-widest pr-6">
                 Actions
               </TableHead>
             </TableRow>
@@ -201,15 +201,15 @@ const RecentTransactionsTable = async ({
                     title={
                       Array.isArray(analysis.detectorResults)
                         ? (analysis.detectorResults as DetectorResultRow[])
-                            .map((r: DetectorResultRow) => r.detectorId)
-                            .join(", ")
+                          .map((r: DetectorResultRow) => r.detectorId)
+                          .join(", ")
                         : ""
                     }
                   >
                     {Array.isArray(analysis.detectorResults)
                       ? (analysis.detectorResults as DetectorResultRow[])
-                          .map((r: DetectorResultRow) => r.detectorId)
-                          .join(", ") || "—"
+                        .map((r: DetectorResultRow) => r.detectorId)
+                        .join(", ") || "—"
                       : "—"}
                   </TableCell>
                   <TableCell className="text-right text-zinc-500 text-sm">
@@ -222,7 +222,7 @@ const RecentTransactionsTable = async ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all"
+                        className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-all"
                       >
                         <ExternalLink className="h-4 w-4" />
                         <span className="sr-only">View details</span>

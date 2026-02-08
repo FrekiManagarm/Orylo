@@ -42,11 +42,11 @@ const chartConfig = {
 
 export function TransactionActivityChart() {
   return (
-    <Card className="col-span-12 md:col-span-8 bg-zinc-900/50 border-white/5 backdrop-blur-xl shadow-2xl overflow-hidden">
+    <Card className="col-span-12 md:col-span-8 border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="space-y-1">
-          <CardTitle className="text-white">Transaction Activity</CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardTitle className="text-white font-semibold">Transaction Activity</CardTitle>
+          <CardDescription className="text-zinc-400 font-light">
             Analysis of traffic and threat detection
           </CardDescription>
         </div>
@@ -120,7 +120,7 @@ export function TransactionActivityChart() {
               cursor={{ stroke: "rgba(255,255,255,0.1)", strokeWidth: 1 }}
               content={
                 <ChartTooltipContent
-                  className="bg-zinc-900 border-white/10 text-white shadow-xl"
+                  className="bg-zinc-900/95 border border-white/10 text-white shadow-xl backdrop-blur-md"
                   indicator="dot"
                 />
               }

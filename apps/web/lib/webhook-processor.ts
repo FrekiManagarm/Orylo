@@ -3,7 +3,11 @@ import { webhookEvents, deadLetterQueue } from "@orylo/database";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import type { DetectionContext } from "@orylo/fraud-engine";
-import { createOrganizationId, createPaymentIntentId } from "@orylo/fraud-engine";
+import {
+  createOrganizationId,
+  createPaymentIntentId,
+  createCustomerId,
+} from "@orylo/fraud-engine";
 import { detectFraud } from "@/lib/fraud/detect-fraud";
 import { applyChargebackPenalty } from "@/lib/trust-score-updater";
 import { stripe } from "@/lib/stripe";
@@ -51,16 +55,26 @@ function buildDetectionContext(
 ): DetectionContext {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
+  const customerId =
+    paymentIntent.customer == null
+      ? null
+      : createCustomerId(
+        typeof paymentIntent.customer === "string"
+          ? paymentIntent.customer
+          : paymentIntent.customer.id
+      );
+
   return {
     organizationId: createOrganizationId(organizationId),
     paymentIntentId: createPaymentIntentId(paymentIntent.id),
+    customerId,
     amount: paymentIntent.amount,
     currency: paymentIntent.currency,
     customerEmail: null, // TODO: Get from Stripe customer lookup
     customerIp: paymentIntent.metadata?.customer_ip || null,
     cardCountry: null, // TODO: Get from payment method
     cardLast4: null, // TODO: Get from payment method
-    metadata: paymentIntent.metadata || {},
+    metadata: (paymentIntent.metadata || {}) as Record<string, unknown>,
     timestamp: new Date(),
   };
 }
@@ -156,33 +170,49 @@ async function handleChargeDispute(
   organizationId: string
 ): Promise<void> {
   const dispute = event.data.object as Stripe.Dispute;
-  const customerId = dispute.customer as string;
-  const chargeId = dispute.charge as string;
+  const chargeId =
+    typeof dispute.charge === "string" ? dispute.charge : dispute.charge.id;
 
-  if (!customerId) {
-    console.error(`[Chargeback] No customerId found in dispute ${dispute.id}`);
+  let charge: Stripe.Charge;
+  try {
+    charge = await stripe.charges.retrieve(chargeId);
+  } catch (error) {
+    logger.error(`[Chargeback] Failed to retrieve charge`, {
+      chargeId,
+      disputeId: dispute.id,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
     return;
   }
 
-  // Get organizationId from charge metadata (if not already provided)
+  const customerId =
+    charge.customer == null
+      ? null
+      : typeof charge.customer === "string"
+        ? charge.customer
+        : charge.customer.id;
+
+  if (!customerId) {
+    logger.error(`[Chargeback] No customerId on charge`, {
+      chargeId,
+      disputeId: dispute.id,
+    });
+    return;
+  }
+
   let finalOrgId = organizationId;
-  if (!finalOrgId && chargeId) {
-    try {
-      const charge = await stripe.charges.retrieve(chargeId);
-      if (charge.metadata?.organizationId) {
-        finalOrgId = charge.metadata.organizationId;
-      }
-    } catch (error) {
-      console.error(`[Chargeback] Failed to retrieve charge ${chargeId}:`, error);
-    }
+  if (charge.metadata?.organizationId) {
+    finalOrgId = charge.metadata.organizationId;
   }
 
   if (!finalOrgId) {
-    console.error(`[Chargeback] No organizationId found for charge ${chargeId}`);
+    logger.error(`[Chargeback] No organizationId for charge`, {
+      chargeId,
+      disputeId: dispute.id,
+    });
     return;
   }
 
-  // Apply penalty
   await applyChargebackPenalty(customerId, finalOrgId);
 }
 
