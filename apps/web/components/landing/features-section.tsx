@@ -165,33 +165,36 @@ export default function FeaturesSection() {
               key={index}
               className={`${feature.className} feature-card group opacity-0`}
             >
-              <Card className="h-full bg-black/40 border-white/10 hover:border-indigo-500/50 transition-all duration-500 overflow-hidden backdrop-blur-sm relative">
+              <Card className="h-full bg-black/40 border-white/10 hover:border-indigo-500/50 transition-all duration-500 overflow-hidden backdrop-blur-sm relative hover:shadow-[0_0_30px_rgba(99,102,241,0.1)]">
                 {/* Corner Markers */}
-                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
-                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
-                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
-                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-indigo-500 transition-colors duration-300" />
+                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-indigo-500 transition-colors duration-300" />
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-indigo-500 transition-colors duration-300" />
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-indigo-500 transition-colors duration-300" />
 
-                <CardHeader>
+                {/* Hover Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                <CardHeader className="relative z-10">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="h-8 w-8 rounded bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-indigo-500 transition-all">
-                      <feature.icon className="h-4 w-4" />
+                    <div className="h-10 w-10 rounded-sm bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-indigo-500 group-hover:bg-indigo-500/10 transition-all duration-300">
+                      <feature.icon className="h-5 w-5" />
                     </div>
                     <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest group-hover:text-indigo-400 transition-colors">
                       MOD_0{index + 1}
                     </span>
                   </div>
-                  <CardTitle className="text-lg text-white font-mono tracking-wide">
+                  <CardTitle className="text-xl text-white font-mono tracking-wide group-hover:text-indigo-100 transition-colors">
                     {feature.title}
                   </CardTitle>
-                  <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2">
+                  <div className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">
                     {feature.subtitle}
                   </div>
-                  <p className="text-zinc-500 text-sm leading-relaxed">
+                  <p className="text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-400 transition-colors">
                     {feature.description}
                   </p>
                 </CardHeader>
-                <CardContent className="pt-0">{feature.visual}</CardContent>
+                <CardContent className="pt-0 relative z-10">{feature.visual}</CardContent>
               </Card>
             </div>
           ))}

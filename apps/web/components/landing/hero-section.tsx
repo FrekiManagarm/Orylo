@@ -112,28 +112,27 @@ export default function HeroSection() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
           </span>
-          Stripe Shield Active
+          <span className="font-mono tracking-wider">SYSTEM_STATUS: NOMINAL</span>
         </div>
 
         {/* Massive Typography */}
         <h1
           ref={titleRef}
-          className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter text-white mb-6 leading-[0.9] text-glow select-none opacity-0"
+          className="text-7xl md:text-9xl lg:text-[10rem] font-extrabold tracking-tighter text-white mb-8 leading-[0.85] text-glow select-none opacity-0"
         >
           FRAUD <br />
-          <span className="text-transparent bg-clip-text bg-linear-to-b from-zinc-200 to-zinc-600">
-            ZERO.
+          <span className="text-transparent bg-clip-text bg-linear-to-b from-white via-zinc-200 to-zinc-600 relative">
+            ZERO
           </span>
         </h1>
 
         <p
           ref={subtitleRef}
-          className="text-lg md:text-xl text-zinc-400 mb-10 max-w-xl mx-auto font-light opacity-0"
+          className="text-lg md:text-xl text-zinc-400 mb-12 max-w-xl mx-auto font-light opacity-0 leading-relaxed"
         >
-          The{" "}
-          <span className="text-indigo-400 font-semibold">latency-free</span>{" "}
-          protection layer for modern commerce. Stop card testing before it hits
-          your balance.
+          The <span className="text-indigo-400 font-semibold">latency-free</span>{" "}
+          protection layer for modern commerce. Stop card testing and chargebacks
+          before they hit your balance.
         </p>
 
         {/* Buttons */}
@@ -167,17 +166,24 @@ export default function HeroSection() {
               {/* Grid Lines moving */}
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[40px_40px] opacity-20 animate-grid-flow" />
 
+              {/* Scanning Line */}
+              <div className="absolute inset-0 w-full h-[2px] bg-indigo-500/30 blur-sm animate-[scan_4s_linear_infinite]" />
+
               {/* Central Radar */}
               <div className="relative w-64 h-64 z-10">
                 <div className="absolute inset-0 border border-indigo-500/30 rounded-full animate-[spin_10s_linear_infinite]" />
                 <div className="absolute inset-4 border border-indigo-500/20 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
                 <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-xl" />
 
+                {/* Inner Data Rings */}
+                <div className="absolute inset-12 border border-dashed border-indigo-500/20 rounded-full opacity-50" />
+                <div className="absolute inset-20 border border-indigo-500/40 rounded-full opacity-30" />
+
                 {/* Scanning Beam */}
-                <div className="absolute inset-0 rounded-full bg-linear-to-t from-transparent via-indigo-500/20 to-transparent w-[2px] h-full left-1/2 -translate-x-1/2 animate-[spin_2s_linear_infinite]" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-indigo-500/20 to-transparent w-[2px] h-full left-1/2 -translate-x-1/2 animate-[spin_2s_linear_infinite]" />
 
                 {/* Center Icon */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black border border-indigo-500 text-indigo-400 p-4 rounded-full shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black border border-indigo-500 text-indigo-400 p-4 rounded-full shadow-[0_0_30px_rgba(99,102,241,0.4)] z-20">
                   <ShieldCheck className="h-8 w-8" />
                 </div>
               </div>
@@ -186,23 +192,30 @@ export default function HeroSection() {
               <FloatingCard
                 className="absolute left-[10%] top-[20%]"
                 label="THREAT BLOCKED"
-                value="IP MISMATCH"
+                value="IP MISMATCH [CN]"
                 color="text-red-500"
                 delay={0}
               />
               <FloatingCard
                 className="absolute right-[10%] bottom-[20%]"
                 label="TRUST SCORE"
-                value="98/100"
+                value="98/100 [HIGH]"
                 color="text-green-500"
                 delay={1}
               />
               <FloatingCard
                 className="absolute left-[20%] bottom-[10%]"
                 label="VELOCITY"
-                value="NORMAL"
+                value="NORMAL [12tx/h]"
                 color="text-indigo-400"
                 delay={2}
+              />
+              <FloatingCard
+                className="absolute right-[15%] top-[15%]"
+                label="DEVICE FINGERPRINT"
+                value="MATCHED [iOS]"
+                color="text-indigo-300"
+                delay={3}
               />
             </div>
 
@@ -227,7 +240,6 @@ export default function HeroSection() {
     </section>
   );
 }
-
 function FloatingCard({
   className,
   label,
@@ -255,16 +267,20 @@ function FloatingCard({
     <div
       ref={cardRef}
       className={cn(
-        "px-4 py-2 bg-black/80 border border-white/10 backdrop-blur-md rounded-sm shadow-xl",
-        "flex flex-col gap-0.5 opacity-0",
-        "transform hover:scale-110 transition-transform cursor-crosshair",
+        "px-4 py-2 bg-black/90 border border-white/10 backdrop-blur-md rounded-sm shadow-2xl",
+        "flex flex-col gap-1 opacity-0 min-w-[140px]",
+        "transform hover:scale-105 transition-all duration-300 cursor-crosshair hover:border-indigo-500/50",
         className,
       )}
     >
-      <span className="text-[9px] text-zinc-500 font-mono tracking-wider">
-        {label}
-      </span>
-      <span className={cn("text-xs font-bold font-mono", color)}>{value}</span>
+      <div className="flex items-center gap-2">
+        <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", color.replace('text-', 'bg-'))} />
+        <span className="text-[9px] text-zinc-500 font-mono tracking-widest uppercase">
+          {label}
+        </span>
+      </div>
+      <span className={cn("text-xs font-bold font-mono tracking-tight", color)}>{value}</span>
     </div>
   );
 }
+

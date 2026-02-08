@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.21",
+    "atmn": "^0.0.36",
     "gsap": "^3.14.2"
   }
 }

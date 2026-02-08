@@ -31,6 +31,7 @@ export default function Navbar() {
         className={cn(
           "relative flex items-center justify-between px-6 py-3 rounded-full",
           "bg-zinc-900/80 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/50",
+          "transition-all duration-300 hover:border-indigo-500/30 hover:shadow-indigo-500/10"
         )}
       >
         {/* Logo */}

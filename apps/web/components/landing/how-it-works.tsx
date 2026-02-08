@@ -77,6 +77,7 @@ export default function HowItWorks() {
 
       <div ref={container} className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
+          {/* Header: titre et description sans ligne */}
           <div className="text-center mb-20">
             <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">
               DEPLOYMENT_FLOW
@@ -89,13 +90,15 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          {/* Central Line (track + animated fill) */}
-          <div className="absolute left-[19px] md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2">
-            <div className="absolute inset-0 w-full bg-white/10" />
-            <div className="timeline-line absolute top-0 left-0 w-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
-          </div>
+          {/* Bloc timeline : la ligne ne couvre que cette zone (en dessous du titre) */}
+          <div className="relative">
+            {/* Ligne centrale (track + fill animé) */}
+            <div className="absolute left-[19px] md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2">
+              <div className="absolute inset-0 w-full bg-white/10" />
+              <div className="timeline-line absolute top-0 left-0 w-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
+            </div>
 
-          <div className="space-y-12 md:space-y-24 relative">
+            <div className="space-y-12 md:space-y-24 relative">
             {steps.map((step, i) => (
               <div
                 key={i}
@@ -136,6 +139,7 @@ export default function HowItWorks() {
                 <div className="hidden md:block md:flex-1" />
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>

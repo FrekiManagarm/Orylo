@@ -33,7 +33,7 @@ export type Group = {
 export function proMenuList(pathname: string): Group[] {
   return [
     {
-      groupLabel: "",
+      groupLabel: "Overview",
       menus: [
         {
           href: `/dashboard`,
