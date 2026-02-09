@@ -1,4 +1,4 @@
-import { SignInForm } from "@/components/auth/sign-in-form";
+import { SignInView } from "@/components/auth/sign-in-view";
 import { Metadata } from "next";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
@@ -27,5 +27,5 @@ export const metadata: Metadata = {
 };
 
 export default function SignInPage() {
-  return <SignInForm />;
+  return <SignInView />;
 }

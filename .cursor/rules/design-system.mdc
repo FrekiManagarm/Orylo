@@ -1,70 +1,176 @@
 ---
-description: Design System & UI Consistency Rules based on the project's visual identity
+description: Design System & UI — Référence basée sur la landing page (apps/web/components/landing/)
 globs: **/*.tsx,**/*.css
 alwaysApply: false
 ---
 # Orylo Design System & UI Rules
 
-This project follows a strict "Dark Mode / Cyber / Fintech" visual identity, heavily inspired by `app/(main)/page.tsx`.
-All new components and pages MUST adhere to these guidelines.
+**Référence unique** : le style de l’application est défini par la landing page dans `apps/web/components/landing/` et `apps/web/app/page.tsx`. Tout nouveau composant ou page doit s’aligner sur ces choix.
 
-## 1. Core Visual Identity (Dark Theme Default)
+Identité : **Dark Mode / Cyber / Fintech** — fond noir, accents indigo, typo mono pour l’aspect “système”, bordures légères et glassmorphism.
 
-- **Backgrounds**:
-  - Main background: `bg-black` (or very dark zinc).
-  - Cards/Surfaces: `bg-zinc-900/50` with `backdrop-blur-xl` (Glassmorphism).
-  - Overlays: Subtle radial gradients (e.g., `bg-indigo-500/10 rounded-full blur-3xl`).
-  - Patterns: Grid patterns (e.g., linear-gradient with transparency) for texture.
+---
 
-- **Borders**:
-  - Subtle, semi-transparent white borders: `border-white/10` or `border-white/5`.
-  - Avoid harsh solid borders.
+## 1. Page & Layout racine
 
-- **Typography**:
-  - Headings: White (`text-white`), bold/extrabold.
-  - Body text: Zinc greys (`text-zinc-400` for secondary, `text-zinc-300` for labels).
-  - Links/Accents: Indigo/Purple (`text-indigo-400`, `hover:text-indigo-300`).
-  - Font: Sans-serif (Geist/Inter), clean and modern.
+- **Wrapper principal** : `min-h-screen bg-black text-foreground overflow-x-hidden`
+- **Sélection de texte** : `selection:bg-indigo-500/30 selection:text-indigo-200`
+- **Police** : `font-sans` (Geist) par défaut ; `font-mono` pour labels, titres “système” et données.
+- **Référence** : `app/page.tsx` (ligne 33).
 
-- **Interactive Elements (Buttons/Inputs)**:
-  - **Primary Button**: White background (`bg-white`), Black text (`text-black`), subtle hover effect (`hover:bg-zinc-200`).
-  - **Secondary/Ghost Button**: Transparent with light text, hover with slight white background (`hover:bg-white/5`).
-  - **Inputs**: Dark background (`bg-zinc-900/50`), light border (`border-white/10`), white text, Indigo focus ring (`focus-visible:ring-indigo-500`).
+---
 
-## 2. Component Implementation Patterns
+## 2. Sections
 
-### Cards & Containers
-When creating a card or container, use this structure:
-```tsx
-<Card className="w-full border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-xl">
-  <CardHeader>
-    <CardTitle className="text-white">...</CardTitle>
-    <CardDescription className="text-zinc-400">...</CardDescription>
-  </CardHeader>
-  {/* ... */}
-</Card>
-```
+- **Fond** : `bg-black` pour toutes les sections pleine largeur.
+- **Espacement vertical** : `py-32` pour les sections de contenu ; `py-20` pour le footer.
+- **Séparation** : `border-t border-white/10` ou `border-white/5` entre sections.
+- **Container** : `container mx-auto px-4` (éventuellement `max-w-6xl` ou `max-w-7xl mx-auto` pour le contenu).
+- **Overflow** : `overflow-hidden` quand il y a effets de fond (grid, glow, noise).
 
-### Inputs & Forms
-```tsx
-<Input 
-  className="bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
-  {...props} 
-/>
-```
+---
 
-### Animation (Framer Motion)
-- Use `framer-motion` for smooth entrances (fade-in up).
-- Standard transition: `initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}`.
+## 3. Arrière-plans & effets
 
-## 3. Tailwind Utility Classes Preference
-- Prefer `zinc` colors for grays (neutral cool tone).
-- Prefer `indigo` or `purple` for brand accents.
-- Use `backdrop-blur` heavily for depth.
-- Use `opacity` modifiers for text hierarchy (`text-white` vs `text-zinc-400`).
+- **Grid** : `bg-grid-white/[0.02]` + masque radial si besoin (hero). Classe utilitaire `.bg-grid-white` dans `globals.css`.
+- **Texture** : `bg-noise` + `opacity-20` (défini dans `globals.css`).
+- **Spot / glow** : cercles floutés type `bg-indigo-600/20 blur-[150px] rounded-full` ou `bg-indigo-500/20 blur-[60px]` pour la profondeur.
+- **Glassmorphism** : `bg-zinc-900/50` ou `bg-black/40` avec `backdrop-blur-xl` ou `backdrop-blur-md`.
+- **Reflets** : `bg-linear-to-tr from-white/5 to-transparent` pour un léger reflet sur les cartes.
 
-## 4. "Do Not" Rules
-- ❌ DO NOT use default white backgrounds (`bg-white`) for main pages.
-- ❌ DO NOT use standard blue browser links.
-- ❌ DO NOT use solid black borders.
-- ❌ DO NOT use shadows without purpose (prefer glows/blurs).
+---
+
+## 4. Bordures
+
+- **Standard** : `border border-white/10` pour cartes et blocs.
+- **Subtiles** : `border-white/5` pour séparateurs internes ou footer.
+- **Hover / accent** : `hover:border-indigo-500/50` ou `border-indigo-500/50` pour plan mis en avant.
+- **Coins “cadre”** (optionnel) : petits coins en `border-t border-l border-white/20` qui passent en `border-indigo-500` au hover.
+
+---
+
+## 5. Typographie
+
+- **Titres principaux** : `text-4xl md:text-6xl` (ou `text-6xl md:text-8xl` hero), `font-bold` ou `font-extrabold`, `text-white`, `tracking-tighter`.
+- **Mot secondaire dans le titre** : `text-zinc-600` dans un `<span>`.
+- **Sous-titres / accroches** : `text-lg md:text-xl text-zinc-400 font-light`.
+- **Corps** : `text-zinc-400`, `text-zinc-500` (secondaire), `text-zinc-600` (tertiaire).
+- **Accents** : `text-indigo-400` ou `text-indigo-500` pour liens et mots-clés.
+- **Labels “système”** : `text-[10px]` ou `text-xs font-mono uppercase tracking-widest text-zinc-500`.
+- **Données / valeurs** : `font-mono` + `text-white` ou couleur sémantique (voir couleurs).
+- **Glow sur titre** : classe utilitaire `.text-glow` (définie dans `globals.css`).
+
+---
+
+## 6. Cartes (Card)
+
+- **Fond** : `bg-black/40` ou `bg-zinc-900/50`, avec `backdrop-blur-sm` / `backdrop-blur-xl`.
+- **Bordure** : `border-white/10`, optionnel `hover:border-indigo-500/50`.
+- **CardHeader** : `CardTitle` en `text-white font-mono` ; sous-titre en `text-indigo-400 font-semibold uppercase` ; description en `text-zinc-500`.
+- **Card populaire (pricing)** : `border-indigo-500/50 shadow-2xl shadow-indigo-900/20` + badge “Recommended” en `bg-indigo-600`.
+- **Référence** : `features-section.tsx`, `pricing-section.tsx`, `cta-section.tsx`.
+
+---
+
+## 7. Boutons
+
+- **Primaire (CTA)** : `bg-white text-black hover:bg-zinc-200` — souvent `rounded-full` (hero, navbar) ou `rounded-none` (pricing, CTA). Optionnel : `font-mono tracking-widest`, `shadow-[0_0_40px_rgba(255,255,255,0.2)]`, `hover:scale-105`.
+- **Secondaire** : `bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10` (ex. cartes pricing non recommandées).
+- **Ghost / lien** : pas de fond, `text-zinc-400 hover:text-white` ou `hover:text-indigo-400`.
+- **Composant** : utiliser `Button` de `@/components/ui/button` avec `render={<Link>…</Link>}` ou `asChild` selon le projet ; appliquer les classes ci-dessus en `className`.
+
+---
+
+## 8. Liens
+
+- **Navigation** : `text-zinc-400 hover:text-white` ou `hover:text-indigo-400 transition-colors`.
+- **Footer** : `text-zinc-500 hover:text-indigo-400` ; libellés en `text-xs` voire `text-[10px] uppercase tracking-widest`.
+- Éviter le bleu lien navigateur par défaut.
+
+---
+
+## 9. Navbar
+
+- **Position** : `fixed top-6 inset-x-0 max-w-2xl mx-auto z-50 px-4`.
+- **Bloc** : `rounded-full bg-zinc-900/80 backdrop-blur-md border border-white/10 shadow-2xl shadow-black/50`.
+- **Logo** : carré `bg-indigo-500` avec lettre blanche ; texte `text-white font-bold`.
+- **Liens** : `text-xs text-zinc-400 hover:text-white uppercase tracking-wider`.
+- **CTA** : bouton blanc (primaire) comme ci-dessus.
+- **Référence** : `navbar.tsx`.
+
+---
+
+## 10. Formulaires & champs
+
+- **Conteneur** : `bg-zinc-900/30` ou `bg-black` avec `border border-white/10`, `backdrop-blur-md`.
+- **Labels** : `text-[10px] font-mono text-zinc-500 uppercase tracking-widest`.
+- **Inputs** : fond sombre `bg-zinc-900/50`, `border-white/10`, texte blanc, `focus-visible:ring-indigo-500`.
+- **Référence** : `roi-calculator.tsx`, patterns dans les composants UI existants.
+
+---
+
+## 11. Indicateurs de statut
+
+- **Succès / online** : `text-green-500` + pastille `w-2 h-2 bg-green-500 rounded-full animate-pulse` + libellé “ONLINE” ou “SYSTEM OPERATIONAL”.
+- **Alerte / menace** : `text-red-400` / `text-red-500`, barres de progression ou logs type “THREAT BLOCKED”.
+- **Neutre / info** : `text-indigo-400` pour données “système” (ex. VELOCITY, TRUST SCORE).
+
+---
+
+## 12. Animations
+
+- **Scroll** : GSAP + `ScrollTrigger` — `fromTo` avec `opacity` et `y`, `stagger` sur les cartes, `scrollTrigger: { trigger, start: "top 80%" }`.
+- **Entrée** : `opacity: 0, y: 20` → `opacity: 1, y: 0` (ou scale 0.95 → 1 pour CTA).
+- **Framer Motion** : pour la navbar (hide on scroll) avec `motion` et `useMotionValueEvent(scrollY)`.
+- **Hover** : `transition-colors` ou `transition-all duration-300` ; `hover:scale-105` sur les CTA principaux.
+- **Spinners / radar** : `animate-spin` ou keyframes personnalisées (`animate-[spin_10s_linear_infinite]`).
+
+---
+
+## 13. Classes utilitaires (globals.css)
+
+- **`.bg-grid-white`** : grille 40px avec lignes blanches semi-transparentes.
+- **`.bg-noise`** : texture bruit SVG (feTurbulence).
+- **`.text-glow`** : `text-shadow` indigo pour titres hero.
+
+Utiliser les variantes avec opacité quand besoin (ex. `bg-grid-white/[0.02]`).
+
+---
+
+## 14. Sémantique des couleurs
+
+| Rôle            | Couleur / classe                          |
+|-----------------|-------------------------------------------|
+| Fond principal  | `bg-black`                                |
+| Surfaces        | `bg-zinc-900/*`, `bg-black/40`            |
+| Texte principal | `text-white`                              |
+| Texte secondaire| `text-zinc-400`, `text-zinc-500`, `text-zinc-600` |
+| Marque / accent | `text-indigo-400`, `bg-indigo-500`, `border-indigo-500/*` |
+| Succès / actif  | `text-green-500`, `bg-green-500`          |
+| Erreur / menace | `text-red-400`, `text-red-500`, `bg-red-500/*` |
+| Bordures        | `border-white/10`, `border-white/5`       |
+
+---
+
+## 15. Règles “Do Not”
+
+- Ne pas utiliser de fond blanc (`bg-white`) pour les pages ou sections principales (sauf boutons CTA).
+- Ne pas utiliser le bleu lien par défaut du navigateur.
+- Ne pas utiliser de bordures noires pleines ; privilégier `white/10` ou `white/5`.
+- Ne pas ajouter d’ombres portées sans intention (préférer glows et blur).
+- Ne pas mélanger d’autres palettes d’accent (rester sur indigo/zinc/green/red selon la sémantique ci-dessus).
+
+---
+
+## 16. Fichiers de référence
+
+- **Layout & sections** : `apps/web/app/page.tsx`
+- **Hero** : `apps/web/components/landing/hero-section.tsx`
+- **Features** : `apps/web/components/landing/features-section.tsx`
+- **Pricing** : `apps/web/components/landing/pricing-section.tsx`
+- **FAQ** : `apps/web/components/landing/faq-section.tsx`
+- **CTA** : `apps/web/components/landing/cta-section.tsx`
+- **Footer** : `apps/web/components/landing/footer.tsx`
+- **Navbar** : `apps/web/components/landing/navbar.tsx`
+- **ROI** : `apps/web/components/landing/roi-calculator.tsx`
+- **Styles globaux** : `apps/web/app/globals.css`

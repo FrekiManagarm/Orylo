@@ -14,23 +14,29 @@
 **Meta Description** : [150-160 caractères avec CTA]
 
 ## Introduction (2-3 paragraphes)
+
 - Hook : Problème/pain point de l'ICP
 - Contexte : Pourquoi c'est important maintenant
 - Promise : Ce que le lecteur va apprendre
 
 ## Section 1 : [Sous-titre H2]
+
 [Contenu éducatif, 3-5 paragraphes]
+
 - Points clés avec exemples
 - Code snippets si pertinent
 - Visuals si possible (screenshots, diagrams)
 
 ## Section 2 : [Sous-titre H2]
+
 [Contenu approfondi]
 
 ## Section 3 : [Sous-titre H2]
+
 [Contenu actionnable]
 
 ## Conclusion
+
 - Récapitulatif des points clés
 - CTA doux : "Essayez Orylo gratuitement" ou "En savoir plus"
 - Lien vers ressources complémentaires
@@ -39,6 +45,7 @@
 ```
 
 ### Checklist Article
+
 - [ ] Titre contient keyword principal
 - [ ] Meta description < 160 caractères
 - [ ] Hook dans les 3 premières lignes
@@ -81,21 +88,25 @@
 ### Formules de Hook Efficaces
 
 **Stats Choquantes :**
+
 - "X% des [audience] ne savent pas que [problème]"
 - "[Nombre] marchands ont perdu leur compte Stripe en [période]"
 - "Stripe Radar laisse passer [X]% des fraudes"
 
 **Questions :**
+
 - "Pourquoi [problème] est-il si commun ?"
 - "Saviez-vous que [fait surprenant] ?"
 - "Que faire quand [situation problématique] ?"
 
 **Déclarations Contre-Intuitives :**
+
 - "Stripe Radar n'est pas suffisant (et voici pourquoi)"
 - "Plus de clients ≠ plus de fraudes (si vous faites ça)"
 - "La plupart des marchands se protègent mal"
 
 ### Checklist Thread
+
 - [ ] Hook dans le tweet 1
 - [ ] 5-10 tweets max
 - [ ] 1 idée par tweet
@@ -152,6 +163,7 @@ Note : Je mentionne Orylo à la fin, mais 90% du contenu est applicable à n'imp
 ### Do's and Don'ts Reddit
 
 **DO :**
+
 - ✅ Apporter de la valeur d'abord
 - ✅ Reconnaissance du problème/empathie
 - ✅ Points actionnables concrets
@@ -161,6 +173,7 @@ Note : Je mentionne Orylo à la fin, mais 90% du contenu est applicable à n'imp
 - ✅ Mentionner alternatives si pertinent
 
 **DON'T :**
+
 - ❌ Pitcher agressivement
 - ❌ Spammer le même message
 - ❌ Ignorer les questions
@@ -170,6 +183,7 @@ Note : Je mentionne Orylo à la fin, mais 90% du contenu est applicable à n'imp
 - ❌ Utiliser langage marketing
 
 ### Checklist Reddit
+
 - [ ] Apport de valeur > promotion
 - [ ] Empathie/reconnaissance du problème
 - [ ] 3+ points actionnables
@@ -242,15 +256,18 @@ Founder, Orylo
 ### Différenciateur 1 : Protection Réelle
 
 **Article Title Ideas :**
+
 - "Stripe Radar laisse passer 30% des fraudes : voici comment vous protéger"
 - "95% vs 60% : pourquoi votre détection de fraude échoue"
 - "Mon compte Stripe a été suspendu malgré Radar : leçons apprises"
 
 **Thread Angle :**
+
 - "Stripe Radar détecte seulement 60-70% des card testing. Voici pourquoi 🧵"
 - "5 fraudes que Stripe Radar laisse passer (et comment les bloquer)"
 
 **Reddit Hook :**
+
 - "J'analyse les fraudes Stripe depuis 2 ans. Voici ce que Radar ne détecte pas :"
 
 ---
@@ -258,15 +275,18 @@ Founder, Orylo
 ### Différenciateur 2 : Intelligence Collective
 
 **Article Title Ideas :**
+
 - "Network effect en anti-fraude : comment l'IA collective protège mieux"
 - "Comment 100 marchands peuvent protéger 1000 contre les mêmes fraudes"
 - "IA collective vs détection individuelle : quelle différence ?"
 
 **Thread Angle :**
+
 - "Fraudeur détecté chez Marchand A → protection automatique pour B, C, D. Voici comment 🧵"
 - "Plus on est nombreux, plus on est protégés : le network effect anti-fraude"
 
 **Reddit Hook :**
+
 - "J'ai analysé 100K transactions de fraude. Voici ce qui arrive quand les marchands partagent les données :"
 
 ---
@@ -274,15 +294,18 @@ Founder, Orylo
 ### Différenciateur 3 : Empathie & Contrôle
 
 **Article Title Ideas :**
+
 - "Règles personnalisées Stripe : comment optimiser votre protection"
 - "Comment gérer les clients frauduleux sans perdre les bons clients"
 - "Customer management anti-fraude : best practices 2026"
 
 **Thread Angle :**
+
 - "Votre business est unique. Votre protection anti-fraude aussi. Voici comment 🧵"
 - "5 règles custom qui ont sauvé mon compte Stripe"
 
 **Reddit Hook :**
+
 - "J'aide des marchands à configurer leur protection anti-fraude. Voici les 5 règles custom les plus efficaces :"
 
 ---
@@ -292,18 +315,21 @@ Founder, Orylo
 ### Metrics par Type de Contenu
 
 **Articles Blog :**
+
 - Vues uniques
 - Temps moyen sur page (target 3+ min)
 - Bounce rate (target < 70%)
 - CTA clicks (sign-ups)
 
 **Twitter Threads :**
+
 - Impressions
 - Engagements (likes + replies + retweets)
 - Clicks sur lien
 - Followers gained
 
 **Reddit Posts :**
+
 - Upvotes
 - Commentaires
 - Clicks sur lien
@@ -333,4 +359,4 @@ Avant de publier tout contenu :
 
 ---
 
-*Ces templates évoluent. Adaptez-les à votre voix et votre audience.* ✍️
+_Ces templates évoluent. Adaptez-les à votre voix et votre audience._ ✍️

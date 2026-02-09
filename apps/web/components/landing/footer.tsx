@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Github, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -46,6 +45,14 @@ export default function Footer() {
                   className="hover:text-indigo-400 transition-colors"
                 >
                   [03] Access
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#comparison"
+                  className="hover:text-indigo-400 transition-colors"
+                >
+                  [04] Radar vs Orylo
                 </Link>
               </li>
             </ul>

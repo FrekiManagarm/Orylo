@@ -7,11 +7,21 @@ import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/prog
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, Sparkles } from "lucide-react";
 
+/** Données factices pour prévisualiser la carte (fallback si API indisponible) */
+const MOCK_AI_METRICS = {
+  accuracy: 0.78,
+  totalSuggestions: 124,
+  accepted: 97,
+  rejected: 18,
+  modified: 9,
+  averageConfidence: 0.82,
+};
+
 /**
  * AIMetricsCard Component
- * 
+ *
  * Story 4.4: AC6 - Display AI suggestion accuracy metrics
- * 
+ *
  * Design:
  * - Card layout with border (Shadcn Card component)
  * - Background: bg-muted/50, border: border-border, padding: p-4
@@ -21,9 +31,14 @@ import { TrendingUp, Sparkles } from "lucide-react";
  */
 type AIMetricsCardProps = {
   organizationId: string;
+  /** Afficher des données factices pour la prévisualisation (prioritaire sur l'API) */
+  useMockData?: boolean;
 };
 
-export function AIMetricsCard({ organizationId }: AIMetricsCardProps) {
+export function AIMetricsCard({
+  organizationId,
+  useMockData = false,
+}: AIMetricsCardProps) {
   const [metrics, setMetrics] = useState<{
     accuracy: number;
     totalSuggestions: number;
@@ -35,8 +50,15 @@ export function AIMetricsCard({ organizationId }: AIMetricsCardProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (useMockData) {
+      const t = setTimeout(() => {
+        setMetrics(MOCK_AI_METRICS);
+        setIsLoading(false);
+      }, 600);
+      return () => clearTimeout(t);
+    }
     fetchMetrics();
-  }, [organizationId]);
+  }, [organizationId, useMockData]);
 
   const fetchMetrics = async () => {
     setIsLoading(true);
@@ -53,6 +75,7 @@ export function AIMetricsCard({ organizationId }: AIMetricsCardProps) {
       setMetrics(data);
     } catch (error) {
       console.error("Error fetching metrics:", error);
+      setMetrics(MOCK_AI_METRICS);
     } finally {
       setIsLoading(false);
     }

@@ -8,18 +8,19 @@ import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/prog
 import { toast } from "sonner";
 import { Loader2, Sparkles, CheckCircle2, X } from "lucide-react";
 import DOMPurify from "isomorphic-dompurify";
+import { cn } from "@/lib/utils";
 
 /**
  * AISuggestionCard Component
- * 
+ *
  * Story 4.1: AC4, AC5 - Display AI suggestion with accept/reject buttons
- * 
- * Design:
- * - Whitelist: border-green-500, bg-green-50/50 (light), bg-green-950/20 (dark)
- * - Blacklist: border-red-500, bg-red-50/50 (light), bg-red-950/20 (dark)
- * - Confidence badge: variant based on confidence (high ≥0.8: 'default', medium 0.5-0.8: 'secondary', low <0.5: 'outline')
- * - Responsive: Mobile-friendly (stack vertically on <768px)
- * - Accessibility: ARIA labels, keyboard navigation (Enter to accept, Escape to reject)
+ *
+ * Design (Orylo Design System - Dark / Cyber / Fintech):
+ * - Fond glassmorphism, bordure white/10, accent gauche sémantique (vert/rouge)
+ * - Whitelist: barre gauche green-500/60 + glow discret
+ * - Blacklist: barre gauche red-500/60 + glow discret
+ * - Labels: font-mono uppercase tracking-widest text-zinc-500
+ * - Accessible: ARIA, clavier (Enter / Escape)
  */
 export interface AISuggestion {
   id: string;
@@ -50,19 +51,21 @@ export function AISuggestionCard({
   // Sanitize reasoning text (XSS prevention, ADR-010)
   const sanitizedReasoning = DOMPurify.sanitize(suggestion.reasoning);
 
-  // Confidence badge variant
-  const confidenceVariant =
+  // Confidence badge: couleur sémantique (design system)
+  const confidenceClass =
     suggestion.confidence >= 0.8
-      ? "default"
+      ? "border-green-500/50 text-green-400 bg-green-500/10"
       : suggestion.confidence >= 0.5
-        ? "secondary"
-        : "outline";
+        ? "border-amber-500/50 text-amber-400 bg-amber-500/10"
+        : "border-red-500/50 text-red-400 bg-red-500/10";
 
-  // Card styling based on type
-  const cardStyles =
+  // Carte: glassmorphism + barre d’accent gauche (whitelist / blacklist)
+  const cardBase =
+    "border border-white/10 bg-zinc-900/50 backdrop-blur-md overflow-hidden";
+  const accentBar =
     suggestion.type === "whitelist"
-      ? "border-green-500 bg-green-50/50 dark:bg-green-950/20"
-      : "border-red-500 bg-red-50/50 dark:bg-red-950/20";
+      ? "border-l-4 border-l-green-500/80 shadow-[inset_0_0_24px_-12px_rgba(34,197,94,0.25)]"
+      : "border-l-4 border-l-red-500/80 shadow-[inset_0_0_24px_-12px_rgba(239,68,68,0.25)]";
 
   // Handle accept
   const handleAccept = async () => {
@@ -139,12 +142,12 @@ export function AISuggestionCard({
 
   if (isAccepted) {
     return (
-      <Card className={`${cardStyles} border-2`}>
+      <Card className={cn(cardBase, accentBar)}>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
             <span>
-              Suggestion {suggestion.type === "whitelist" ? "acceptée" : "acceptée"} - Action appliquée
+              Suggestion acceptée — Action appliquée
             </span>
           </div>
         </CardContent>
@@ -153,37 +156,49 @@ export function AISuggestionCard({
   }
 
   return (
-    <Card className={`${cardStyles} border-2`}>
+    <Card className={cn(cardBase, accentBar)}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-base font-mono font-medium text-white flex items-center gap-2">
+            <Sparkles
+              className={cn(
+                "h-4 w-4 shrink-0",
+                suggestion.type === "whitelist" ? "text-green-500" : "text-red-500"
+              )}
+            />
             Suggestion IA: {suggestion.type === "whitelist" ? "Whitelist" : "Blacklist"}
           </CardTitle>
-          <Badge variant={confidenceVariant}>
+          <Badge
+            variant="outline"
+            className={cn("font-mono text-[10px] uppercase tracking-widest", confidenceClass)}
+          >
             {Math.round(suggestion.confidence * 100)}% confiance
           </Badge>
         </div>
-        <CardDescription className="text-xs">
+        <CardDescription className="text-xs text-zinc-500">
           Basée sur l'analyse des patterns historiques
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Confidence Progress */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Confiance</span>
-            <span className="font-medium">{Math.round(suggestion.confidence * 100)}%</span>
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+              Confiance
+            </span>
+            <span className="font-mono text-sm text-white">
+              {Math.round(suggestion.confidence * 100)}%
+            </span>
           </div>
           <Progress value={suggestion.confidence * 100}>
-            <ProgressTrack className="h-2">
+            <ProgressTrack className="h-1.5 bg-white/5">
               <ProgressIndicator
                 className={
                   suggestion.confidence >= 0.8
-                    ? "bg-green-600"
+                    ? "bg-green-500"
                     : suggestion.confidence >= 0.5
-                      ? "bg-yellow-600"
-                      : "bg-red-600"
+                      ? "bg-amber-500"
+                      : "bg-red-500"
                 }
               />
             </ProgressTrack>
@@ -191,19 +206,23 @@ export function AISuggestionCard({
         </div>
 
         {/* Reasoning */}
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Raison</p>
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            Raison
+          </p>
           <p
-            className="text-sm text-muted-foreground leading-relaxed"
+            className="text-sm text-zinc-400 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: sanitizedReasoning }}
           />
         </div>
 
         {/* Factors */}
         {suggestion.factors.length > 0 && (
-          <div className="space-y-1">
-            <p className="text-sm font-medium">Facteurs détectés</p>
-            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+              Facteurs détectés
+            </p>
+            <ul className="text-sm text-zinc-400 space-y-1 list-disc list-inside">
               {suggestion.factors.map((factor, index) => (
                 <li key={index}>{factor}</li>
               ))}
@@ -212,14 +231,18 @@ export function AISuggestionCard({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-white/5">
           <Button
             variant={suggestion.type === "whitelist" ? "default" : "destructive"}
             size="sm"
             onClick={handleAccept}
             onKeyDown={(e) => handleKeyDown(e, "accept")}
             disabled={isAccepting || isRejecting}
-            className="flex-1 min-h-[44px]"
+            className={cn(
+              "flex-1 min-h-[44px] font-mono text-xs uppercase tracking-wider",
+              suggestion.type === "whitelist" &&
+                "bg-white text-black hover:bg-zinc-200"
+            )}
             aria-label={`Accepter la suggestion ${suggestion.type}`}
           >
             {isAccepting ? (
@@ -240,7 +263,7 @@ export function AISuggestionCard({
             onClick={handleReject}
             onKeyDown={(e) => handleKeyDown(e, "reject")}
             disabled={isAccepting || isRejecting}
-            className="flex-1 min-h-[44px]"
+            className="flex-1 min-h-[44px] font-mono text-xs uppercase tracking-wider border-white/10 text-zinc-400 hover:bg-white/5 hover:text-white"
             aria-label={`Rejeter la suggestion ${suggestion.type}`}
           >
             {isRejecting ? (

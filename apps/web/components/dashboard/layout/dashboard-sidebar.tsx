@@ -125,29 +125,34 @@ export function DashboardSidebar({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <SidebarMenuButton isActive={menu.active} tooltip={menu.label}>
+            <SidebarMenuButton isActive={menu.active} tooltip={menu.label} className="rounded-lg">
               {menu.icon && <menu.icon className="h-4 w-4" />}
               <span>{menu.label}</span>
               <ChevronRight className="ml-auto h-4 w-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" align="start" className="w-48">
-            <DropdownMenuLabel>{menu.label}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {menu.submenus?.map((submenu: Submenu, index: number) => (
-              <DropdownMenuItem key={index}>
+          <DropdownMenuContent side="right" align="start" className="w-48 rounded-xl border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-xs font-mono uppercase tracking-widest text-zinc-500">{menu.label}</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/5" />
+              {menu.submenus?.map((submenu: Submenu, index: number) => (
+              <DropdownMenuItem
+                key={index}
+                className={cn(
+                  "rounded-lg",
+                  submenu.active && "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20",
+                )}
+              >
                 <a
                   href={submenu.href}
-                  className={cn(
-                    "flex items-center gap-2",
-                    submenu.active && "bg-accent text-accent-foreground",
-                  )}
+                  className="flex items-center gap-2 w-full"
                 >
                   {submenu.icon && <submenu.icon className="h-4 w-4" />}
                   <span>{submenu.label}</span>
                 </a>
               </DropdownMenuItem>
             ))}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
@@ -196,8 +201,8 @@ export function DashboardSidebar({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <SidebarMenuButton size="lg">
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <SidebarMenuButton size="lg" className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50">
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-300">
                       {activeOrganization?.logo ? (
                         <Image
                           src={activeOrganization?.logo ?? ""}
@@ -211,26 +216,26 @@ export function DashboardSidebar({
                       )}
                     </div>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
+                      <span className="truncate font-semibold text-white">
                         {activeOrganization?.name}
                       </span>
-                      <span className="truncate text-xs">
+                      <span className="truncate text-xs text-zinc-500 font-mono uppercase tracking-wider">
                         {activeOrganization?.name}
                       </span>
                     </div>
-                    <ChevronsUpDown className="ml-auto" />
+                    <ChevronsUpDown className="ml-auto text-zinc-500" />
                   </SidebarMenuButton>
                 }
               />
               <DropdownMenuContent
                 align="end"
                 side={isMobile ? "bottom" : "right"}
-                className="w-64 p-2 rounded-lg border border-border/40 shadow-lg animate-in fade-in-50 zoom-in-95 slide-in-from-top-5 duration-200"
+                className="w-64 p-2 rounded-xl border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl animate-in fade-in-50 zoom-in-95 slide-in-from-top-5 duration-200"
               >
                 {organizations && organizations.length > 0 && (
                   <>
                     <DropdownMenuGroup>
-                      <DropdownMenuLabel className="text-xs font-medium px-2 py-1.5 text-muted-foreground">
+                      <DropdownMenuLabel className="text-xs font-mono uppercase tracking-widest px-2 py-1.5 text-zinc-500">
                         Accounts
                       </DropdownMenuLabel>
                       <div className="max-h-[200px] overflow-y-auto my-1 rounded-md space-y-0.5 pr-1">
@@ -238,10 +243,10 @@ export function DashboardSidebar({
                           <DropdownMenuItem
                             key={org.id}
                             className={cn(
-                              "group flex items-center gap-3 p-2 rounded-md transition-all cursor-pointer duration-200",
+                              "group flex items-center gap-3 p-2 rounded-xl transition-all cursor-pointer duration-200",
                               activeOrganization?.id === org.id
-                                ? "bg-primary/10 text-primary font-medium shadow-sm"
-                                : "hover:bg-accent hover:translate-x-1 hover:shadow-sm",
+                                ? "bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-medium"
+                                : "hover:bg-white/5 hover:border-white/10 border border-transparent",
                               switchingOrg === org.id &&
                               "animate-pulse opacity-70",
                             )}
@@ -251,10 +256,9 @@ export function DashboardSidebar({
                             {org.logo ? (
                               <div
                                 className={cn(
-                                  "h-8 w-8 overflow-hidden rounded-md shadow-sm shrink-0 transition-all duration-300",
-                                  activeOrganization?.id === org.id
-                                    ? "ring-2 ring-primary/30"
-                                    : "ring-1 ring-border/50 hover:ring-primary/20",
+                                  "h-8 w-8 overflow-hidden rounded-lg border border-white/10 shrink-0 transition-all duration-300",
+                                  activeOrganization?.id === org.id &&
+                                    "ring-2 ring-indigo-500/30",
                                 )}
                               >
                                 <Image
@@ -265,53 +269,53 @@ export function DashboardSidebar({
                                   className={cn(
                                     "h-full w-full object-cover transition-transform duration-300",
                                     activeOrganization?.id !== org.id &&
-                                    "hover:scale-110",
+                                    "group-hover:scale-105",
                                   )}
                                 />
                               </div>
                             ) : (
                               <div
                                 className={cn(
-                                  "h-8 w-8 rounded-md flex items-center justify-center shrink-0 transition-all duration-300",
+                                  "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300 border border-white/10",
                                   activeOrganization?.id === org.id
-                                    ? "bg-primary/20"
-                                    : "bg-primary/10 hover:bg-primary/15",
+                                    ? "bg-indigo-500/20 text-indigo-300"
+                                    : "bg-zinc-800/50 text-zinc-400 group-hover:bg-white/5",
                                 )}
                               >
-                                <Building className="h-4 w-4 text-primary" />
+                                <Building className="h-4 w-4" />
                               </div>
                             )}
                             <div className="flex flex-col">
-                              <span className="text-sm font-medium leading-none">
+                              <span className="text-sm font-medium leading-none text-white">
                                 {org.name}
                               </span>
-                              <span className="text-xs text-muted-foreground mt-1">
+                              <span className="text-xs text-zinc-500 mt-1 font-mono">
                                 {org.trialEndsAt
                                   ? "Trial account"
                                   : "Paid account"}
                               </span>
                             </div>
                             {activeOrganization?.id === org.id && (
-                              <Check className="h-4 w-4 ml-auto text-primary animate-in zoom-in-50 duration-300" />
+                              <Check className="h-4 w-4 ml-auto text-indigo-400 animate-in zoom-in-50 duration-300" />
                             )}
                           </DropdownMenuItem>
                         ))}
                       </div>
                     </DropdownMenuGroup>
                     <DropdownMenuGroup>
-                      <DropdownMenuSeparator className="my-2" />
-                      <DropdownMenuLabel className="text-xs font-medium px-2 py-1.5 text-muted-foreground">
+                      <DropdownMenuSeparator className="my-2 bg-white/5" />
+                      <DropdownMenuLabel className="text-xs font-mono uppercase tracking-widest px-2 py-1.5 text-zinc-500">
                         New company
                       </DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={() => setShowCredenza(true)}
-                        className="group flex items-center gap-3 p-2 rounded-md hover:bg-accent hover:translate-x-1 transition-all cursor-pointer duration-200 hover:shadow-sm"
+                        className="group flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer duration-200"
                       >
-                        <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0 transition-all duration-300 hover:bg-primary/20">
-                          <Plus className="h-4 w-4 text-primary" />
+                        <div className="h-8 w-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-indigo-500/20">
+                          <Plus className="h-4 w-4 text-indigo-400" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium leading-none">
+                          <span className="text-sm font-medium leading-none text-white">
                             Add a company
                           </span>
                         </div>
@@ -373,7 +377,7 @@ export function DashboardSidebar({
           .map((group, groupIndex) => {
             return (
               <SidebarGroup key={groupIndex}>
-                <SidebarGroupLabel className="flex items-center gap-2">
+                <SidebarGroupLabel className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500">
                   <span>{group.groupLabel}</span>
                 </SidebarGroupLabel>
 
@@ -422,63 +426,67 @@ export function DashboardSidebar({
                 render={
                   <SidebarMenuButton
                     size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50 data-[state=open]:bg-white/5 data-[state=open]:border-indigo-500/50"
                   >
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="h-8 w-8 rounded-lg border border-white/10">
                       <AvatarImage
                         src={session.user.image ?? ""}
                         alt={session.user.name ?? ""}
                       />
-                      <AvatarFallback className="rounded-lg">
+                      <AvatarFallback className="rounded-lg bg-zinc-800 text-zinc-300">
                         {session.user.name?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
+                      <span className="truncate font-medium text-white">
                         {session.user.name}
                       </span>
-                      <span className="truncate text-xs">
+                      <span className="truncate text-xs text-zinc-500 font-mono">
                         {session.user.email}
                       </span>
                     </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
+                    <ChevronsUpDown className="ml-auto size-4 text-zinc-500" />
                   </SidebarMenuButton>
                 }
               />
               <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl"
                 side={isMobile ? "bottom" : "right"}
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={session.user.image ?? ""}
-                        alt={session.user.name}
-                      />
-                      <AvatarFallback className="rounded-lg">
-                        {session.user.name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {session.user.name}
-                      </span>
-                      <span className="truncate text-xs">
-                        {session.user.email}
-                      </span>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar className="h-8 w-8 rounded-lg border border-white/10">
+                        <AvatarImage
+                          src={session.user.image ?? ""}
+                          alt={session.user.name}
+                        />
+                        <AvatarFallback className="rounded-lg bg-zinc-800 text-zinc-300">
+                          {session.user.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium text-white">
+                          {session.user.name}
+                        </span>
+                        <span className="truncate text-xs text-zinc-500">
+                          {session.user.email}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => setShowProfile(true)}>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                  onClick={() => setShowProfile(true)}
+                  className="rounded-lg text-zinc-300 hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
+                >
                   <User className="size-4" />
                   Mon profil
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-white/5" />
                 <DropdownMenuItem
-                  className="gap-2 group text-red-500"
+                  className="gap-2 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 focus:bg-rose-500/10 focus:text-rose-300"
                   onClick={async () => {
                     await signOut({
                       fetchOptions: {
@@ -489,9 +497,10 @@ export function DashboardSidebar({
                     });
                   }}
                 >
-                  <LogOut className="size-4 text-red-500 group-hover:text-white" />
+                  <LogOut className="size-4" />
                   Se déconnecter
                 </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
