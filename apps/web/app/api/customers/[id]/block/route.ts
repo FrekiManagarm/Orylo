@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { fraudDetections } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
-import { trackCustomerBlocked } from "@/lib/posthog";
 import { logger } from "@/lib/logger";
 
 /**
@@ -94,7 +93,7 @@ export async function POST(
     // await redis.del(`trust:${organizationId}:${customerIdentifier}`);
 
     // Story 3.3 AC4: Track customer blocked event
-    trackCustomerBlocked(organizationId, customerIdentifier);
+    // trackCustomerBlocked(organizationId, customerIdentifier);
 
     logger.info("Customer blocked", {
       customerId: customerIdentifier,

@@ -7,6 +7,7 @@ import { SuggestionIdSchema } from "@/lib/validation/ai-suggestions";
 import { MerchantReasonSchema } from "@/lib/validation/ai-feedback";
 import { trackFeedback, getDetectionContext } from "@/lib/ai/feedback-tracker";
 import { z } from "zod";
+import { suggestionRejectRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/suggestions/[id]/feedback

@@ -148,7 +148,8 @@ export async function GET(
       )
     );
 
-    const formattedRecommendations = insertedRecommendations.map((r) => ({
+    const insertedRows = insertedRecommendations.flat();
+    const formattedRecommendations = insertedRows.map((r) => ({
       id: r.id,
       ...(r.ruleSuggestion as object),
       confidence: r.confidence,
