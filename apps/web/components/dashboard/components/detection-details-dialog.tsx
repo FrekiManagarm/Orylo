@@ -9,11 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Progress,
-  ProgressTrack,
-  ProgressIndicator,
-} from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -173,11 +169,11 @@ export function DetectionDetailsDialog({
     }
   };
 
-  // Trust score color
+  // Trust score color (barre de progression)
   const getTrustScoreColor = (score: number): string => {
     if (score < 30) return "bg-destructive";
-    if (score < 70) return "bg-warning";
-    return "bg-success";
+    if (score < 70) return "bg-amber-500";
+    return "bg-emerald-500";
   };
 
   // Detector name formatting
@@ -229,13 +225,11 @@ export function DetectionDetailsDialog({
                   {detection.trustScore} / 100
                 </span>
               </div>
-              <Progress value={detection.trustScore}>
-                <ProgressTrack className="h-3">
-                  <ProgressIndicator
-                    className={getTrustScoreColor(detection.trustScore)}
-                  />
-                </ProgressTrack>
-              </Progress>
+              <Progress
+                value={detection.trustScore}
+                className="h-3 bg-white/10"
+                indicatorClassName={getTrustScoreColor(detection.trustScore)}
+              />
               <p className="text-xs text-muted-foreground">
                 Risk Score: {detection.riskScore} | Confidence:{" "}
                 {Math.round(detection.confidence * 100)}%
@@ -327,7 +321,7 @@ export function DetectionDetailsDialog({
                     Payment Intent:
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-mono text-xs">
+                    <span className="text-xs font-mono">
                       {detection.paymentIntentId}
                     </span>
                     <Button

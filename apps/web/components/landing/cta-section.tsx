@@ -32,7 +32,7 @@ export default function CTASection() {
   );
 
   return (
-    <section ref={container} className="py-32 px-4 bg-black relative overflow-hidden flex flex-col items-center text-center border-t border-white/5">
+    <section ref={container} className="py-12 px-4 bg-black relative overflow-hidden flex flex-col items-center text-center border-t border-white/5">
 
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none" />
@@ -49,13 +49,15 @@ export default function CTASection() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
           <Button
-            render={<Link href="/auth/register">
-              INITIALIZE_PROTECTION
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>}
+            asChild
             size="lg"
             className="h-14 px-8 text-lg bg-white text-black hover:bg-zinc-200 rounded-none font-mono tracking-widest"
-          />
+          >
+            <Link href="/auth/register">
+              INITIALIZE_PROTECTION
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Link>
+          </Button>
         </div>
 
         <p className="text-xs text-zinc-600 font-mono pt-4 uppercase tracking-widest">

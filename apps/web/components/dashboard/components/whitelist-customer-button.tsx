@@ -56,7 +56,7 @@ export function WhitelistCustomerButton({
       // TODO (Epic 3): Implement undo API endpoint
       // For now, just reset the UI state
       setIsWhitelisted(false);
-      
+
       toast.info("Whitelist reverted", {
         description: "Customer whitelist has been removed.",
       });
@@ -102,9 +102,9 @@ export function WhitelistCustomerButton({
     } catch (error) {
       // Error handling - rollback UI
       setIsWhitelisted(false);
-      
+
       console.error("Error whitelisting customer:", error);
-      
+
       toast.error("Failed to whitelist customer", {
         description: error instanceof Error ? error.message : "Please try again.",
       });
@@ -121,14 +121,14 @@ export function WhitelistCustomerButton({
     <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {/* AC1: Whitelist button */}
       <AlertDialogTrigger
-        render={(props) => (
-          <Button
-            {...props}
-            variant={variant}
-            size={size}
-            className={className}
-            disabled={isWhitelisted || isWhitelisting}
-          >
+        asChild
+      >
+        <Button
+          variant={variant}
+          size={size}
+          className={className}
+          disabled={isWhitelisted || isWhitelisting}
+        >
           {isWhitelisting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -139,9 +139,8 @@ export function WhitelistCustomerButton({
           ) : (
             "Whitelist"
           )}
-          </Button>
-        )}
-      />
+        </Button>
+      </AlertDialogTrigger>
 
       {/* AC2: Confirmation dialog */}
       <AlertDialogContent>

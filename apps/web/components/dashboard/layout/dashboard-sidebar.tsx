@@ -136,22 +136,22 @@ export function DashboardSidebar({
               <DropdownMenuLabel className="text-xs font-mono uppercase tracking-widest text-zinc-500">{menu.label}</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/5" />
               {menu.submenus?.map((submenu: Submenu, index: number) => (
-              <DropdownMenuItem
-                key={index}
-                className={cn(
-                  "rounded-lg",
-                  submenu.active && "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20",
-                )}
-              >
-                <a
-                  href={submenu.href}
-                  className="flex items-center gap-2 w-full"
+                <DropdownMenuItem
+                  key={index}
+                  className={cn(
+                    "rounded-lg",
+                    submenu.active && "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20",
+                  )}
                 >
-                  {submenu.icon && <submenu.icon className="h-4 w-4" />}
-                  <span>{submenu.label}</span>
-                </a>
-              </DropdownMenuItem>
-            ))}
+                  <a
+                    href={submenu.href}
+                    className="flex items-center gap-2 w-full"
+                  >
+                    {submenu.icon && <submenu.icon className="h-4 w-4" />}
+                    <span>{submenu.label}</span>
+                  </a>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -175,7 +175,7 @@ export function DashboardSidebar({
             <SidebarMenuSub>
               {menu.submenus?.map((submenu: Submenu, index: number) => (
                 <SidebarMenuSubItem key={index}>
-                  <SidebarMenuSubButton isActive={submenu.active}>
+                  <SidebarMenuSubButton isActive={submenu.active} asChild>
                     <Link
                       href={submenu.href}
                       className="flex items-center gap-2"
@@ -199,34 +199,32 @@ export function DashboardSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <SidebarMenuButton size="lg" className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50">
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-300">
-                      {activeOrganization?.logo ? (
-                        <Image
-                          src={activeOrganization?.logo ?? ""}
-                          alt={activeOrganization?.name ?? ""}
-                          width={32}
-                          height={32}
-                          className="object-cover rounded-xl"
-                        />
-                      ) : (
-                        <Building className="size-4" />
-                      )}
-                    </div>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold text-white">
-                        {activeOrganization?.name}
-                      </span>
-                      <span className="truncate text-xs text-zinc-500 font-mono uppercase tracking-wider">
-                        {activeOrganization?.name}
-                      </span>
-                    </div>
-                    <ChevronsUpDown className="ml-auto text-zinc-500" />
-                  </SidebarMenuButton>
-                }
-              />
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg" className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-300">
+                    {activeOrganization?.logo ? (
+                      <Image
+                        src={activeOrganization?.logo ?? ""}
+                        alt={activeOrganization?.name ?? ""}
+                        width={32}
+                        height={32}
+                        className="object-cover rounded-xl"
+                      />
+                    ) : (
+                      <Building className="size-4" />
+                    )}
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold text-white">
+                      {activeOrganization?.name}
+                    </span>
+                    <span className="truncate text-xs text-zinc-500 font-mono uppercase tracking-wider">
+                      {activeOrganization?.name}
+                    </span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto text-zinc-500" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
                 side={isMobile ? "bottom" : "right"}
@@ -258,7 +256,7 @@ export function DashboardSidebar({
                                 className={cn(
                                   "h-8 w-8 overflow-hidden rounded-lg border border-white/10 shrink-0 transition-all duration-300",
                                   activeOrganization?.id === org.id &&
-                                    "ring-2 ring-indigo-500/30",
+                                  "ring-2 ring-indigo-500/30",
                                 )}
                               >
                                 <Image
@@ -351,7 +349,6 @@ export function DashboardSidebar({
                       <SidebarMenuButton
                         isActive={menu.active}
                         tooltip={state === "collapsed" ? menu.label : undefined}
-                        className="cursor-pointer"
                       >
                         <a
                           href={menu.href}
@@ -398,6 +395,7 @@ export function DashboardSidebar({
                           tooltip={
                             state === "collapsed" ? menu.label : undefined
                           }
+                          asChild
                         >
                           <a
                             href={menu.href}
@@ -422,33 +420,31 @@ export function DashboardSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <SidebarMenuButton
-                    size="lg"
-                    className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50 data-[state=open]:bg-white/5 data-[state=open]:border-indigo-500/50"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg border border-white/10">
-                      <AvatarImage
-                        src={session.user.image ?? ""}
-                        alt={session.user.name ?? ""}
-                      />
-                      <AvatarFallback className="rounded-lg bg-zinc-800 text-zinc-300">
-                        {session.user.name?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium text-white">
-                        {session.user.name}
-                      </span>
-                      <span className="truncate text-xs text-zinc-500 font-mono">
-                        {session.user.email}
-                      </span>
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4 text-zinc-500" />
-                  </SidebarMenuButton>
-                }
-              />
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="rounded-xl border border-white/10 hover:bg-white/5 hover:border-indigo-500/50 data-[state=open]:bg-white/5 data-[state=open]:border-indigo-500/50"
+                >
+                  <Avatar className="h-8 w-8 rounded-lg border border-white/10">
+                    <AvatarImage
+                      src={session.user.image ?? ""}
+                      alt={session.user.name ?? ""}
+                    />
+                    <AvatarFallback className="rounded-lg bg-zinc-800 text-zinc-300">
+                      {session.user.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium text-white">
+                      {session.user.name}
+                    </span>
+                    <span className="truncate text-xs text-zinc-500 font-mono">
+                      {session.user.email}
+                    </span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4 text-zinc-500" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl"
                 side={isMobile ? "bottom" : "right"}
@@ -478,28 +474,28 @@ export function DashboardSidebar({
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuItem
-                  onClick={() => setShowProfile(true)}
-                  className="rounded-lg text-zinc-300 hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
-                >
-                  <User className="size-4" />
-                  Mon profil
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/5" />
-                <DropdownMenuItem
-                  className="gap-2 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 focus:bg-rose-500/10 focus:text-rose-300"
-                  onClick={async () => {
-                    await signOut({
-                      fetchOptions: {
-                        onSuccess: () => {
-                          router.push("/");
+                    onClick={() => setShowProfile(true)}
+                    className="rounded-lg text-zinc-300 hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white"
+                  >
+                    <User className="size-4" />
+                    Mon profil
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/5" />
+                  <DropdownMenuItem
+                    className="gap-2 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 focus:bg-rose-500/10 focus:text-rose-300"
+                    onClick={async () => {
+                      await signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            router.push("/");
+                          },
                         },
-                      },
-                    });
-                  }}
-                >
-                  <LogOut className="size-4" />
-                  Se déconnecter
-                </DropdownMenuItem>
+                      });
+                    }}
+                  >
+                    <LogOut className="size-4" />
+                    Se déconnecter
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>

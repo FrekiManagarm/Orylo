@@ -12,6 +12,7 @@ import {
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { member } from "./members";
 import { invitation } from "./invitations";
+import { paymentProcessorsConnections } from "./payment-processors-connections";
 
 // ==========================================
 // ORGANIZATION ONBOARDING CONFIG TYPE
@@ -166,6 +167,7 @@ export const organization = pgTable(
         shadowMode: false,
       })
       .notNull(),
+    shareFeedbackForModelImprovement: boolean("share_feedback_for_model_improvement").default(false).notNull(),
 
     // ==========================================
     // ONBOARDING & METADATA
@@ -193,6 +195,7 @@ export const organization = pgTable(
 export const organizationRelations = relations(organization, ({ many }) => ({
   members: many(member),
   invitations: many(invitation),
+  paymentProcessorsConnections: many(paymentProcessorsConnections),
 }));
 
 // ==========================================

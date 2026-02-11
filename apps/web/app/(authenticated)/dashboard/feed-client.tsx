@@ -190,7 +190,7 @@ export function FeedClient() {
             Connect your Stripe account to start monitoring fraud detections in real-time.
           </p>
           <Button className="mt-2" variant="outline">
-            <Link href="/settings/stripe">Connect Stripe</Link>
+            <Link href="/dashboard/connections">Connect Stripe</Link>
           </Button>
         </div>
       </div>

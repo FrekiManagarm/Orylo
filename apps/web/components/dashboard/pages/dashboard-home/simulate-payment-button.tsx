@@ -96,14 +96,15 @@ export function SimulatePaymentButton() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger render={<Button
-        variant="outline"
-        className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-white/10 bg-zinc-900/50 hover:bg-white/5 hover:border-indigo-500/50 hover:text-indigo-400 transition-all group"
-      >
-        <Zap className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-        <span className="text-xs font-mono uppercase tracking-wider">Test Payment</span>
-      </Button>}
-      />
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-white/10 bg-zinc-900/50 hover:bg-white/5 hover:border-indigo-500/50 hover:text-indigo-400 transition-all group"
+        >
+          <Zap className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
+          <span className="text-xs font-mono uppercase tracking-wider">Test Payment</span>
+        </Button>
+      </DialogTrigger>
       <DialogContent className="border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-white font-semibold">
@@ -198,8 +199,8 @@ export function SimulatePaymentButton() {
             </label>
             <Select
               value={riskLevel}
-              onValueChange={(value: "low" | "medium" | "high" | null) =>
-                setRiskLevel(value ?? "medium")
+              onValueChange={(value: string | null) =>
+                setRiskLevel((value ?? "medium") as "low" | "medium" | "high")
               }
             >
               <SelectTrigger className="bg-zinc-900/50 border border-white/10 text-white focus-visible:ring-indigo-500">

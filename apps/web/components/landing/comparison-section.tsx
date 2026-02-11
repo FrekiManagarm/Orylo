@@ -92,7 +92,7 @@ export default function ComparisonSection() {
   return (
     <section
       id="comparison"
-      className="py-32 bg-black border-t border-white/10 relative overflow-hidden"
+      className="py-12 bg-black border-t border-white/10 relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-20 pointer-events-none" />

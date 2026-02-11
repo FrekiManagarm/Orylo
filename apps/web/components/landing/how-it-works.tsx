@@ -69,7 +69,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="py-32 bg-black border-t border-white/10 relative overflow-hidden"
+      className="py-12 bg-black border-t border-white/10 relative overflow-hidden"
     >
       {/* Background */}
       <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
@@ -99,46 +99,46 @@ export default function HowItWorks() {
             </div>
 
             <div className="space-y-12 md:space-y-24 relative">
-            {steps.map((step, i) => (
-              <div
-                key={i}
-                className={`step-item relative flex flex-col md:flex-row gap-8 md:gap-0 ${i % 2 !== 0 ? "md:flex-row-reverse" : ""
-                  } items-center`}
-              >
-                {/* Content Side */}
+              {steps.map((step, i) => (
                 <div
-                  className={`flex-1 pl-12 md:pl-0 ${i % 2 === 0
+                  key={i}
+                  className={`step-item relative flex flex-col md:flex-row gap-8 md:gap-0 ${i % 2 !== 0 ? "md:flex-row-reverse" : ""
+                    } items-center`}
+                >
+                  {/* Content Side */}
+                  <div
+                    className={`flex-1 pl-12 md:pl-0 ${i % 2 === 0
                       ? "md:pr-16 md:text-right"
                       : "md:pl-16 md:text-left"
-                    }`}
-                >
-                  <div className="group p-6 rounded-lg bg-black/40 border border-white/10 backdrop-blur-sm hover:border-indigo-500/50 transition-all duration-300 relative overflow-hidden">
-                    {/* Corner markers */}
-                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
-                    <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
-                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
-                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
-                    <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-                      STEP_0{i + 1}
-                    </span>
-                    <h3 className="text-xl font-bold font-mono text-white mt-2 mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed">
-                      {step.desc}
-                    </p>
+                      }`}
+                  >
+                    <div className="group p-6 rounded-lg bg-black/40 border border-white/10 backdrop-blur-sm hover:border-indigo-500/50 transition-all duration-300 relative overflow-hidden">
+                      {/* Corner markers */}
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
+                      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
+                      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-indigo-500 transition-colors" />
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-indigo-500 transition-colors" />
+                      <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+                        STEP_0{i + 1}
+                      </span>
+                      <h3 className="text-xl font-bold font-mono text-white mt-2 mb-2">
+                        {step.title}
+                      </h3>
+                      <p className="text-zinc-500 text-sm leading-relaxed">
+                        {step.desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                {/* Center Node */}
-                <div className="absolute left-[19px] md:left-1/2 -translate-x-1/2 top-[24px] md:top-1/2 md:-translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-black border-2 border-white/10 z-10 shadow-xl ring-2 ring-black">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full" />
-                </div>
+                  {/* Center Node */}
+                  <div className="absolute left-[19px] md:left-1/2 -translate-x-1/2 top-[24px] md:top-1/2 md:-translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-black border-2 border-white/10 z-10 shadow-xl ring-2 ring-black">
+                    <div className="w-3 h-3 bg-indigo-500 rounded-full" />
+                  </div>
 
-                {/* Empty Side for layout balance */}
-                <div className="hidden md:block md:flex-1" />
-              </div>
-            ))}
+                  {/* Empty Side for layout balance */}
+                  <div className="hidden md:block md:flex-1" />
+                </div>
+              ))}
             </div>
           </div>
         </div>

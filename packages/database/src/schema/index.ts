@@ -20,3 +20,4 @@ export * from "./ai-suggestions";
 export * from "./ai-explanations";
 export * from "./ai-rule-recommendations";
 export * from "./ai-feedback";
+export * from "./payment-processors-connections";

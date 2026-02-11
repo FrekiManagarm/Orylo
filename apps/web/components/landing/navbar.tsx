@@ -66,10 +66,12 @@ export default function Navbar() {
             Login
           </Link>
           <Button
-            render={<Link href="/sign-up">Start Free</Link>}
+            asChild
             size="sm"
             className="bg-white text-black hover:bg-zinc-200 rounded-full text-xs font-semibold px-4 h-8"
-          />
+          >
+            <Link href="/sign-up">Start Free</Link>
+          </Button>
         </div>
       </motion.nav>
     </div>
