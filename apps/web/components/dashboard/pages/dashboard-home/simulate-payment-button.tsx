@@ -51,7 +51,7 @@ export function SimulatePaymentButton() {
     if (connections.length > 0 && !selectedAccountId) {
       const firstActive = connections.find((c) => c.isActive);
       if (firstActive) {
-        setSelectedAccountId(firstActive.stripeAccountId);
+        setSelectedAccountId(firstActive.accountId ?? firstActive.stripeAccountId ?? "");
       }
     }
   }, [connections, selectedAccountId]);
@@ -91,7 +91,7 @@ export function SimulatePaymentButton() {
   // };
 
   const selectedConnection = connections.find(
-    (c) => c.stripeAccountId === selectedAccountId
+    (c) => (c.accountId ?? c.stripeAccountId) === selectedAccountId
   );
 
   return (
@@ -156,7 +156,7 @@ export function SimulatePaymentButton() {
                       <div className="flex items-center gap-2">
                         <Store className="h-4 w-4 text-indigo-400" />
                         <span>
-                          {`Compte ${selectedConnection.stripeAccountId.slice(-8)}`}
+                          {`Compte ${(selectedConnection.accountId ?? selectedConnection.stripeAccountId ?? "").slice(-8)}`}
                         </span>
                       </div>
                     )}
@@ -168,17 +168,17 @@ export function SimulatePaymentButton() {
                     .map((connection) => (
                       <SelectItem
                         key={connection.id}
-                        value={connection.stripeAccountId}
+                        value={connection.accountId ?? connection.stripeAccountId}
                         className="text-white"
                       >
                         <div className="flex items-center gap-2">
                           <Store className="h-4 w-4 text-indigo-400" />
                           <div className="flex flex-col">
                             <span>
-                              Compte Stripe {connection.stripeAccountId.slice(0, 21)}...
+                              Compte Stripe {(connection.accountId ?? connection.stripeAccountId ?? "").slice(0, 21)}...
                             </span>
                             <span className="text-xs text-zinc-500">
-                              {connection.stripeAccountId.slice(0, 21)}...
+                              {(connection.accountId ?? connection.stripeAccountId ?? "").slice(0, 21)}...
                             </span>
                           </div>
                         </div>

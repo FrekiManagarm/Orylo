@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { organization } from "@orylo/database";
-import { eq } from "drizzle-orm";
+import { paymentProcessorsConnections } from "@orylo/database";
+import { and, eq } from "drizzle-orm";
 
 /**
  * GET /api/stripe/callback
@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
  * Handles Stripe OAuth callback
  * - Verifies CSRF state parameter
  * - Exchanges authorization code for access token (AC3)
- * - Stores stripe_account_id in organizations table (AC3)
+ * - Stores connection in payment_processors_connections table (AC3)
  * - Handles errors with user-friendly messages (AC5)
  */
 const baseUrl = () =>
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // AC3 & AC6: Store stripe_account_id in organization table (multi-tenant isolated)
+    // AC3 & AC6: Store connection in payment_processors_connections (multi-tenant isolated)
     const fullOrg = await auth.api.getFullOrganization({
       headers: await headers(),
     });
@@ -109,17 +109,38 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await db
-      .update(organization)
-      .set({
-        stripeAccountId,
-        stripeAccessToken: tokenData.access_token ?? null,
-        stripeRefreshToken: tokenData.refresh_token ?? null,
-        stripeScope: tokenData.scope ?? null,
-        stripeConnectedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(organization.id, fullOrg.id));
+    const existingConnection = await db.query.paymentProcessorsConnections.findFirst({
+      where: and(
+        eq(paymentProcessorsConnections.organizationId, fullOrg.id),
+        eq(paymentProcessorsConnections.paymentProcessor, "stripe"),
+        eq(paymentProcessorsConnections.accountId, stripeAccountId),
+      ),
+    });
+
+    if (existingConnection) {
+      await db
+        .update(paymentProcessorsConnections)
+        .set({
+          accessToken: tokenData.access_token ?? "",
+          refreshToken: tokenData.refresh_token ?? "",
+          scope: tokenData.scope ?? "",
+          connectedAt: new Date(),
+          isActive: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(paymentProcessorsConnections.id, existingConnection.id));
+    } else {
+      await db.insert(paymentProcessorsConnections).values({
+        organizationId: fullOrg.id,
+        paymentProcessor: "stripe",
+        accountId: stripeAccountId,
+        accessToken: tokenData.access_token ?? "",
+        refreshToken: tokenData.refresh_token ?? "",
+        scope: tokenData.scope ?? "",
+        livemode: false,
+        isActive: true,
+      });
+    }
 
     // Clear CSRF state cookie — redirect to connect page for success message
     const response = NextResponse.redirect(

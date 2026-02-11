@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, webhookSecret } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { organization, webhookEvents } from "@orylo/database";
+import { paymentProcessorsConnections, webhookEvents } from "@orylo/database";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { processWebhookWithRetry } from "@/lib/webhook-processor";
@@ -92,14 +92,12 @@ export async function POST(request: NextRequest) {
     let organizationId: string | null = null;
 
     if (stripeAccountId) {
-      // Query organization by Stripe account ID
-      const orgs = await db
-        .select({ id: organization.id })
-        .from(organization)
-        .where(eq(organization.stripeAccountId, stripeAccountId))
-        .limit(1);
+      const connection = await db.query.paymentProcessorsConnections.findFirst({
+        where: eq(paymentProcessorsConnections.accountId, stripeAccountId),
+        columns: { organizationId: true },
+      });
 
-      organizationId = orgs[0]?.id || null;
+      organizationId = connection?.organizationId ?? null;
     }
 
     // For payment_intent.created, also try to get org from metadata

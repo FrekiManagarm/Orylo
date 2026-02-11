@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { organization } from "@orylo/database";
-import { eq } from "drizzle-orm";
+import { paymentProcessorsConnections } from "@orylo/database";
+import { and, eq } from "drizzle-orm";
 import { ConnectStripeClient } from "./connect-stripe-client";
 
 export const dynamic = "force-dynamic";
@@ -13,16 +13,17 @@ export default async function ConnectStripePage() {
     headers: await headers(),
   });
 
-  console.log(org, "org");
-
   let stripeAccountId: string | null = null;
   if (org?.id) {
-    const [row] = await db
-      .select({ stripeAccountId: organization.stripeAccountId })
-      .from(organization)
-      .where(eq(organization.id, org.id))
-      .limit(1);
-    stripeAccountId = row?.stripeAccountId ?? null;
+    const connection = await db.query.paymentProcessorsConnections.findFirst({
+      where: and(
+        eq(paymentProcessorsConnections.organizationId, org.id),
+        eq(paymentProcessorsConnections.paymentProcessor, "stripe"),
+        eq(paymentProcessorsConnections.isActive, true),
+      ),
+      columns: { accountId: true },
+    });
+    stripeAccountId = connection?.accountId ?? null;
   }
 
   const stripeConnected = Boolean(stripeAccountId);

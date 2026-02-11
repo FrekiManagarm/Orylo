@@ -2,8 +2,8 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { organization } from "@orylo/database";
-import { eq } from "drizzle-orm";
+import { paymentProcessorsConnections } from "@orylo/database";
+import { and, eq } from "drizzle-orm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,22 +49,16 @@ async function StripeConnectionStatus() {
     );
   }
 
-  // Query organization with stripeAccountId
-  const org = await db.query.organization.findFirst({
-    where: eq(organization.id, organizationId),
+  const connection = await db.query.paymentProcessorsConnections.findFirst({
+    where: and(
+      eq(paymentProcessorsConnections.organizationId, organizationId),
+      eq(paymentProcessorsConnections.paymentProcessor, "stripe"),
+      eq(paymentProcessorsConnections.isActive, true),
+    ),
+    columns: { accountId: true, connectedAt: true },
   });
 
-  // Get stripeAccountId from direct field or metadata (backward compatibility)
-  const stripeAccountId = org?.stripeAccountId ||
-    (org?.metadata ? (() => {
-      try {
-        const metadata = JSON.parse(org.metadata);
-        return metadata.stripeAccountId || null;
-      } catch {
-        return null;
-      }
-    })() : null);
-
+  const stripeAccountId = connection?.accountId ?? null;
   const isConnected = !!stripeAccountId;
 
   return (
@@ -91,7 +85,7 @@ async function StripeConnectionStatus() {
         </div>
 
         {/* AC3: Account ID and Date if connected */}
-        {isConnected && stripeAccountId && org && (
+        {isConnected && stripeAccountId && connection && (
           <div className="space-y-2">
             <div>
               <span className="text-sm font-medium">Account ID: </span>
@@ -101,11 +95,11 @@ async function StripeConnectionStatus() {
                   : stripeAccountId}
               </span>
             </div>
-            {org.createdAt && (
+            {connection.connectedAt && (
               <div>
                 <span className="text-sm font-medium">Connected on: </span>
                 <span className="text-sm text-muted-foreground">
-                  {new Date(org.createdAt).toLocaleDateString("fr-FR", {
+                  {new Date(connection.connectedAt).toLocaleDateString("fr-FR", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",

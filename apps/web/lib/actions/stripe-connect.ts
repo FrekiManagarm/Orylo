@@ -2,12 +2,11 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "../db";
-import { StripeConnection, stripeConnections } from "../db/schemas";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 import { getCurrentOrganization, requireAuthAndOrganization } from "./auth";
-import { getConnectedStripeClient, stripePlatformClient } from "../stripe";
-import { decrypt } from "../stripe/encryption";
+import { getConnectedStripeClient, stripe } from "../stripe";
+import { decrypt } from "../encryption";
 import { PaymentProcessorsConnections, paymentProcessorsConnections } from "@orylo/database";
 
 export async function disconnectStripeAccount(connectionId: string) {
@@ -30,7 +29,7 @@ export async function disconnectStripeAccount(connectionId: string) {
 
     // Deauthorize the account
     try {
-      await stripePlatformClient.oauth.deauthorize({
+      await stripe.oauth.deauthorize({
         client_id: process.env.STRIPE_CONNECT_CLIENT_ID!,
         stripe_user_id: connection.accountId,
       });
@@ -41,11 +40,11 @@ export async function disconnectStripeAccount(connectionId: string) {
 
     // Delete webhook endpoint if exists
     // Les webhooks Connect sont gérés au niveau plateforme
-    if (connection.webhookSecret) {
+    if (connection.webhookEndpointId) {
       try {
-        await stripePlatformClient.webhookEndpoints.del(connection.webhookSecret);
+        await stripe.webhookEndpoints.del(connection.webhookEndpointId);
         console.log(
-          `✅ Deleted Connect webhook ${connection.webhookSecret}`,
+          `✅ Deleted Connect webhook ${connection.webhookEndpointId}`,
         );
       } catch (error) {
         console.warn("Error deleting webhook endpoint:", error);
@@ -54,15 +53,15 @@ export async function disconnectStripeAccount(connectionId: string) {
 
     // Mark connection as inactive
     await db
-      .update(stripeConnections)
+      .update(paymentProcessorsConnections)
       .set({ isActive: false })
-      .where(eq(stripeConnections.id, connection.id));
+      .where(eq(paymentProcessorsConnections.id, connection.id));
 
     console.log(
-      `✅ Disconnected Stripe account ${connection.stripeAccountId} for organization ${organization.id}`,
+      `✅ Disconnected Stripe account ${connection.accountId} for organization ${organization.id}`,
     );
 
-    await db.delete(stripeConnections).where(and(eq(stripeConnections.organizationId, organization.id), eq(stripeConnections.id, connectionId)));
+    await db.delete(paymentProcessorsConnections).where(and(eq(paymentProcessorsConnections.organizationId, organization.id), eq(paymentProcessorsConnections.id, connectionId)));
 
     revalidatePath("/dashboard");
 

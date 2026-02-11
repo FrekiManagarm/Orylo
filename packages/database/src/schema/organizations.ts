@@ -100,18 +100,7 @@ export const organization = pgTable(
     // Contact Information
     phoneNumber: text("phone_number"),
 
-    // ==========================================
-    // STRIPE CONNECT OAUTH
-    // ==========================================
-    stripeAccountId: text("stripe_account_id").unique(),
-    stripeAccessToken: text("stripe_access_token"),
-    stripeRefreshToken: text("stripe_refresh_token"),
-    stripeScope: text("stripe_scope"),
-    stripeConnectedAt: timestamp("stripe_connected_at"),
-
-    // Webhook configuration
-    webhookEndpointId: text("webhook_endpoint_id"),
-    webhookSecret: text("webhook_secret"),
+    // Stripe Connect: voir payment_processors_connections
 
     // ==========================================
     // SUBSCRIPTION & BILLING
@@ -182,7 +171,6 @@ export const organization = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [
-    index("organization_stripe_account_idx").on(table.stripeAccountId),
     index("organization_plan_idx").on(table.plan),
     index("organization_subscription_status_idx").on(table.subscriptionStatus),
     index("organization_slug_idx").on(table.slug),
