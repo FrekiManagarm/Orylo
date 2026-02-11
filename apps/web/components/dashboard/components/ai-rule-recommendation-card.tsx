@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { Loader2, Sparkles, CheckCircle2, Eye } from "lucide-react";
 import type { SimpleCondition } from "@/lib/fraud/custom-rules";
@@ -198,19 +198,16 @@ export function AIRuleRecommendationCard({
               {Math.round(recommendation.confidence * 100)}%
             </span>
           </div>
-          <Progress value={recommendation.confidence * 100}>
-            <ProgressTrack className="h-2">
-              <ProgressIndicator
-                className={
-                  recommendation.confidence >= 0.8
-                    ? "bg-green-600"
-                    : recommendation.confidence >= 0.5
-                      ? "bg-yellow-600"
-                      : "bg-red-600"
-                }
-              />
-            </ProgressTrack>
-          </Progress>
+          <Progress
+            value={recommendation.confidence * 100}
+            indicatorClassName={
+              recommendation.confidence >= 0.8
+                ? "bg-green-600"
+                : recommendation.confidence >= 0.5
+                  ? "bg-yellow-600"
+                  : "bg-red-600"
+            }
+          />
         </div>
 
         {/* Reasoning */}

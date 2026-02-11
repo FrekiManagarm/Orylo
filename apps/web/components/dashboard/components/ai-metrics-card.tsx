@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, Sparkles } from "lucide-react";
 
@@ -135,19 +135,16 @@ export function AIMetricsCard({
               )}
             </div>
           </div>
-          <Progress value={accuracyPercent}>
-            <ProgressTrack className="h-3">
-              <ProgressIndicator
-                className={
-                  accuracyPercent >= 70
-                    ? "bg-green-600"
-                    : accuracyPercent >= 50
-                      ? "bg-yellow-600"
-                      : "bg-red-600"
-                }
-              />
-            </ProgressTrack>
-          </Progress>
+          <Progress
+            value={accuracyPercent}
+            indicatorClassName={
+              accuracyPercent >= 70
+                ? "bg-green-600"
+                : accuracyPercent >= 50
+                  ? "bg-yellow-600"
+                  : "bg-red-600"
+            }
+          />
         </div>
 
         {/* Counts */}
