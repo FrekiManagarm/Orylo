@@ -92,7 +92,7 @@ export const auth = betterAuth({
           try {
             const org = await createUserOrganization(user.id, user.name);
             console.log(
-              `[Onboarding] Created organization ${org.name} (${org.slug}) for user ${user.email}`
+              `[Onboarding] Created organization ${org?.name} (${org?.slug}) for user ${user.email}`
             );
           } catch (error) {
             console.error("[Onboarding] Failed to create organization:", error);
