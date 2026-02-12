@@ -156,7 +156,6 @@ export const organization = pgTable(
         shadowMode: false,
       })
       .notNull(),
-    shareFeedbackForModelImprovement: boolean("share_feedback_for_model_improvement").default(false).notNull(),
 
     // ==========================================
     // ONBOARDING & METADATA
