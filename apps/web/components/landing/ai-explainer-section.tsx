@@ -55,7 +55,7 @@ export default function AIExplainerSection() {
     () => {
       const items = gsap.utils.toArray<HTMLElement>(".ai-card");
       const arrows = gsap.utils.toArray<HTMLElement>(".ai-arrow");
-      
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container.current,
@@ -88,7 +88,7 @@ export default function AIExplainerSection() {
     <section
       id="how-orylo-ai-works"
       ref={container}
-      className="py-24 bg-black border-t border-white/5 relative overflow-hidden"
+      className="py-12 bg-black border-t border-white/5 relative overflow-hidden"
     >
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-indigo-900/10 blur-[100px] rounded-full pointer-events-none" />

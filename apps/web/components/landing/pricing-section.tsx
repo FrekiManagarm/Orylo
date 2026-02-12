@@ -94,7 +94,7 @@ export default function PricingSection() {
   );
 
   return (
-    <section id="pricing" className="py-32 bg-black relative">
+    <section id="pricing" className="py-12 bg-black relative">
       <div ref={container} className="container mx-auto px-4 relative z-10">
         <h2 className="text-4xl md:text-6xl font-bold text-white mb-12 text-center tracking-tighter">
           ACCESS <span className="text-zinc-600">TIERS</span>
@@ -186,12 +186,14 @@ export default function PricingSection() {
 
                 <CardFooter>
                   <Button
-                    render={<Link href={plan.href}>{plan.cta}</Link>}
+                    asChild
                     className={`w-full rounded-sm h-12 font-mono text-sm font-bold tracking-widest uppercase transition-all duration-300 ${plan.popular
                       ? "bg-white text-black hover:bg-indigo-50 hover:scale-[1.02] shadow-lg"
                       : "bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10 hover:border-white/30"
                       }`}
-                  />
+                  >
+                    <Link href={plan.href}>{plan.cta}</Link>
+                  </Button>
                 </CardFooter>
               </Card>
             );

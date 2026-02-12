@@ -53,12 +53,13 @@ export const StatsGrid = async ({
       textColor: "text-green-600",
     },
     {
-      title: "Avg Risk Score",
-      value: stats.avgRiskScore.value ? stats.avgRiskScore.value.toFixed(2) : "0.00",
-      change: stats.avgRiskScore.change,
-      trend: stats.avgRiskScore.change <= 0 ? "up" : "down", // Inversé car un score plus bas est meilleur
+      title: "At Risk (Review)",
+      value: formatNumber(stats.atRisk.value),
+      change: stats.atRisk.change,
+      trend: stats.atRisk.change <= 0 ? "up" : "down", // Less is better
       icon: Zap,
       description: "vs last month",
+      textColor: "text-yellow-500",
     },
   ];
 

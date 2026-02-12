@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import { Slider } from "@/components/ui/slider";
-import { motion } from "framer-motion";
 import { Terminal } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -43,7 +42,7 @@ export default function RoiCalculator() {
     <section
       id="roi"
       ref={container}
-      className="py-32 bg-black border-t border-white/5 relative overflow-hidden"
+      className="py-12 bg-black border-t border-white/5 relative overflow-hidden"
     >
       <div className="container mx-auto px-4">
         <div className="roi-content opacity-1">
@@ -73,9 +72,9 @@ export default function RoiCalculator() {
                       <span className="text-zinc-600 font-mono mb-1">EUR</span>
                     </div>
                     <Slider
-                      value={monthlyRevenue}
+                      value={[monthlyRevenue]}
                       onValueChange={(value) =>
-                        setMonthlyRevenue(value as number)
+                        setMonthlyRevenue(value[0] as number)
                       }
                       min={5000}
                       max={500000}
@@ -94,9 +93,9 @@ export default function RoiCalculator() {
                       </span>
                     </div>
                     <Slider
-                      value={chargebackRate}
+                      value={[chargebackRate]}
                       onValueChange={(value) =>
-                        setChargebackRate(value as number)
+                        setChargebackRate(value[0] as number)
                       }
                       min={0.1}
                       max={5}

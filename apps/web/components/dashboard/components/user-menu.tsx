@@ -53,19 +53,18 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={(props) => (
-          <button
-            {...props}
-            className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            aria-label="Open user menu"
-          >
-            <Avatar size="default">
-              {user.image && <AvatarImage src={user.image} alt={userName} />}
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-          </button>
-        )}
-      />
+        asChild
+      >
+        <button
+          className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          aria-label="Open user menu"
+        >
+          <Avatar size="default">
+            {user.image && <AvatarImage src={user.image} alt={userName} />}
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
@@ -79,49 +78,42 @@ export function UserMenu() {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          render={(props) => (
-            <button
-              {...props}
-              className="w-full"
-              onClick={() => {
-                // TODO: Navigate to profile page when created
-                router.push("/dashboard");
-              }}
-            >
-              <User className="mr-2 h-4 w-4" />
-              <span>Profil</span>
-            </button>
-          )}
-        />
-        <DropdownMenuItem
-          render={(props) => (
-            <button
-              {...props}
-              className="w-full"
-              onClick={() => {
-                router.push("/settings/stripe");
-              }}
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Paramètres</span>
-            </button>
-          )}
-        />
+        <DropdownMenuItem asChild>
+          <button
+            className="w-full"
+            onClick={() => {
+              // TODO: Navigate to profile page when created
+              router.push("/dashboard");
+            }}
+          >
+            <User className="mr-2 h-4 w-4" />
+            <span>Profil</span>
+          </button>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <button
+            className="w-full"
+            onClick={() => {
+              router.push("/settings/stripe");
+            }}
+          >
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Paramètres</span>
+          </button>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
-          render={(props) => (
-            <button
-              {...props}
-              className="w-full"
-              onClick={handleSignOut}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Déconnexion</span>
-            </button>
-          )}
-        />
+          asChild
+        >
+          <button
+            className="w-full"
+            onClick={handleSignOut}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Déconnexion</span>
+          </button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

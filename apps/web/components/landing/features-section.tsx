@@ -135,7 +135,7 @@ export default function FeaturesSection() {
   );
 
   return (
-    <section id="features" className="py-32 bg-black relative overflow-hidden">
+    <section id="features" className="py-12 bg-black relative overflow-hidden">
       <div ref={container} className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-white/10 pb-8">
           <div>

@@ -93,7 +93,7 @@ export default function Footer() {
 
         <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-700">
           <div>
-            © {new Date().getFullYear()} Orylo Inc. // All systems nominal.
+            © {new Date().getFullYear()} Orylo Inc.
           </div>
 
           <div className="flex items-center gap-6">

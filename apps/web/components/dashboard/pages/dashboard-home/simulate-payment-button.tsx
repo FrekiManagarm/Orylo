@@ -51,7 +51,7 @@ export function SimulatePaymentButton() {
     if (connections.length > 0 && !selectedAccountId) {
       const firstActive = connections.find((c) => c.isActive);
       if (firstActive) {
-        setSelectedAccountId(firstActive.stripeAccountId);
+        setSelectedAccountId(firstActive.accountId ?? firstActive.stripeAccountId ?? "");
       }
     }
   }, [connections, selectedAccountId]);
@@ -91,19 +91,20 @@ export function SimulatePaymentButton() {
   // };
 
   const selectedConnection = connections.find(
-    (c) => c.stripeAccountId === selectedAccountId
+    (c) => (c.accountId ?? c.stripeAccountId) === selectedAccountId
   );
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger render={<Button
-        variant="outline"
-        className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-white/10 bg-zinc-900/50 hover:bg-white/5 hover:border-indigo-500/50 hover:text-indigo-400 transition-all group"
-      >
-        <Zap className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
-        <span className="text-xs font-mono uppercase tracking-wider">Test Payment</span>
-      </Button>}
-      />
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-white/10 bg-zinc-900/50 hover:bg-white/5 hover:border-indigo-500/50 hover:text-indigo-400 transition-all group"
+        >
+          <Zap className="h-6 w-6 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
+          <span className="text-xs font-mono uppercase tracking-wider">Test Payment</span>
+        </Button>
+      </DialogTrigger>
       <DialogContent className="border border-white/10 bg-zinc-900/95 backdrop-blur-xl shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-white font-semibold">
@@ -155,7 +156,7 @@ export function SimulatePaymentButton() {
                       <div className="flex items-center gap-2">
                         <Store className="h-4 w-4 text-indigo-400" />
                         <span>
-                          {`Compte ${selectedConnection.stripeAccountId.slice(-8)}`}
+                          {`Compte ${(selectedConnection.accountId ?? selectedConnection.stripeAccountId ?? "").slice(-8)}`}
                         </span>
                       </div>
                     )}
@@ -167,17 +168,17 @@ export function SimulatePaymentButton() {
                     .map((connection) => (
                       <SelectItem
                         key={connection.id}
-                        value={connection.stripeAccountId}
+                        value={connection.accountId ?? connection.stripeAccountId}
                         className="text-white"
                       >
                         <div className="flex items-center gap-2">
                           <Store className="h-4 w-4 text-indigo-400" />
                           <div className="flex flex-col">
                             <span>
-                              Compte Stripe {connection.stripeAccountId.slice(0, 21)}...
+                              Compte Stripe {(connection.accountId ?? connection.stripeAccountId ?? "").slice(0, 21)}...
                             </span>
                             <span className="text-xs text-zinc-500">
-                              {connection.stripeAccountId.slice(0, 21)}...
+                              {(connection.accountId ?? connection.stripeAccountId ?? "").slice(0, 21)}...
                             </span>
                           </div>
                         </div>
@@ -198,8 +199,8 @@ export function SimulatePaymentButton() {
             </label>
             <Select
               value={riskLevel}
-              onValueChange={(value: "low" | "medium" | "high" | null) =>
-                setRiskLevel(value ?? "medium")
+              onValueChange={(value: string | null) =>
+                setRiskLevel((value ?? "medium") as "low" | "medium" | "high")
               }
             >
               <SelectTrigger className="bg-zinc-900/50 border border-white/10 text-white focus-visible:ring-indigo-500">

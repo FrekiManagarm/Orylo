@@ -39,12 +39,12 @@ export default function FAQSection() {
   useGSAP(
     () => {
       const items = gsap.utils.toArray<HTMLElement>(".faq-item");
-      
+
       gsap.fromTo(
         items,
-        { 
-          y: 20, 
-          opacity: 0 
+        {
+          y: 20,
+          opacity: 0
         },
         {
           y: 0,
@@ -62,7 +62,7 @@ export default function FAQSection() {
   );
 
   return (
-    <section className="py-32 bg-black border-t border-white/5">
+    <section className="py-12 bg-black border-t border-white/5">
       <div ref={container} className="container mx-auto px-4 max-w-4xl">
         <h2 className="text-3xl md:text-5xl font-bold text-white mb-16 text-center tracking-tighter">
           SYSTEM <span className="text-zinc-600">FAQ</span>
@@ -79,8 +79,8 @@ export default function FAQSection() {
                 className="flex items-center justify-between w-full p-6 text-left hover:bg-white/5 transition-colors group"
               >
                 <span className="text-base md:text-lg font-mono text-zinc-300 group-hover:text-white transition-colors">
-                    <span className="text-indigo-500 mr-4">0{i+1}.</span>
-                    {faq.question}
+                  <span className="text-indigo-500 mr-4">0{i + 1}.</span>
+                  {faq.question}
                 </span>
                 <ChevronDown
                   className={cn(
@@ -89,7 +89,7 @@ export default function FAQSection() {
                   )}
                 />
               </button>
-              
+
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-in-out bg-black/50",
@@ -97,10 +97,10 @@ export default function FAQSection() {
                 )}
               >
                 <div className="p-6 pt-2 border-t border-white/5">
-                    <div className="font-mono text-xs text-zinc-600 mb-2">{">"} RESPONSE_LOG:</div>
-                    <p className="text-zinc-400 leading-relaxed text-sm">
+                  <div className="font-mono text-xs text-zinc-600 mb-2">{">"} RESPONSE_LOG:</div>
+                  <p className="text-zinc-400 leading-relaxed text-sm">
                     {faq.answer}
-                    </p>
+                  </p>
                 </div>
               </div>
             </div>

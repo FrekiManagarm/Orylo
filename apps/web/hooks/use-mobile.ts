@@ -1,39 +1,19 @@
-"use client";
+import * as React from "react"
 
-import { useEffect, useState, useRef } from "react";
+const MOBILE_BREAKPOINT = 768
 
-/**
- * Hook to detect if the current viewport is mobile
- * Uses window.matchMedia to detect screen size < 768px
- */
 export function useIsMobile() {
-  // Initialize with a function to avoid SSR mismatch
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 768px)").matches;
-  });
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 
-  const hasInitialized = useRef(false);
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
 
-  useEffect(() => {
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    
-    // Create event listener
-    const handleChange = (event: MediaQueryListEvent) => {
-      setIsMobile(event.matches);
-    };
-
-    // Add listener
-    mediaQuery.addEventListener("change", handleChange);
-
-    // Cleanup
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
-  return isMobile;
+  return !!isMobile
 }

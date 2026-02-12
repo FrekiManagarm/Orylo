@@ -65,17 +65,7 @@ export async function createUserOrganization(userId: string, userName: string) {
     body: {
       name: orgName,
       slug,
-      keepCurrentActiveOrganization: false,
     },
-  });
-
-  // Add user as owner member
-  await db.insert(member).values({
-    id: createId(),
-    organizationId: newOrg?.id || "",
-    userId: userId,
-    role: "owner", // Better Auth default role for organization creator
-    createdAt: new Date(),
   });
 
   return newOrg;

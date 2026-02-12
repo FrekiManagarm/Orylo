@@ -99,7 +99,7 @@ export default function HeroSection() {
   return (
     <section
       ref={container}
-      className="relative min-h-[110vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden bg-black selection:bg-indigo-500/30"
+      className="relative min-h-[110vh] flex flex-col items-center justify-center pt-32 pb-12 overflow-hidden bg-black selection:bg-indigo-500/30"
     >
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-grid-white/[0.02] mask-image-radial-gradient-ellipse-at-center-transparent-20%-black" />
@@ -150,10 +150,12 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-24 opacity-0"
         >
           <Button
-            render={<Link href="/auth/register">Deploy Protection</Link>}
+            asChild
             size="lg"
             className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 h-12 text-sm font-bold uppercase tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-transform hover:scale-105"
-          />
+          >
+            <Link href="/auth/register">Deploy Protection</Link>
+          </Button>
           <div className="text-xs text-zinc-500 font-mono flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             SYSTEM OPERATIONAL

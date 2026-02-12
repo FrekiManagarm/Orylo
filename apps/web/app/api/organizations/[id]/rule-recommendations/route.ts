@@ -151,7 +151,6 @@ export async function GET(
     );
     // .returning() renvoie un tableau par insert → aplatir pour obtenir les lignes
     const insertedRows = insertResults.flat();
-
     const formattedRecommendations = insertedRows.map((r) => ({
       id: r.id,
       ...(r.ruleSuggestion as object),

@@ -64,9 +64,9 @@ export function proMenuList(pathname: string): Group[] {
       groupLabel: "Settings",
       menus: [
         {
-          href: `/dashboard/connect`,
-          label: "Stripe Connect",
-          active: pathname === `/dashboard/connect`,
+          href: `/dashboard/connections`,
+          label: "Connections",
+          active: pathname === `/dashboard/connections`,
           icon: LinkIcon,
         },
         {

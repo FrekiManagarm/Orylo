@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { organization } from "@orylo/database";
-import { eq } from "drizzle-orm";
+import { paymentProcessorsConnections } from "@orylo/database";
+import { and, eq } from "drizzle-orm";
 
 /**
  * GET /api/stripe/callback
@@ -11,9 +11,12 @@ import { eq } from "drizzle-orm";
  * Handles Stripe OAuth callback
  * - Verifies CSRF state parameter
  * - Exchanges authorization code for access token (AC3)
- * - Stores stripe_account_id in organizations table (AC3)
+ * - Stores connection in payment_processors_connections table (AC3)
  * - Handles errors with user-friendly messages (AC5)
  */
+const baseUrl = () =>
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
 export async function GET(request: NextRequest) {
   try {
     // Validate Better Auth session
@@ -22,9 +25,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/login?error=unauthorized`
-      );
+      return NextResponse.redirect(`${baseUrl()}/login?error=unauthorized`);
     }
 
     // Extract query parameters
@@ -35,10 +36,11 @@ export async function GET(request: NextRequest) {
     const errorDescription = searchParams.get("error_description");
 
     // Handle OAuth errors from Stripe
+
     if (error) {
       console.error("Stripe OAuth error:", error, errorDescription);
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`,
       );
     }
 
@@ -46,29 +48,32 @@ export async function GET(request: NextRequest) {
     const storedState = request.cookies.get("stripe_oauth_state")?.value;
     if (!state || !storedState || state !== storedState) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent("Connection expired. Please restart the process.")}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent("Connection expired. Please restart the process.")}`,
       );
     }
 
     // Verify authorization code exists
     if (!code) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`,
       );
     }
 
     // Exchange authorization code for access token
-    const tokenResponse = await fetch("https://connect.stripe.com/oauth/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+    const tokenResponse = await fetch(
+      "https://connect.stripe.com/oauth/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_secret: process.env.STRIPE_SECRET_KEY!,
+          code,
+          grant_type: "authorization_code",
+        }),
       },
-      body: new URLSearchParams({
-        client_secret: process.env.STRIPE_SECRET_KEY!,
-        code,
-        grant_type: "authorization_code",
-      }),
-    });
+    );
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.json();
@@ -81,7 +86,7 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent(errorMessage)}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent(errorMessage)}`,
       );
     }
 
@@ -90,40 +95,58 @@ export async function GET(request: NextRequest) {
 
     if (!stripeAccountId) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent("Failed to connect Stripe. Please try again.")}`,
       );
     }
 
-    // AC3 & AC6: Store stripe_account_id in organizations table (multi-tenant isolated)
-    // Get active organization from session
-    // Note: In Better Auth with organization plugin, the active org is stored in session metadata
-    // For this implementation, we'll use the first organization or require explicit org selection
-    // TODO: In production, get from session.activeOrganization or implement org selector UI
+    // AC3 & AC6: Store connection in payment_processors_connections (multi-tenant isolated)
+    const fullOrg = await auth.api.getFullOrganization({
+      headers: await headers(),
+    });
 
-    // For now, we'll get the user's primary organization
-    // This is a simplified approach for MVP - production should have explicit org selection
-    // Better Auth organization plugin stores org in session.user.organizationId
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const organizationId = (session.user as any).organizationId as string | undefined;
-
-    if (!organizationId) {
+    if (!fullOrg?.id) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent("No organization found. Please contact support.")}`
+        `${baseUrl()}/dashboard/connect?error=${encodeURIComponent("No organization found. Please contact support.")}`,
       );
     }
 
-    // Update organization with Stripe account ID
-    await db
-      .update(organization)
-      .set({
-        stripeAccountId,
-        updatedAt: new Date(),
-      })
-      .where(eq(organization.id, organizationId));
+    const existingConnection =
+      await db.query.paymentProcessorsConnections.findFirst({
+        where: and(
+          eq(paymentProcessorsConnections.organizationId, fullOrg.id),
+          eq(paymentProcessorsConnections.paymentProcessor, "stripe"),
+          eq(paymentProcessorsConnections.accountId, stripeAccountId),
+        ),
+      });
 
-    // Clear CSRF state cookie
+    if (existingConnection) {
+      await db
+        .update(paymentProcessorsConnections)
+        .set({
+          accessToken: tokenData.access_token ?? "",
+          refreshToken: tokenData.refresh_token ?? "",
+          scope: tokenData.scope ?? "",
+          connectedAt: new Date(),
+          isActive: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(paymentProcessorsConnections.id, existingConnection.id));
+    } else {
+      await db.insert(paymentProcessorsConnections).values({
+        organizationId: fullOrg.id,
+        paymentProcessor: "stripe",
+        accountId: stripeAccountId,
+        accessToken: tokenData.access_token ?? "",
+        refreshToken: tokenData.refresh_token ?? "",
+        scope: tokenData.scope ?? "",
+        livemode: false,
+        isActive: true,
+      });
+    }
+
+    // Clear CSRF state cookie — redirect to connect page for success message
     const response = NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?success=${encodeURIComponent("Stripe connected successfully")}` // AC4
+      `${baseUrl()}/dashboard/connect?success=${encodeURIComponent("Stripe connected successfully")}`, // AC4
     );
     response.cookies.delete("stripe_oauth_state");
 
@@ -132,15 +155,16 @@ export async function GET(request: NextRequest) {
     console.error("Stripe OAuth callback error:", error);
 
     // AC5: Network error handling
-    const errorMessage = error instanceof Error
-      ? `Network error: ${error.message}`
-      : "Network error. Check your internet connection.";
+    const errorMessage =
+      error instanceof Error
+        ? `Network error: ${error.message}`
+        : "Network error. Check your internet connection.";
     if (error instanceof Error) {
       console.error("Error details:", error.message);
     }
 
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?error=${encodeURIComponent(errorMessage)}`
+      `${baseUrl()}/dashboard/connect?error=${encodeURIComponent(errorMessage)}`,
     );
   }
 }

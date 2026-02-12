@@ -86,15 +86,15 @@ export function DashboardHeader() {
                       </BreadcrumbPage>
                     ) : (
                       <BreadcrumbLink
-                        render={
-                          <Link
-                            href={crumb.href}
-                            className="text-zinc-400 hover:text-white font-mono text-sm transition-colors"
-                          >
-                            {crumb.title}
-                          </Link>
-                        }
-                      />
+                        asChild
+                      >
+                        <Link
+                          href={crumb.href}
+                          className="text-zinc-400 hover:text-white font-mono text-sm transition-colors"
+                        >
+                          {crumb.title}
+                        </Link>
+                      </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
                   {!isLast ? (

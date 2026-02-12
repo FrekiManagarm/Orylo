@@ -380,7 +380,8 @@ export async function getDashboardStats() {
     const currentMonthStats = await db
       .select({
         totalTransactions: sql<number>`count(*)::int`,
-        totalBlocked: sql<number>`count(case when ${fraudDetections.decision} =  'BLOCK' then 1 end)::int`,
+        totalBlocked: sql<number>`count(case when ${fraudDetections.decision} = 'BLOCK' then 1 end)::int`,
+        totalAtRisk: sql<number>`count(case when ${fraudDetections.decision} = 'REVIEW' then 1 end)::int`,
         totalAmount: sql<number>`sum(case when ${fraudDetections.decision} = 'BLOCK' then ${fraudDetections.amount} else 0 end)::int`,
         avgRiskScore: sql<number>`avg(${fraudDetections.score})::int`,
       })
@@ -398,6 +399,7 @@ export async function getDashboardStats() {
       .select({
         totalTransactions: sql<number>`count(*)::int`,
         totalBlocked: sql<number>`count(case when ${fraudDetections.decision} = 'BLOCK' then 1 end)::int`,
+        totalAtRisk: sql<number>`count(case when ${fraudDetections.decision} = 'REVIEW' then 1 end)::int`,
         totalAmount: sql<number>`sum(case when ${fraudDetections.decision} = 'BLOCK' then ${fraudDetections.amount} else 0 end)::int`,
         avgRiskScore: sql<number>`avg(${fraudDetections.score})::int`,
       })
@@ -413,6 +415,7 @@ export async function getDashboardStats() {
     const current = currentMonthStats[0] || {
       totalTransactions: 0,
       totalBlocked: 0,
+      totalAtRisk: 0,
       totalAmount: 0,
       avgRiskScore: 0,
     };
@@ -420,6 +423,7 @@ export async function getDashboardStats() {
     const previous = lastMonthStats[0] || {
       totalTransactions: 0,
       totalBlocked: 0,
+      totalAtRisk: 0,
       totalAmount: 0,
       avgRiskScore: 0,
     };
@@ -445,6 +449,10 @@ export async function getDashboardStats() {
       moneySaved: {
         value: current.totalAmount, // Amount in cents
         change: calculateChange(current.totalAmount, previous.totalAmount),
+      },
+      atRisk: {
+        value: current.totalAtRisk,
+        change: calculateChange(current.totalAtRisk, previous.totalAtRisk),
       },
       avgRiskScore: {
         value: current.avgRiskScore,
