@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
-import { aiSuggestions, fraudDetections } from "@orylo/database";
+import { aiSuggestions } from "@orylo/database";
 import { eq, and } from "drizzle-orm";
 import { SuggestionIdSchema } from "@/lib/validation/ai-suggestions";
 import { suggestionRejectRateLimit } from "@/lib/rate-limit";
@@ -10,9 +10,9 @@ import { z } from "zod";
 
 /**
  * POST /api/suggestions/[id]/reject
- * 
+ *
  * Story 4.1: AC5 - Reject AI suggestion
- * 
+ *
  * Security (ADR-010):
  * - Validates suggestionId with Zod schema
  * - Verifies Better Auth session
@@ -25,7 +25,7 @@ const RejectSuggestionSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // 1. Check session
@@ -46,7 +46,7 @@ export async function POST(
     if (!organizationId) {
       return Response.json(
         { error: "Organization ID not found in session" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,14 +55,13 @@ export async function POST(
     const validatedSuggestionId = SuggestionIdSchema.parse(id);
 
     // 4. Rate limiting
-    const rateLimitResult = await suggestionRejectRateLimit.limit(organizationId);
+    const rateLimitResult =
+      await suggestionRejectRateLimit.limit(organizationId);
     if (!rateLimitResult.success) {
       return Response.json(
         {
           error: "Rate limit exceeded",
-          retryAfter: Math.ceil(
-            (rateLimitResult.reset - Date.now()) / 1000
-          ),
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
         },
         {
           status: 429,
@@ -70,7 +69,7 @@ export async function POST(
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
           },
-        }
+        },
       );
     }
 
@@ -85,16 +84,13 @@ export async function POST(
       .where(
         and(
           eq(aiSuggestions.id, validatedSuggestionId),
-          eq(aiSuggestions.organizationId, organizationId)
-        )
+          eq(aiSuggestions.organizationId, organizationId),
+        ),
       )
       .limit(1);
 
     if (!suggestion[0]) {
-      return Response.json(
-        { error: "Suggestion not found" },
-        { status: 404 }
-      );
+      return Response.json({ error: "Suggestion not found" }, { status: 404 });
     }
 
     // 7. Update suggestion as rejected
@@ -110,7 +106,7 @@ export async function POST(
     // 8. Story 4.4: Track feedback (AC1, AC2, AC3)
     const detectionContext = await getDetectionContext(
       organizationId,
-      suggestion[0].detectionId
+      suggestion[0].detectionId,
     );
     if (detectionContext) {
       await trackFeedback(
@@ -123,7 +119,7 @@ export async function POST(
           originalConfidence: suggestion[0].confidence,
           detectionContext,
         },
-        validatedBody.merchantReason
+        validatedBody.merchantReason,
       );
     }
 
@@ -133,16 +129,10 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      return Response.json(
-        { error: "Invalid input format" },
-        { status: 400 }
-      );
+      return Response.json({ error: "Invalid input format" }, { status: 400 });
     }
 
     console.error("Error rejecting suggestion:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

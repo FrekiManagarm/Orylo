@@ -1,17 +1,17 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
-import { aiFeedback, aiSuggestions } from "@orylo/database";
-import { eq, and } from "drizzle-orm";
+import { aiSuggestions } from "@orylo/database";
+import { eq } from "drizzle-orm";
 import { OrganizationIdSchema } from "@/lib/validation/ai-feedback";
 import { ruleRecommendationsGetRateLimit } from "@/lib/rate-limit";
 import { analyzeFeedback } from "@/lib/ai/feedback-analyzer";
 
 /**
  * GET /api/organizations/[id]/ai-metrics
- * 
+ *
  * Story 4.4: AC6 - Get AI suggestion accuracy metrics
- * 
+ *
  * Security (ADR-010):
  * - Validates organizationId with Zod schema
  * - Verifies Better Auth session
@@ -20,7 +20,7 @@ import { analyzeFeedback } from "@/lib/ai/feedback-analyzer";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // 1. Check session
@@ -41,7 +41,7 @@ export async function GET(
     if (!sessionOrganizationId) {
       return Response.json(
         { error: "Organization ID not found in session" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,21 +53,19 @@ export async function GET(
     if (validatedOrganizationId !== sessionOrganizationId) {
       return Response.json(
         { error: "Organization access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // 5. Rate limiting
     const rateLimitResult = await ruleRecommendationsGetRateLimit.limit(
-      validatedOrganizationId
+      validatedOrganizationId,
     );
     if (!rateLimitResult.success) {
       return Response.json(
         {
           error: "Rate limit exceeded",
-          retryAfter: Math.ceil(
-            (rateLimitResult.reset - Date.now()) / 1000
-          ),
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
         },
         {
           status: 429,
@@ -75,7 +73,7 @@ export async function GET(
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
           },
-        }
+        },
       );
     }
 
@@ -113,14 +111,11 @@ export async function GET(
     if (error instanceof Error && error.name === "ZodError") {
       return Response.json(
         { error: "Invalid organization ID format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error fetching AI metrics:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

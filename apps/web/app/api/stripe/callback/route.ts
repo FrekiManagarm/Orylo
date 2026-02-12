@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { organizations } from "@orylo/database";
+import { organization } from "@orylo/database";
 import { eq } from "drizzle-orm";
 
 /**
  * GET /api/stripe/callback
- * 
+ *
  * Handles Stripe OAuth callback
  * - Verifies CSRF state parameter
  * - Exchanges authorization code for access token (AC3)
@@ -114,12 +114,12 @@ export async function GET(request: NextRequest) {
 
     // Update organization with Stripe account ID
     await db
-      .update(organizations)
+      .update(organization)
       .set({
         stripeAccountId,
         updatedAt: new Date(),
       })
-      .where(eq(organizations.id, organizationId));
+      .where(eq(organization.id, organizationId));
 
     // Clear CSRF state cookie
     const response = NextResponse.redirect(

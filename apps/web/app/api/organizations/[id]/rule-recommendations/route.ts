@@ -13,9 +13,9 @@ import {
 
 /**
  * GET /api/organizations/[id]/rule-recommendations
- * 
+ *
  * Story 4.3: AC4 - Get AI rule recommendations for an organization
- * 
+ *
  * Security (ADR-010):
  * - Validates organizationId with Zod schema
  * - Verifies Better Auth session
@@ -24,7 +24,7 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // 1. Check session
@@ -45,7 +45,7 @@ export async function GET(
     if (!sessionOrganizationId) {
       return Response.json(
         { error: "Organization ID not found in session" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,21 +57,19 @@ export async function GET(
     if (validatedOrganizationId !== sessionOrganizationId) {
       return Response.json(
         { error: "Organization access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // 5. Rate limiting
     const rateLimitResult = await ruleRecommendationsGetRateLimit.limit(
-      validatedOrganizationId
+      validatedOrganizationId,
     );
     if (!rateLimitResult.success) {
       return Response.json(
         {
           error: "Rate limit exceeded",
-          retryAfter: Math.ceil(
-            (rateLimitResult.reset - Date.now()) / 1000
-          ),
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
         },
         {
           status: 429,
@@ -79,7 +77,7 @@ export async function GET(
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
           },
-        }
+        },
       );
     }
 
@@ -96,8 +94,8 @@ export async function GET(
       .where(
         and(
           eq(aiRuleRecommendations.organizationId, validatedOrganizationId),
-          eq(aiRuleRecommendations.applied, false)
-        )
+          eq(aiRuleRecommendations.applied, false),
+        ),
       );
 
     if (existingRecommendations.length > 0) {
@@ -112,14 +110,18 @@ export async function GET(
       }));
 
       // Cache for future requests
-      await setCachedRecommendations(validatedOrganizationId, recommendations, 86400); // 24h
+      await setCachedRecommendations(
+        validatedOrganizationId,
+        recommendations,
+        86400,
+      ); // 24h
 
       return Response.json({ recommendations });
     }
 
     // 8. Generate new recommendations
     const recommendations = await generateRuleRecommendations(
-      validatedOrganizationId
+      validatedOrganizationId,
     );
 
     if (recommendations.length === 0) {
@@ -127,7 +129,7 @@ export async function GET(
     }
 
     // 9. Store recommendations in DB
-    const insertedRecommendations = await Promise.all(
+    const insertResults = await Promise.all(
       recommendations.map((rec) =>
         db
           .insert(aiRuleRecommendations)
@@ -144,11 +146,13 @@ export async function GET(
             confidence: rec.confidence,
             applied: false,
           })
-          .returning()
-      )
+          .returning(),
+      ),
     );
+    // .returning() renvoie un tableau par insert → aplatir pour obtenir les lignes
+    const insertedRows = insertResults.flat();
 
-    const formattedRecommendations = insertedRecommendations.map((r) => ({
+    const formattedRecommendations = insertedRows.map((r) => ({
       id: r.id,
       ...(r.ruleSuggestion as object),
       confidence: r.confidence,
@@ -161,7 +165,7 @@ export async function GET(
     await setCachedRecommendations(
       validatedOrganizationId,
       formattedRecommendations,
-      86400
+      86400,
     );
 
     return Response.json({ recommendations: formattedRecommendations });
@@ -169,14 +173,11 @@ export async function GET(
     if (error instanceof Error && error.name === "ZodError") {
       return Response.json(
         { error: "Invalid organization ID format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error fetching rule recommendations:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

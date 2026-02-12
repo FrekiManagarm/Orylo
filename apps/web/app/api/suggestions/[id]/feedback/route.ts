@@ -7,12 +7,13 @@ import { SuggestionIdSchema } from "@/lib/validation/ai-suggestions";
 import { MerchantReasonSchema } from "@/lib/validation/ai-feedback";
 import { trackFeedback, getDetectionContext } from "@/lib/ai/feedback-tracker";
 import { z } from "zod";
+import { suggestionRejectRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/suggestions/[id]/feedback
- * 
+ *
  * Story 4.4: AC1, AC2, AC3 - Explicit feedback for modified suggestions
- * 
+ *
  * Security (ADR-010):
  * - Validates suggestionId with Zod schema
  * - Verifies Better Auth session
@@ -26,7 +27,7 @@ const FeedbackSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // 1. Check session
@@ -47,7 +48,7 @@ export async function POST(
     if (!organizationId) {
       return Response.json(
         { error: "Organization ID not found in session" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,14 +62,13 @@ export async function POST(
 
     // 5. Rate limiting (30 req/min)
     // Note: Using suggestion reject rate limit as similar endpoint
-    const rateLimitResult = await suggestionRejectRateLimit.limit(organizationId);
+    const rateLimitResult =
+      await suggestionRejectRateLimit.limit(organizationId);
     if (!rateLimitResult.success) {
       return Response.json(
         {
           error: "Rate limit exceeded",
-          retryAfter: Math.ceil(
-            (rateLimitResult.reset - Date.now()) / 1000
-          ),
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
         },
         {
           status: 429,
@@ -76,7 +76,7 @@ export async function POST(
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimitResult.reset.toString(),
           },
-        }
+        },
       );
     }
 
@@ -87,28 +87,25 @@ export async function POST(
       .where(
         and(
           eq(aiSuggestions.id, validatedSuggestionId),
-          eq(aiSuggestions.organizationId, organizationId)
-        )
+          eq(aiSuggestions.organizationId, organizationId),
+        ),
       )
       .limit(1);
 
     if (!suggestion[0]) {
-      return Response.json(
-        { error: "Suggestion not found" },
-        { status: 404 }
-      );
+      return Response.json({ error: "Suggestion not found" }, { status: 404 });
     }
 
     // 7. Get detection context
     const detectionContext = await getDetectionContext(
       organizationId,
-      suggestion[0].detectionId
+      suggestion[0].detectionId,
     );
 
     if (!detectionContext) {
       return Response.json(
         { error: "Detection context not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -123,7 +120,7 @@ export async function POST(
         originalConfidence: suggestion[0].confidence,
         detectionContext,
       },
-      validatedBody.merchantReason
+      validatedBody.merchantReason,
     );
 
     return Response.json({
@@ -132,16 +129,10 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      return Response.json(
-        { error: "Invalid input format" },
-        { status: 400 }
-      );
+      return Response.json({ error: "Invalid input format" }, { status: 400 });
     }
 
     console.error("Error tracking feedback:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }

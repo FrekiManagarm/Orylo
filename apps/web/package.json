@@ -53,6 +53,7 @@
     "react-dom": "19.2.3",
     "react-resizable-panels": "^4.4.0",
     "recharts": "2.15.4",
+    "resend": "^6.9.1",
     "shadcn": "^3.6.3",
     "sonner": "^2.0.7",
     "stripe": "^20.1.2",

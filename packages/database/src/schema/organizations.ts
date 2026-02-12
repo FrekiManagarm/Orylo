@@ -19,36 +19,31 @@ import { invitation } from "./invitations";
 export interface OrganizationOnboardingConfig {
   // Platform type
   platformType?:
-  | "marketplace"
-  | "saas_b2b"
-  | "saas_b2c"
-  | "ecommerce"
-  | "payment_platform"
-  | "other";
+    | "marketplace"
+    | "saas_b2b"
+    | "saas_b2c"
+    | "ecommerce"
+    | "payment_platform"
+    | "other";
   platformTypeOther?: string;
 
   // Customer creation strategy
   customerCreationStrategy?:
-  | "first_payment"
-  | "registration"
-  | "manual"
-  | "not_applicable"
-  | "other";
+    | "first_payment"
+    | "registration"
+    | "manual"
+    | "not_applicable"
+    | "other";
   customerCreationStrategyOther?: string;
 
   // Business information
-  monthlyTransactionVolume?:
-  | "0-1k"
-  | "1k-10k"
-  | "10k-100k"
-  | "100k-1M"
-  | "1M+";
+  monthlyTransactionVolume?: "0-1k" | "1k-10k" | "10k-100k" | "100k-1M" | "1M+";
   averageTransactionAmount?:
-  | "0-50"
-  | "50-200"
-  | "200-500"
-  | "500-1000"
-  | "1000+";
+    | "0-50"
+    | "50-200"
+    | "200-500"
+    | "500-1000"
+    | "1000+";
 }
 
 // ==========================================
@@ -123,6 +118,11 @@ export const organization = pgTable(
     currentPeriodStart: timestamp("current_period_start"),
     currentPeriodEnd: timestamp("current_period_end"),
     cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false).notNull(),
+    shareFeedbackForModelImprovement: boolean(
+      "share_feedback_for_model_improvement",
+    )
+      .default(false)
+      .notNull(),
 
     // Trial
     trialStartedAt: timestamp("trial_started_at"),
@@ -170,8 +170,11 @@ export const organization = pgTable(
     // ==========================================
     // ONBOARDING & METADATA
     // ==========================================
-    onboardingCompleted: boolean("onboarding_completed").default(false).notNull(),
-    onboardingConfig: jsonb("onboarding_config").$type<OrganizationOnboardingConfig>(),
+    onboardingCompleted: boolean("onboarding_completed")
+      .default(false)
+      .notNull(),
+    onboardingConfig:
+      jsonb("onboarding_config").$type<OrganizationOnboardingConfig>(),
     firstTransactionAt: timestamp("first_transaction_at"),
 
     // ==========================================
@@ -184,7 +187,7 @@ export const organization = pgTable(
     index("organization_plan_idx").on(table.plan),
     index("organization_subscription_status_idx").on(table.subscriptionStatus),
     index("organization_slug_idx").on(table.slug),
-  ]
+  ],
 );
 
 // ==========================================

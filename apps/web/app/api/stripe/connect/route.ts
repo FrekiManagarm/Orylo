@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 
 /**
  * GET /api/stripe/connect
- * 
+ *
  * Initiates Stripe OAuth flow
  * - Validates Better Auth session (AC7)
  * - Generates Stripe OAuth URL with CSRF protection
@@ -20,7 +20,7 @@ export async function GET() {
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in first." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -39,11 +39,13 @@ export async function GET() {
     if (!stripeClientId) {
       return NextResponse.json(
         { error: "Stripe client ID not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
-    const stripeOAuthUrl = new URL("https://connect.stripe.com/oauth/authorize");
+    const stripeOAuthUrl = new URL(
+      "https://connect.stripe.com/oauth/authorize",
+    );
     stripeOAuthUrl.searchParams.set("client_id", stripeClientId);
     stripeOAuthUrl.searchParams.set("redirect_uri", redirectUri);
     stripeOAuthUrl.searchParams.set("response_type", "code");
@@ -65,7 +67,7 @@ export async function GET() {
     console.error("Stripe OAuth initiation error:", error);
     return NextResponse.json(
       { error: "Failed to initiate Stripe connection" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

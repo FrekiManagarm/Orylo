@@ -1,6 +1,7 @@
 import { db } from "./db";
-import { organization, member } from "@orylo/database";
+import { member } from "@orylo/database";
 import { createId } from "@paralleldrive/cuid2";
+import { auth } from "./auth/auth";
 
 /**
  * Onboarding Utility
@@ -54,28 +55,24 @@ async function generateUniqueSlug(baseName: string): Promise<string> {
  * @param userName - The user's name (used to generate organization name)
  * @returns The created organization
  */
-export async function createUserOrganization(
-  userId: string,
-  userName: string
-) {
+export async function createUserOrganization(userId: string, userName: string) {
   // Generate organization name from user name
   const orgName = `${userName}'s Organization`;
   const slug = await generateUniqueSlug(orgName);
 
   // Create organization
-  const [newOrg] = await db
-    .insert(organization)
-    .values({
+  const newOrg = await auth.api.createOrganization({
+    body: {
       name: orgName,
       slug,
-      createdAt: new Date(),
-    })
-    .returning();
+      keepCurrentActiveOrganization: false,
+    },
+  });
 
   // Add user as owner member
   await db.insert(member).values({
     id: createId(),
-    organizationId: newOrg.id,
+    organizationId: newOrg?.id || "",
     userId: userId,
     role: "owner", // Better Auth default role for organization creator
     createdAt: new Date(),

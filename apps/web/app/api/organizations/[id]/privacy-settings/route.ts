@@ -8,9 +8,9 @@ import { z } from "zod";
 
 /**
  * POST /api/organizations/[id]/privacy-settings
- * 
+ *
  * Story 4.4: AC7 - Update privacy opt-in setting for feedback sharing
- * 
+ *
  * Security (ADR-010):
  * - Validates organizationId with Zod schema
  * - Verifies Better Auth session
@@ -23,7 +23,7 @@ const PrivacySettingsSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // 1. Check session
@@ -44,7 +44,7 @@ export async function POST(
     if (!sessionOrganizationId) {
       return Response.json(
         { error: "Organization ID not found in session" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function POST(
     if (validatedOrganizationId !== sessionOrganizationId) {
       return Response.json(
         { error: "Organization access denied" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -80,16 +80,10 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      return Response.json(
-        { error: "Invalid input format" },
-        { status: 400 }
-      );
+      return Response.json({ error: "Invalid input format" }, { status: 400 });
     }
 
     console.error("Error updating privacy settings:", error);
-    return Response.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 }
