@@ -1,3 +1,5 @@
+import { Resend } from "resend";
+
 /**
  * Email Alerts via Resend (Optional)
  * 
@@ -7,8 +9,7 @@
  * Installation required: bun add resend
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let resend: any = null; // Resend client type (optional dependency)
+let resend: Resend | null = null; // Resend client type (optional dependency)
 
 function getResend() {
   if (!process.env.RESEND_API_KEY) {
@@ -17,9 +18,6 @@ function getResend() {
 
   if (!resend) {
     try {
-      // Dynamic import to avoid errors if package not installed
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { Resend } = require("resend");
       resend = new Resend(process.env.RESEND_API_KEY);
     } catch {
       console.warn("[Alerts] Resend package not installed. Run: bun add resend");
