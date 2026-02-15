@@ -226,7 +226,7 @@ export function RulesClient() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-zinc-500 font-mono">
           {rules.length} / 10 rules

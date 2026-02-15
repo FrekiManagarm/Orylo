@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { LoaderCircle, Zap, Store } from "lucide-react";
-// import { simulatePaymentIntent } from "@/lib/actions/simulate-payment";
 import {
   Select,
   SelectContent,
@@ -20,9 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
+import { simulatePaymentIntent } from "@/lib/actions/simulate-payment";
 import { toast } from "sonner";
-// import { getStripeConnections } from "@/lib/actions/stripe-connect";
-// import type { StripeConnection } from "@/lib/actions/stripe-connect";
 
 export function SimulatePaymentButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,39 +54,39 @@ export function SimulatePaymentButton() {
     }
   }, [connections, selectedAccountId]);
 
-  // const handleSimulate = async () => {
-  //   if (!selectedAccountId) {
-  //     toast.error("⚠️ Compte requis", {
-  //       description: "Veuillez sélectionner un compte Stripe",
-  //     });
-  //     return;
-  //   }
+  const handleSimulate = async () => {
+    if (!selectedAccountId) {
+      toast.error("⚠️ Compte requis", {
+        description: "Veuillez sélectionner un compte Stripe",
+      });
+      return;
+    }
 
-  //   setIsLoading(true);
-  //   try {
-  //     const result = await simulatePaymentIntent({
-  //       riskLevel,
-  //       stripeAccountId: selectedAccountId,
-  //     });
+    setIsLoading(true);
+    try {
+      const result = await simulatePaymentIntent({
+        riskLevel,
+        stripeAccountId: selectedAccountId,
+      });
 
-  //     if (result.success && result.sessionUrl) {
-  //       toast.success("✅ Checkout Session créée", {
-  //         description: "Redirection vers la page de paiement...",
-  //       });
-  //       window.location.href = result.sessionUrl;
-  //     } else {
-  //       toast.error("❌ Erreur", {
-  //         description: result.error || "Impossible de créer la session",
-  //       });
-  //       setIsLoading(false);
-  //     }
-  //   } catch (error) {
-  //     toast.error("❌ Erreur", {
-  //       description: "Une erreur inattendue s'est produite",
-  //     });
-  //     setIsLoading(false);
-  //   }
-  // };
+      if (result.success && result.sessionUrl) {
+        toast.success("✅ Checkout Session créée", {
+          description: "Redirection vers la page de paiement...",
+        });
+        window.location.href = result.sessionUrl;
+      } else {
+        toast.error("❌ Erreur", {
+          description: result.error || "Impossible de créer la session",
+        });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      toast.error("❌ Erreur", {
+        description: "Une erreur inattendue s'est produite",
+      });
+      setIsLoading(false);
+    }
+  };
 
   const selectedConnection = connections.find(
     (c) => (c.accountId ?? c.stripeAccountId) === selectedAccountId
@@ -255,7 +253,7 @@ export function SimulatePaymentButton() {
             Annuler
           </Button>
           <Button
-            onClick={() => { }}
+            onClick={handleSimulate}
             disabled={isLoading || connections.length === 0 || !selectedAccountId}
             className="bg-white text-black hover:bg-zinc-200"
           >

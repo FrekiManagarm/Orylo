@@ -42,15 +42,20 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Extract organizationId for multi-tenancy (RLS)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const organizationId = (session.user as any).organizationId as string | undefined;
+    // Use getFullOrganization (same as transactions page) - session.user.organizationId
+    // is not reliably set by Better Auth; active org is in session.session.activeOrganizationId
+    const organization = await auth.api.getFullOrganization({
+      headers: request.headers,
+    });
 
-    if (!organizationId) {
+    if (!organization?.id) {
       return Response.json(
-        { error: "Organization ID not found in session" },
+        { error: "Organization not found" },
         { status: 400 }
       );
     }
+
+    const organizationId = organization.id;
 
     // 3. Parse query parameters
     const { searchParams } = new URL(request.url);

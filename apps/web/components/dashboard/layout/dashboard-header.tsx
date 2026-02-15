@@ -29,19 +29,12 @@ export function DashboardHeader() {
       if (pathname.startsWith(item.href)) {
         items.push({ title: item.title, href: item.href });
         if (
-          Array.isArray(
-            (item as { items: { title: string; href: string }[] }).items,
-          ) &&
-          (item as { items: { title: string; href: string }[] }).items.length >
-          0
+          "items" in item &&
+          Array.isArray(item.items) &&
+          item.items.length > 0
         ) {
           let deepest = null as null | { title: string; href: string };
-          for (const sub of (
-            item as { items: { title: string; href: string }[] }
-          ).items as {
-            title: string;
-            href: string;
-          }[]) {
+          for (const sub of item.items) {
             if (pathname.startsWith(sub.href)) {
               if (!deepest || sub.href.length > deepest.href.length) {
                 deepest = { title: sub.title, href: sub.href };

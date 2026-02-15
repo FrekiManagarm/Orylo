@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { connectStripeAccount } from "@/lib/actions/stripe-connect";
 
 /**
  * Stripe Connect Button Component
@@ -15,18 +17,24 @@ import { Loader2 } from "lucide-react";
 export function StripeConnectButton() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const { mutateAsync } = useMutation({
+    mutationFn: connectStripeAccount,
+  });
+
   const handleConnect = async () => {
     setIsLoading(true);
-    
+
     try {
-      // Redirect to OAuth initiation endpoint
-      window.location.href = "/api/stripe/connect";
-    } catch {
-      setIsLoading(false);
-      // AC5: User-friendly error message
-      toast.error("Connection Failed", {
-        description: "Failed to connect Stripe. Please try again.",
+      const result = await mutateAsync();
+      if (result?.url) {
+        window.location.href = result?.url;
+      }
+    } catch (error) {
+      toast.error("Failed to connect Stripe", {
+        description: error instanceof Error ? error.message : "An unknown error occurred",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
