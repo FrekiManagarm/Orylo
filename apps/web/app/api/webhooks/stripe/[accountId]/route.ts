@@ -1,31 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import { webhookSecret } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { webhookEvents } from "@orylo/database";
+import { paymentProcessorsConnections } from "@orylo/database";
+import { eq } from "drizzle-orm";
+import { decrypt } from "@/lib/encryption";
 import { processStripeWebhook } from "@/lib/webhook-handler";
 import { processWebhookWithRetry } from "@/lib/webhook-processor";
+import { webhookEvents } from "@orylo/database";
 import { logger } from "@/lib/logger";
 
 /**
- * POST /api/webhooks/stripe
+ * POST /api/webhooks/stripe/[accountId]
  *
- * Platform-level webhook (single endpoint).
- * - Stripe CLI: stripe listen --forward-to localhost:3000/api/webhooks/stripe
- * - Platform account (simulate without Connect)
- * - Resolves org via event.account or metadata
+ * Per-account Stripe webhook endpoint.
+ * Account ID in URL → direct org lookup, no need for event.account or metadata.
+ *
+ * Used when setupWebhooks creates endpoints with URL .../stripe/acct_xxx
  */
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ accountId: string }> }
+) {
   const startTime = Date.now();
+  const { accountId } = await params;
 
   try {
     const body = await request.text();
     const signature = request.headers.get("stripe-signature");
 
+    // Get webhook secret for this account from connection
+    const connection = await db.query.paymentProcessorsConnections.findFirst({
+      where: eq(paymentProcessorsConnections.accountId, accountId),
+      columns: { webhookSecret: true, organizationId: true },
+    });
+
+    if (!connection?.webhookSecret) {
+      logger.warn("No webhook secret for account", { accountId });
+      return NextResponse.json({ error: "Unknown account" }, { status: 404 });
+    }
+
+    const webhookSecret = decrypt(connection.webhookSecret);
+
     const result = await processStripeWebhook({
       body,
       signature,
       webhookSecret,
-      accountIdFromUrl: null,
+      accountIdFromUrl: accountId,
     });
 
     if (!result.ok) {
@@ -47,10 +66,12 @@ export async function POST(request: NextRequest) {
 
     void processWebhookWithRetry(event, organizationId);
 
+    const duration = Date.now() - startTime;
     logger.info("Webhook received and queued for processing", {
       eventId: event.id,
       eventType: event.type,
-      responseTimeMs: Date.now() - startTime,
+      accountId,
+      responseTimeMs: duration,
     });
 
     return NextResponse.json({ received: true }, { status: 200 });
@@ -58,6 +79,7 @@ export async function POST(request: NextRequest) {
     const responseTime = Date.now() - startTime;
     logger.error("Webhook processing error", {
       error: error instanceof Error ? error.message : "Unknown error",
+      accountId,
       responseTimeMs: responseTime,
     });
     return NextResponse.json(
@@ -66,4 +88,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

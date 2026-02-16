@@ -36,6 +36,9 @@ type WhitelistCustomerButtonProps = {
   variant?: "default" | "ghost" | "outline" | "destructive" | "secondary";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  /** Controlled mode: open dialog from parent (e.g. QuickActionsMenu) */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function WhitelistCustomerButton({
@@ -45,10 +48,16 @@ export function WhitelistCustomerButton({
   variant = "outline",
   size = "sm",
   className,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: WhitelistCustomerButtonProps) {
   const [isWhitelisting, setIsWhitelisting] = useState(false);
   const [isWhitelisted, setIsWhitelisted] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange;
+  const dialogOpen = isControlled ? controlledOpen : internalOpen;
+  const setDialogOpen = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
   // AC7: Undo whitelist action
   const handleUndo = async () => {

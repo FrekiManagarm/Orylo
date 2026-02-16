@@ -5,11 +5,15 @@ import { db } from "../db";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 import { getCurrentOrganization, requireAuthAndOrganization } from "./auth";
-import { getConnectedStripeClient, stripe } from "../stripe";
-import { decrypt } from "../encryption";
+import { stripe } from "../stripe";
 import { PaymentProcessorsConnections, paymentProcessorsConnections } from "@orylo/database";
 
-export async function disconnectStripeAccount(connectionId: string) {
+/**
+ * Disconnect a payment processor connection.
+ * For Stripe: deauthorizes the account and removes webhooks.
+ * For other processors: marks inactive and deletes the record.
+ */
+export async function disconnectConnection(connectionId: string) {
   try {
     const isAuthorized = await requireAuthAndOrganization();
     if (!isAuthorized) {
@@ -25,29 +29,26 @@ export async function disconnectStripeAccount(connectionId: string) {
       throw new Error("Connection not found");
     }
 
-    const stripeConnectClient = getConnectedStripeClient(decrypt(connection.accessToken!));
-
-    // Deauthorize the account
-    try {
-      await stripe.oauth.deauthorize({
-        client_id: process.env.STRIPE_CONNECT_CLIENT_ID!,
-        stripe_user_id: connection.accountId,
-      });
-    } catch (error) {
-      console.warn("Error deauthorizing Stripe account:", error);
-      // Continue even if deauthorization fails
-    }
-
-    // Delete webhook endpoint if exists
-    // Les webhooks Connect sont gérés au niveau plateforme
-    if (connection.webhookEndpointId) {
+    // Stripe-specific: deauthorize and delete webhooks
+    if (connection.paymentProcessor === "stripe") {
       try {
-        await stripe.webhookEndpoints.del(connection.webhookEndpointId);
-        console.log(
-          `✅ Deleted Connect webhook ${connection.webhookEndpointId}`,
-        );
+        await stripe.oauth.deauthorize({
+          client_id: process.env.STRIPE_CONNECT_CLIENT_ID!,
+          stripe_user_id: connection.accountId,
+        });
       } catch (error) {
-        console.warn("Error deleting webhook endpoint:", error);
+        console.warn("Error deauthorizing Stripe account:", error);
+      }
+
+      if (connection.webhookEndpointId) {
+        try {
+          await stripe.webhookEndpoints.del(connection.webhookEndpointId);
+          console.log(
+            `✅ Deleted Connect webhook ${connection.webhookEndpointId}`,
+          );
+        } catch (error) {
+          console.warn("Error deleting webhook endpoint:", error);
+        }
       }
     }
 
@@ -64,18 +65,13 @@ export async function disconnectStripeAccount(connectionId: string) {
     await db.delete(paymentProcessorsConnections).where(and(eq(paymentProcessorsConnections.organizationId, organization.id), eq(paymentProcessorsConnections.id, connectionId)));
 
     revalidatePath("/dashboard");
+    revalidatePath("/dashboard/connections");
 
     return true;
   } catch (error) {
     console.error("❌ Error disconnecting Stripe:", error);
     throw new Error("Failed to disconnect Stripe account");
   }
-}
-
-export async function setupWebhooks(organizationId: string, connectionId: string) {
-}
-
-export async function deleteWebhook(organizationId: string, connectionId: string) {
 }
 
 export async function connectStripeAccount() {
@@ -94,7 +90,7 @@ export async function connectStripeAccount() {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://orylo.app";
-    const redirectUri = `${baseUrl}/api/stripe/connect/callback`;
+    const redirectUri = `${baseUrl}/api/stripe/callback`;
 
     const stripeAuthUrl = new URL("https://connect.stripe.com/oauth/authorize");
     stripeAuthUrl.searchParams.set("client_id", stripeClientId);

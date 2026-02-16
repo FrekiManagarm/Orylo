@@ -359,12 +359,14 @@ function SidebarSeparator({
   ...props
 }: React.ComponentProps<typeof Separator>) {
   return (
-    <Separator
-      data-slot="sidebar-separator"
-      data-sidebar="separator"
-      className={cn("bg-sidebar-border mx-2 w-auto", className)}
-      {...props}
-    />
+    <div className="mx-2 w-auto">
+      <Separator
+        data-slot="sidebar-separator"
+        data-sidebar="separator"
+        className={cn("bg-sidebar-border", className)}
+        {...props}
+      />
+    </div>
   );
 }
 
@@ -569,7 +571,7 @@ function SidebarMenuAction({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className,
       )}
       {...props}

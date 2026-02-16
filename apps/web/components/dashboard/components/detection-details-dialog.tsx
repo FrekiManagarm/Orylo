@@ -2,23 +2,18 @@
 
 import { useEffect, useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { Shield, ShieldAlert, ShieldCheck, Copy, CheckCircle } from "lucide-react";
 import { BlockCustomerButton } from "@/components/dashboard/components/block-customer-button";
@@ -75,12 +70,15 @@ type DetectionDetailsDialogProps = {
   detectionId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Optional className for DialogContent (e.g. dashboard-home dark theme) */
+  contentClassName?: string;
 };
 
 export function DetectionDetailsDialog({
   detectionId,
   open,
   onOpenChange,
+  contentClassName,
 }: DetectionDetailsDialogProps) {
   const [detection, setDetection] = useState<DetectionDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,9 +96,12 @@ export function DetectionDetailsDialog({
     setIsLoading(true);
 
     fetch(`/api/detections/${detectionId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
-        setDetection(data);
+        setDetection(data && !data.error ? data : null);
       })
       .catch((error) => {
         console.error("Error fetching detection:", error);
@@ -185,239 +186,215 @@ export function DetectionDetailsDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="w-full h-full max-w-full md:max-w-[700px] md:h-auto md:max-h-[90vh] overflow-y-auto md:rounded-xl"
-        aria-labelledby="detection-dialog-title"
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        className={cn(
+          "w-full sm:max-w-[700px] flex flex-col p-0",
+          contentClassName
+        )}
+        aria-describedby="detection-sheet-description"
       >
-        <DialogHeader>
-          <DialogTitle id="detection-dialog-title" className="flex items-center gap-2">
+        <SheetHeader className="px-6 pt-6 pb-4">
+          <SheetTitle className="flex items-center gap-2">
             <ShieldAlert className="h-5 w-5" />
             Detection Details
-          </DialogTitle>
-        </DialogHeader>
+          </SheetTitle>
+          <SheetDescription id="detection-sheet-description">
+            Full breakdown of fraud analysis, detector results, and recommended actions.
+          </SheetDescription>
+        </SheetHeader>
 
         {isLoading ? (
-          <div className="space-y-6">
+          <div className="flex-1 overflow-y-auto px-6 space-y-6">
             <Skeleton className="h-32 w-full" />
             <Skeleton className="h-32 w-full" />
             <Skeleton className="h-48 w-full" />
           </div>
         ) : detection ? (
-          <div className="space-y-6">
-            {/* Decision Badge */}
-            <div className="flex items-center justify-between">
-              <Badge variant={getBadgeVariant(detection.decision)} className="text-sm">
-                {detection.decision}
-              </Badge>
-              <span className="text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(detection.createdAt), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-
-            {/* AC5: Trust Score */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Trust Score</h3>
-                <span className="text-sm font-bold">
-                  {detection.trustScore} / 100
-                </span>
-              </div>
-              <Progress
-                value={detection.trustScore}
-                className="h-3 bg-white/10"
-                indicatorClassName={getTrustScoreColor(detection.trustScore)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Risk Score: {detection.riskScore} | Confidence:{" "}
-                {Math.round(detection.confidence * 100)}%
-              </p>
-            </div>
-
-            {/* Story 4.1: AI Suggestion Card */}
-            {isLoadingSuggestion ? (
-              <Skeleton className="h-32 w-full" />
-            ) : suggestion ? (
-              <AISuggestionCard
-                suggestion={suggestion}
-                detectionId={detection.id}
-                onAccept={() => {
-                  // Refresh detection to show updated status
-                  fetch(`/api/detections/${detectionId}`)
-                    .then((res) => res.json())
-                    .then((data) => {
-                      setDetection(data);
-                      setSuggestion(null); // Hide suggestion after accept
-                    })
-                    .catch(console.error);
-                }}
-                onReject={() => {
-                  setSuggestion(null); // Hide suggestion after reject
-                }}
-              />
-            ) : null}
-
-            {/* AC3: Customer Info */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Customer Information
-              </h3>
-              <div className="rounded-lg border p-4 space-y-2">
+          <>
+            <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-8">
+              {/* Header / Summary Section */}
+              <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Email:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">
-                      {detection.customerEmail || "N/A"}
+                  <div className="flex items-center gap-3">
+                    <Badge variant={getBadgeVariant(detection.decision)} className="px-3 py-1 text-sm font-medium uppercase tracking-wider">
+                      {detection.decision}
+                    </Badge>
+                    <span className="text-sm text-zinc-500 font-mono">
+                      {detection.createdAt && !isNaN(new Date(detection.createdAt).getTime())
+                        ? formatDistanceToNow(new Date(detection.createdAt), { addSuffix: true })
+                        : "N/A"}
                     </span>
-                    {detection.customerEmail && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                        onClick={() =>
-                          copyToClipboard(detection.customerEmail, "email")
-                        }
-                      >
-                        {copiedField === "email" ? (
-                          <CheckCircle className="h-3 w-3 text-success" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold font-mono text-white">
+                      {detection.trustScore}
+                      <span className="text-sm text-zinc-500 ml-1">/100</span>
+                    </div>
+                    <div className="text-xs text-zinc-500 uppercase tracking-wider">Trust Score</div>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-1">
+                  <Progress
+                    value={detection.trustScore}
+                    className="h-2 bg-zinc-800"
+                    indicatorClassName={getTrustScoreColor(detection.trustScore)}
+                  />
+                  <div className="flex justify-between text-xs text-zinc-500 font-mono">
+                    <span>Risk: {detection.riskScore}</span>
+                    <span>Confidence: {Math.round(detection.confidence * 100)}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Suggestion */}
+              {isLoadingSuggestion ? (
+                <Skeleton className="h-24 w-full bg-zinc-800/50" />
+              ) : suggestion ? (
+                <AISuggestionCard
+                  suggestion={suggestion}
+                  detectionId={detection.id}
+                  onAccept={() => {
+                    fetch(`/api/detections/${detectionId}`)
+                      .then((res) => res.json())
+                      .then((data) => {
+                        setDetection(data);
+                        setSuggestion(null);
+                      })
+                      .catch(console.error);
+                  }}
+                  onReject={() => setSuggestion(null)}
+                />
+              ) : null}
+
+              {/* Details Grid - Clean Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Customer Info */}
+                <div className="space-y-4">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                    <Shield className="h-3 w-3" /> Customer
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-xs text-zinc-500 block mb-1">Email</span>
+                      <div className="flex items-center gap-2 group">
+                        <span className="text-sm text-white font-medium truncate max-w-[200px]">
+                          {detection.customerEmail || "N/A"}
+                        </span>
+                        {detection.customerEmail && (
+                          <button
+                            onClick={() => copyToClipboard(detection.customerEmail, "email")}
+                            className="text-zinc-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            {copiedField === "email" ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                          </button>
                         )}
-                      </Button>
+                      </div>
+                    </div>
+                    {detection.customerIp && (
+                      <div>
+                        <span className="text-xs text-zinc-500 block mb-1">IP Address</span>
+                        <span className="text-sm text-zinc-300 font-mono">
+                          {detection.customerIp}
+                          {detection.customerCountry && <span className="text-zinc-500 ml-1">({detection.customerCountry})</span>}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
-                {detection.customerIp && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">IP Address:</span>
-                    <span className="text-sm font-medium">
-                      {detection.customerIp}
-                      {detection.customerCountry &&
-                        ` (${detection.customerCountry})`}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
 
-            {/* AC3: Transaction Details */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4" />
-                Transaction Details
-              </h3>
-              <div className="rounded-lg border p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Amount:</span>
-                  <span className="text-sm font-bold">
-                    {formatAmount(detection.amount, detection.currency)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Payment Intent:
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono">
-                      {detection.paymentIntentId}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={() =>
-                        copyToClipboard(detection.paymentIntentId, "payment")
-                      }
-                    >
-                      {copiedField === "payment" ? (
-                        <CheckCircle className="h-3 w-3 text-success" />
-                      ) : (
-                        <Copy className="h-3 w-3" />
-                      )}
-                    </Button>
+                {/* Transaction Info */}
+                <div className="space-y-4">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                    <ShieldCheck className="h-3 w-3" /> Transaction
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <span className="text-xs text-zinc-500 block mb-1">Amount</span>
+                      <span className="text-lg font-bold text-white font-mono">
+                        {formatAmount(detection.amount, detection.currency)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-zinc-500 block mb-1">Payment ID</span>
+                      <div className="flex items-center gap-2 group">
+                        <span className="text-xs text-zinc-400 font-mono truncate max-w-[180px]">
+                          {detection.paymentIntentId}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(detection.paymentIntentId, "payment")}
+                          className="text-zinc-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          {copiedField === "payment" ? <CheckCircle className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* AC4: Detector Results */}
-            {detection.detectorResults && detection.detectorResults.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Detector Analysis</h3>
-                <div className="rounded-lg border overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Detector</TableHead>
-                        <TableHead>Decision</TableHead>
-                        <TableHead className="text-right">Risk</TableHead>
-                        <TableHead className="hidden sm:table-cell">
-                          Details
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {detection.detectorResults.map((result) => (
-                        <TableRow key={result.detectorId}>
-                          <TableCell className="font-medium">
+              {/* Detector Analysis - Simplified List */}
+              {detection.detectorResults && detection.detectorResults.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-zinc-500">Analysis Results</h3>
+                  <div className="space-y-2">
+                    {detection.detectorResults.map((result) => (
+                      <div key={result.detectorId} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-1.5 h-1.5 rounded-full ${result.decision === "BLOCK" ? "bg-rose-500" :
+                            result.decision === "REVIEW" ? "bg-amber-500" : "bg-emerald-500"
+                            }`} />
+                          <span className="text-sm font-medium text-zinc-200">
                             {formatDetectorName(result.detectorId)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={getBadgeVariant(result.decision)}
-                              className="text-xs"
-                            >
-                              {result.decision}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {result.score}
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                            {result.metadata
-                              ? Object.entries(result.metadata)
-                                .map(([key, value]) => `${key}: ${value}`)
-                                .join(", ")
-                              : "—"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-xs text-zinc-500 font-mono">
+                            Score: <span className="text-zinc-300">{result.score}</span>
+                          </span>
+                          <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ${result.decision === "BLOCK" ? "border-rose-500/20 text-rose-400 bg-rose-500/10" :
+                            result.decision === "REVIEW" ? "border-amber-500/20 text-amber-400 bg-amber-500/10" :
+                              "border-emerald-500/20 text-emerald-400 bg-emerald-500/10"
+                            }`}>
+                            {result.decision}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* AI Explanation */}
+              <div className="pt-2">
+                <AIExplanation detectionId={detection.id} />
               </div>
-            )}
+            </div>
 
-            {/* Story 4.2: AI Explanation Card */}
-            <AIExplanation detectionId={detection.id} />
-
-            {/* AC3: Action Buttons - Story 2.11: 44px tap targets */}
-            <div className="flex gap-3 pt-4 border-t">
-              {/* Story 2.7: Block Customer Button */}
+            <SheetFooter className="grid grid-cols-2 gap-3 border-t border-white/10 px-6 py-4 bg-zinc-900/50">
               <BlockCustomerButton
                 customerEmail={detection.customerEmail}
                 variant="destructive"
-                size="default"
-                className="flex-1 min-h-[44px]"
+                size="lg"
+                className="w-full bg-destructive"
               />
-              {/* Story 2.8: Whitelist Customer Button */}
               <WhitelistCustomerButton
                 customerEmail={detection.customerEmail}
                 variant="outline"
-                size="default"
-                className="flex-1 min-h-[44px]"
+                size="lg"
+                className="w-full border-white/10 hover:bg-white/5 text-zinc-300"
               />
-            </div>
-          </div>
+            </SheetFooter>
+          </>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             Failed to load detection details
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

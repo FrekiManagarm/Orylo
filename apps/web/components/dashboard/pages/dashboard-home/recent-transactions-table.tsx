@@ -34,38 +34,6 @@ const RecentTransactionsTable = async ({
     }).format(amount / 100);
   };
 
-  // Get composite score color based on risk level
-  const getCompositeScoreColor = (level: string | null | undefined) => {
-    switch (level) {
-      case "minimal":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case "low":
-        return "bg-green-500/10 text-green-400 border-green-500/20";
-      case "moderate":
-        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
-      case "elevated":
-        return "bg-orange-500/10 text-orange-400 border-orange-500/20";
-      case "high":
-        return "bg-red-500/10 text-red-400 border-red-500/20";
-      case "critical":
-        return "bg-rose-500/10 text-rose-400 border-rose-500/20";
-      default:
-        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
-    }
-  };
-
-  const getCompositeRiskLabel = (level: string | null | undefined) => {
-    switch (level) {
-      case "minimal": return "Min";
-      case "low": return "Faible";
-      case "moderate": return "Mod";
-      case "elevated": return "Élevé";
-      case "high": return "Très élevé";
-      case "critical": return "Critique";
-      default: return "—";
-    }
-  };
-
   const getActionBadge = (action: string) => {
     switch (action) {
       case "ALLOW":
@@ -173,25 +141,9 @@ const RecentTransactionsTable = async ({
                     {formatCurrency(analysis.amount, analysis.currency)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1">
-                      {/* Composite Score Badge */}
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`inline-flex items-center justify-center rounded-md px-2 py-0.5 text-xs font-bold border ${getCompositeScoreColor(analysis.decision)}`}
-                          title={`Score composite: ${analysis.score ?? analysis.score}/100`}
-                        >
-                          {analysis.score ?? analysis.score}
-                        </div>
-                        <span className={`text-[10px] font-medium ${getCompositeScoreColor(analysis.decision).split(' ')[1]}`}>
-                          {getCompositeRiskLabel(analysis.decision)}
-                        </span>
-                      </div>
-                      {/* Breakdown: Risk / Card Testing */}
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-500">
-                        <span title="Score de risque général">R:{analysis.score}</span>
-                        <span className="text-zinc-600">·</span>
-                      </div>
-                    </div>
+                    <span className="font-mono text-sm font-medium text-zinc-300">
+                      {analysis.score ?? "—"}
+                    </span>
                   </TableCell>
                   <TableCell>
                     {getActionBadge(analysis.decision)}

@@ -1,9 +1,21 @@
 import { defineConfig } from "@trigger.dev/sdk";
 
 export default defineConfig({
-  project: "",
-  maxDuration: 2400,
+  project: "proj_lduckgshsvswaztqyhqy",
+  runtime: "node",
+  logLevel: "log",
+  maxDuration: 3600,
   build: {
     external: ["pg"],
+  },
+  retries: {
+    enabledInDev: true,
+    default: {
+      maxAttempts: 3,
+      minTimeoutInMs: 1000,
+      maxTimeoutInMs: 10000,
+      factor: 2,
+      randomize: true,
+    },
   },
 });

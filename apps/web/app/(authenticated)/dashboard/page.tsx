@@ -1,10 +1,13 @@
 import { Suspense } from "react";
-import { getDashboardStats } from "@/lib/actions/transactions";
-import { StatsGrid } from "@/components/dashboard/pages/dashboard-home/stats-grid";
+import { getFraudAnalyses } from "@/lib/actions/transactions";
 import { RefreshButton } from "@/components/dashboard/pages/dashboard-home/refresh-button";
 import { QuickActionsDropdown } from "@/components/dashboard/pages/dashboard-home/quick-actions-dropdown";
-import { FiltersBar } from "@/components/dashboard/components/filters-bar";
-import { FeedClient } from "./feed-client";
+import { StatsSection } from "@/components/dashboard/pages/dashboard-home/stats-section";
+import { LiveFeedWidget } from "@/components/dashboard/pages/dashboard-home/live-feed-widget";
+import RecentTransactionsTable from "@/components/dashboard/pages/dashboard-home/recent-transactions-table";
+import { TransactionActivityChart } from "@/components/dashboard/pages/dashboard-home/transaction-activity-chart";
+import { CardTestingWidget } from "@/components/dashboard/pages/dashboard-home/card-testing-widget";
+import { UsageCard } from "@/components/dashboard/pages/dashboard-home/usage-card";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,7 +28,7 @@ const DashboardHome = async () => {
     }),
   ].join(" · ");
 
-  const stats = await getDashboardStats();
+  const recentAnalyses = await getFraudAnalyses({ limit: 5 });
 
   return (
     <div className="space-y-6 relative min-h-screen pb-20">
@@ -53,33 +56,29 @@ const DashboardHome = async () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <Suspense
-        fallback={
-          <div className="text-zinc-500 font-mono text-sm">Chargement…</div>
-        }
-      >
-        <StatsGrid stats={stats} />
-      </Suspense>
+      {/* Stats: PRD 2.2 avec tabs Today/Week/Month (dashboard-home style) */}
+      <StatsSection />
 
-      {/* Main Content: Feed */}
-      <div className="mx-auto space-y-6">
-        {/* Filters */}
-        <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-white/5 md:border-none md:bg-transparent md:backdrop-blur-none">
-          <FiltersBar />
+      <div className="grid gap-6 lg:grid-cols-12">
+        {/* Left Column: Charts, Widgets, Table */}
+        <div className="lg:col-span-7 space-y-6">
+          <TransactionActivityChart />
         </div>
 
-        {/* Feed */}
-        <Suspense
-          fallback={
-            <div className="text-zinc-500 font-mono text-sm text-center py-10">
-              Loading feed...
-            </div>
-          }
-        >
-          <FeedClient />
-        </Suspense>
+        {/* Right Column: Feed (PRD 2.1) */}
+        <div className="lg:col-span-5 space-y-6 h-full">
+          <Suspense
+            fallback={
+              <div className="text-zinc-500 font-mono text-sm text-center py-10">
+                Loading feed...
+              </div>
+            }
+          >
+            <LiveFeedWidget />
+          </Suspense>
+        </div>
       </div>
+      <RecentTransactionsTable recentAnalyses={recentAnalyses} />
     </div>
   );
 };

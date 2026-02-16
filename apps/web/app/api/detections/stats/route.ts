@@ -38,15 +38,18 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Extract organizationId for RLS
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const organizationId = (session.user as any).organizationId as string | undefined;
+    const org = await auth.api.getFullOrganization({
+      headers: request.headers,
+    });
 
-    if (!organizationId) {
+    if (!org?.id) {
       return Response.json(
         { error: "Organization ID not found in session" },
         { status: 400 }
       );
     }
+
+    const organizationId = org.id;
 
     // 3. Parse date range
     const { searchParams } = new URL(request.url);

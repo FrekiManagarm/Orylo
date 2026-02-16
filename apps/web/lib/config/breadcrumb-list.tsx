@@ -1,6 +1,6 @@
 export const breadcrumbProList = () => [
   {
-    title: "Tableau de bord",
+    title: "Dashboard",
     href: `/dashboard`,
   },
   {
@@ -8,8 +8,8 @@ export const breadcrumbProList = () => [
     href: `/dashboard/transactions`,
   },
   {
-    title: "Connect",
-    href: `/dashboard/connect`,
+    title: "Connections",
+    href: `/dashboard/connections`,
   },
   {
     title: "Rules",
@@ -18,11 +18,5 @@ export const breadcrumbProList = () => [
   {
     title: "Settings",
     href: `/dashboard/settings`,
-    items: [
-      {
-        title: "Billing",
-        href: `/dashboard/settings/billing`,
-      },
-    ],
   },
 ];

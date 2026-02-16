@@ -35,16 +35,19 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Extract organizationId for multi-tenancy (RLS)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const organizationId = (session.user as any).organizationId as string | undefined;
+    // 2. Extract organizationId for multi-tenancy (RLS) - use getFullOrganization (same as feed/transactions)
+    const organization = await auth.api.getFullOrganization({
+      headers: request.headers,
+    });
 
-    if (!organizationId) {
+    if (!organization?.id) {
       return Response.json(
-        { error: "Organization ID not found in session" },
+        { error: "Organization not found" },
         { status: 400 }
       );
     }
+
+    const organizationId = organization.id;
 
     // 3. Get detection ID from params
     const { id } = await params;

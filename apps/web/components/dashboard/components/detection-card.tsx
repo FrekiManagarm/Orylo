@@ -1,12 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { BlockCustomerButton } from "@/components/dashboard/components/block-customer-button";
 import { WhitelistCustomerButton } from "@/components/dashboard/components/whitelist-customer-button";
 import { QuickActionsMenu } from "@/components/dashboard/components/quick-actions-menu";
-import { toast } from "sonner";
 
 /**
  * Detection type matching API response
@@ -53,6 +53,8 @@ export function DetectionCard({
   onClick?: () => void;
 }) {
   const { customerEmail, amount, currency, decision, score, createdAt, paymentIntentId } = detection;
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [whitelistDialogOpen, setWhitelistDialogOpen] = useState(false);
 
   // Handle card click (Story 2.4 - AC1)
   const handleCardClick = (e: React.MouseEvent) => {
@@ -91,14 +93,16 @@ export function DetectionCard({
     }
   };
 
-  // Format timestamp (AC3)
-  const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
+  // Format timestamp (AC3) - guard against invalid dates
+  const timeAgo =
+    createdAt && !isNaN(new Date(createdAt).getTime())
+      ? formatDistanceToNow(new Date(createdAt), { addSuffix: true })
+      : "N/A";
 
   return (
     <Card
       className="w-full hover:shadow-md transition-shadow cursor-pointer"
       aria-label={`Detection card for transaction ${paymentIntentId}`}
-      role="button"
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
@@ -120,11 +124,11 @@ export function DetectionCard({
             <Badge variant={getBadgeVariant(decision)}>
               {decision}
             </Badge>
-            {/* Story 2.9: Quick Actions Menu */}
+            {/* Story 2.9: Quick Actions Menu - opens Block/Whitelist dialogs */}
             <QuickActionsMenu
               onViewDetails={() => onClick?.()}
-              onBlock={() => toast.info("Use the Block button below")}
-              onWhitelist={() => toast.info("Use the Whitelist button below")}
+              onBlock={() => setBlockDialogOpen(true)}
+              onWhitelist={() => setWhitelistDialogOpen(true)}
             />
           </div>
         </div>
@@ -150,11 +154,15 @@ export function DetectionCard({
         <BlockCustomerButton
           customerEmail={customerEmail || paymentIntentId}
           className="flex-1 md:flex-initial min-h-[44px]"
+          open={blockDialogOpen}
+          onOpenChange={setBlockDialogOpen}
         />
         {/* Story 2.8: Whitelist Customer Button - Story 2.11: Full-width on mobile, 44px tap target */}
         <WhitelistCustomerButton
           customerEmail={customerEmail || paymentIntentId}
           className="flex-1 md:flex-initial min-h-[44px]"
+          open={whitelistDialogOpen}
+          onOpenChange={setWhitelistDialogOpen}
         />
       </CardFooter>
     </Card>

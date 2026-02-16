@@ -57,7 +57,22 @@ export function FeedClient() {
   // Story 2.10: Track new detections for animation
   const [newDetectionIds, setNewDetectionIds] = useState<Set<string>>(new Set());
 
+  // Track Stripe connections for empty state (show appropriate message)
+  const [hasStripeConnection, setHasStripeConnection] = useState<boolean | null>(null);
+
   const LIMIT = 20;
+
+  // Fetch connections to adapt empty state message
+  useEffect(() => {
+    fetch("/api/stripe/connections")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((connections: { isActive?: boolean }[]) => {
+        setHasStripeConnection(
+          Array.isArray(connections) && connections.some((c) => c.isActive)
+        );
+      })
+      .catch(() => setHasStripeConnection(false));
+  }, []);
 
   // Story 2.3 - AC6: Get filter values from URL
   const decision = searchParams.get("decision");
@@ -183,15 +198,30 @@ export function FeedClient() {
   // AC7: Empty state
   if (detections.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/10 p-12 text-center bg-black/40 backdrop-blur-sm">
         <div className="flex flex-col gap-4 max-w-md">
-          <h3 className="text-lg font-semibold">No detections yet</h3>
-          <p className="text-sm text-muted-foreground">
-            Connect your Stripe account to start monitoring fraud detections in real-time.
-          </p>
-          <Button className="mt-2" variant="outline">
-            <Link href="/dashboard/connections">Connect Stripe</Link>
-          </Button>
+          <h3 className="text-lg font-semibold text-white">No detections yet</h3>
+          {hasStripeConnection === null ? (
+            <p className="text-sm text-zinc-500">Checking connection…</p>
+          ) : hasStripeConnection ? (
+            <>
+              <p className="text-sm text-zinc-400">
+                Your Stripe account is connected. Detections will appear here when payments are processed.
+              </p>
+              <p className="text-xs text-zinc-500">
+                Use <strong className="text-zinc-400">Quick Actions → Simulate Payment</strong> to test the flow.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-zinc-400">
+                Connect your Stripe account to start monitoring fraud detections in real-time.
+              </p>
+              <Button className="mt-2" variant="outline">
+                <Link href="/dashboard/connections">Connecter</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     );

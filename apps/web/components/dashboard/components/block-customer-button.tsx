@@ -36,6 +36,9 @@ type BlockCustomerButtonProps = {
   variant?: "default" | "ghost" | "outline" | "destructive";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  /** Controlled mode: open dialog from parent (e.g. QuickActionsMenu) */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function BlockCustomerButton({
@@ -45,10 +48,16 @@ export function BlockCustomerButton({
   variant = "destructive",
   size = "sm",
   className,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: BlockCustomerButtonProps) {
   const [isBlocking, setIsBlocking] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange;
+  const dialogOpen = isControlled ? controlledOpen : internalOpen;
+  const setDialogOpen = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
   // AC3, AC4, AC5, AC6: Block customer with optimistic UI
   const handleBlock = async () => {
@@ -98,8 +107,8 @@ export function BlockCustomerButton({
 
   return (
     <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      {/* AC1: Block button */}
-      <AlertDialogTrigger>
+      {/* AC1: Block button - asChild avoids button nesting (Trigger renders as button by default) */}
+      <AlertDialogTrigger asChild>
         <Button
           variant={variant}
           size={size}

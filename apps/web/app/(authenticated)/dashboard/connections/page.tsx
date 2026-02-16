@@ -2,31 +2,52 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { paymentProcessorsConnections } from "@orylo/database";
-import { and, eq } from "drizzle-orm";
-import { ConnectStripeClient } from "./connect-stripe-client";
+import { eq } from "drizzle-orm";
+import { ConnectionsClient } from "./connections-client";
+import { paymentProcessorList, type PaymentProcessorId } from "@/lib/config/payment-processors";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function ConnectStripePage() {
+export type Connection = {
+  id: string;
+  accountId: string;
+  paymentProcessor: string;
+  isActive: boolean;
+  livemode: boolean;
+  connectedAt: Date | null;
+};
+
+export default async function ConnectionsPage() {
   const org = await auth.api.getFullOrganization({
     headers: await headers(),
   });
 
-  let stripeAccountId: string | null = null;
-  if (org?.id) {
-    const connection = await db.query.paymentProcessorsConnections.findFirst({
-      where: and(
-        eq(paymentProcessorsConnections.organizationId, org.id),
-        eq(paymentProcessorsConnections.paymentProcessor, "stripe"),
-        eq(paymentProcessorsConnections.isActive, true),
-      ),
-      columns: { accountId: true },
-    });
-    stripeAccountId = connection?.accountId ?? null;
-  }
+  const allConnections: Connection[] =
+    org?.id
+      ? await db.query.paymentProcessorsConnections.findMany({
+          where: eq(paymentProcessorsConnections.organizationId, org.id),
+          columns: {
+            id: true,
+            accountId: true,
+            paymentProcessor: true,
+            isActive: true,
+            livemode: true,
+            connectedAt: true,
+          },
+          orderBy: (c, { desc }) => [desc(c.connectedAt)],
+        })
+      : [];
 
-  const stripeConnected = Boolean(stripeAccountId);
+  // Group connections by processor
+  const connectionsByProcessor = paymentProcessorList.reduce<
+    Record<PaymentProcessorId, Connection[]>
+  >((acc, config) => {
+    acc[config.id] = allConnections.filter(
+      (c) => c.paymentProcessor === config.id
+    );
+    return acc;
+  }, {} as Record<PaymentProcessorId, Connection[]>);
 
   return (
     <div className="space-y-6 relative min-h-screen pb-20">
@@ -35,17 +56,14 @@ export default async function ConnectStripePage() {
 
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white">
-          Connect Stripe
+          Connections
         </h1>
         <p className="text-zinc-400 mt-1 font-light">
-          Link your Stripe account to enable real-time fraud detection on your payments.
+          Link your payment processors and e-commerce platforms for real-time fraud detection.
         </p>
       </div>
 
-      <ConnectStripeClient
-        stripeConnected={stripeConnected}
-        stripeAccountId={stripeAccountId}
-      />
+      <ConnectionsClient connectionsByProcessor={connectionsByProcessor} />
     </div>
   );
 }
