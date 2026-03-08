@@ -53,7 +53,7 @@ export const generateAIExplanation = task({
       const rateLimitResult = await explanationGenerationRateLimit.limit(
         payload.organizationId
       );
-      
+
       if (!rateLimitResult.success) {
         // Rate limit exceeded - use template fallback
         console.warn("[ai_explanation_rate_limit_exceeded]", {

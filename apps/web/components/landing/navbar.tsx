@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -36,9 +37,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-6 w-6 rounded bg-indigo-500 flex items-center justify-center group-hover:bg-indigo-400 transition-colors shadow-[0_0_10px_rgba(99,102,241,0.5)]">
-            <span className="text-white font-bold text-[10px]">O</span>
-          </div>
+          <Image src="/orylo-logo.png" alt="Orylo" width={24} height={24} />
           <span className="text-white font-bold text-sm tracking-wide">
             Orylo
           </span>

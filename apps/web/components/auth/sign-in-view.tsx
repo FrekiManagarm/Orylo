@@ -4,6 +4,7 @@ import { SignInForm } from "@/components/auth/sign-in-form";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ShieldCheck, ChevronLeft } from "lucide-react";
+import Image from "next/image";
 
 export function SignInView() {
   return (
@@ -11,20 +12,20 @@ export function SignInView() {
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-white opacity-20 pointer-events-none" />
       <div className="absolute inset-0 bg-noise opacity-20 pointer-events-none" />
-      
+
       {/* Glows */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 blur-[150px] rounded-full pointer-events-none -translate-y-1/2" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none translate-y-1/2" />
 
       {/* Navigation */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="absolute top-8 left-8 z-20"
       >
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="group flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -33,7 +34,7 @@ export function SignInView() {
       </motion.div>
 
       {/* Main Content */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
@@ -42,7 +43,7 @@ export function SignInView() {
         {/* Logo / Brand Header */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-xl bg-zinc-900/50 border border-white/10 backdrop-blur-md shadow-lg shadow-indigo-500/10">
-            <div className="w-6 h-6 bg-indigo-500 rounded-sm" />
+            <Image src="/orylo-logo.png" alt="Orylo" width={24} height={24} />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
             Orylo<span className="text-zinc-600">.Terminal</span>

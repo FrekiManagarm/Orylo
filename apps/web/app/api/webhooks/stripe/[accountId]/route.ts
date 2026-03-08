@@ -24,7 +24,9 @@ export async function POST(
   const { accountId } = await params;
 
   try {
-    const body = await request.text();
+    // Raw body required for Stripe signature verification (request.text() can alter bytes)
+    const rawBody = await request.arrayBuffer();
+    const body = Buffer.from(rawBody).toString("utf-8");
     const signature = request.headers.get("stripe-signature");
 
     // Get webhook secret for this account from connection
@@ -38,7 +40,20 @@ export async function POST(
       return NextResponse.json({ error: "Unknown account" }, { status: 404 });
     }
 
-    const webhookSecret = decrypt(connection.webhookSecret);
+    let webhookSecret = decrypt(connection.webhookSecret);
+
+    // En développement local avec Stripe CLI (stripe listen)
+    const stripeCliSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (
+      stripeCliSecret &&
+      (webhookSecret === "whsec_local_dev_secret" ||
+        process.env.NODE_ENV === "development")
+    ) {
+      logger.info("Using Stripe CLI webhook secret from environment", {
+        accountId,
+      });
+      webhookSecret = stripeCliSecret;
+    }
 
     const result = await processStripeWebhook({
       body,
